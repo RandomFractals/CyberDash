@@ -33,7 +33,7 @@ var retweet = function() {
       if (!err) {
           // process matching tweets
           data.statuses.forEach(status => {
-            console.log(status.text, status.user.screen_name)
+            console.log(status.user.screen_name, '>', status.text)
             // retweet
             Twitter.post('statuses/retweet/:id', {id: status.id_str}, function(err, response) {
               if (response) {
