@@ -23,7 +23,7 @@ var retweet = function() {
   // see: https://dev.twitter.com/rest/reference/get/search/tweets
   var params = {
     q: '#cyberSec, #hacking',
-    count: 5,
+    count: 3,
     result_type: 'recent',
     lang: 'en'    
   }
@@ -33,11 +33,10 @@ var retweet = function() {
       if (!err) {
           // process matching tweets
           data.statuses.forEach(status => {
-            console.log(status.user.screen_name, '>', status.text)
             // retweet
             Twitter.post('statuses/retweet/:id', {id: status.id_str}, function(err, response) {
               if (response) {
-                console.log('.');
+                console.log(status.user.screen_name, '>', status.text)                
               }
               // if there was an error while tweeting
               if (err) {
@@ -48,13 +47,21 @@ var retweet = function() {
       }
       // if unable to Search a tweet
       else {
-        console.error('Twitter search failed!');
+        console.error('Twitter search failed!', err);
       }
   });
 }
 
 // grab & retweet as soon as program is running...
-retweet();
+//retweet();
 
-// retweet in every 50 minutes
-setInterval(retweet, 3000000);
+// retweet every 15 minutes
+//setInterval(retweet, 900000);
+
+const twitterStream = Twitter.stream('statuses/filter', {
+  track: 'cyberSec, hacking'
+});
+
+twitterStream.on('tweet', t => {
+  console.log(`${t.text}\n`)
+})
