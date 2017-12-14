@@ -1,0 +1,15 @@
+{
+  "name": "CyberDash",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": "https://github.com/RandomFractals/CyberDash.git",
+  "author": "Taras Novak <taras.novak@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "twit": "^2.2.9"
+  }
+}
