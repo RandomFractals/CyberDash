@@ -41,7 +41,7 @@ var retweet = function() {
               }
               // if there was an error while tweeting
               if (err) {
-                coneole.error('failed to RT', status)
+                console.error('failed to RT', status)
               }
             });
           })
