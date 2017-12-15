@@ -24,6 +24,9 @@ Twitter.get('followers/list', {
 const keywords = config.track_filter.split(',')
 console.log('Filter:', keywords)
 
+// get min followers for processing a tweet
+const minFollowers = Number(config.min_followers)
+
 /**
  * Creates filtered realtime tweets feed for testing.
  * 
@@ -33,21 +36,32 @@ const filterStream = Twitter.stream('statuses/filter', {
   track: config.track_filter
 });
 
-filterStream.on('tweet', t => {
-  console.log(`\n${t.user.screen_name}: ${t.text}`)
+filterStream.on('tweet', tweet => {
+  if (Number(tweet.user.followers_count) >= minFollowers) {
+    processTweet(tweet)
+  }
+})
 
+/**
+ * Prints out tweet text and stats.
+ * 
+ * @param tweet Tweet to print out.
+ */
+function processTweet (tweet) {
+  console.log(`\n${tweet.user.screen_name}: ${tweet.text}`)
+  
   // check keyword matches
   let matches = ''
   keywords.forEach(keyword => {
-    if (t.text.indexOf(keyword) >= 0) {
+    if (tweet.text.indexOf(keyword) >= 0) {
       matches += keyword + ' '
     }
   })
   if (matches.length > 0) {
     console.log('matches:', matches)
   }
-
+  
   // print out other stats for analysis later
-  console.log(`followers: ${t.user.followers_count} | tweets: ${t.user.statuses_count}`)
-  //console.log(t)
-})
+  console.log(`followers: ${tweet.user.followers_count} | tweets: ${tweet.user.statuses_count}`)
+  //console.log(t)  
+}
