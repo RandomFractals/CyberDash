@@ -10,13 +10,13 @@ You can use this simple Twitter bot code for creating your own news feed bot for
 
 # Config: save .env.template as .env
 
-Follow instructions and links in .env.template for procuring your own Twitter bot API keys
+Follow instructions in .env.template for your Twitter bot config
 
-# Test Config
+# 1. Run realtime Twitter stream/filter bot
 
 >node src/stream.js
 
-# Run Bot
+# 2. OR Run bot.js for periodic RT's
 
 >TODO :)
 
