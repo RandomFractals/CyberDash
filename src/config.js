@@ -1,6 +1,7 @@
 require('dotenv').config()
 
 module.exports = {
+  twitter_account: process.env.TWITTER_ACCOUNT,
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
   access_token: process.env.ACCESS_TOKEN,
