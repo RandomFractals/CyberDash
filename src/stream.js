@@ -21,7 +21,10 @@ Twitter.get('followers/list', {
 })
 
 // get a list of configured track filter keywords
-const keywords = config.track_filter.split(',').map(keyword => keyword.toLowerCase())
+let keywords = config.track_filter.split(',').map(keyword => keyword.toLowerCase())
+if (config.hashtags_filter) {
+  keywords = keywords.map(keyword => ('#' + keyword))
+}
 console.log('Filter:', keywords)
 
 // get min followers for processing a tweet
@@ -53,7 +56,7 @@ filterStream.on('tweet', tweet => {
     const matchedKeywords = getKeywordMatches(tweetText)
     if (matchedKeywords.length > 0) {
       logTweet(tweet, tweetText, matchedKeywords)
-      //retweet(tweet)    
+      retweet(tweet)    
     }              
   }
 })
