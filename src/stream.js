@@ -26,7 +26,7 @@ Twitter.get('followers/list', {
  * see: https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference/post-statuses-filter.html
  */
 const filterStream = Twitter.stream('statuses/filter', {
-  track: 'cyberSec, hacking'
+  track: config.track_filter
 });
 
 filterStream.on('tweet', t => {
