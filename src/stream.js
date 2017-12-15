@@ -37,7 +37,9 @@ const filterStream = Twitter.stream('statuses/filter', {
 });
 
 filterStream.on('tweet', tweet => {
-  if (Number(tweet.user.followers_count) >= minFollowers) {
+  if (Number(tweet.user.followers_count) >= minFollowers &&
+      tweet.entities.urls.length > 0 && // has a link
+      !tweet.retweeted) { // skip retweets
     processTweet(tweet)
   }
 })
@@ -63,5 +65,5 @@ function processTweet (tweet) {
   
   // print out other stats for analysis later
   console.log(`followers: ${tweet.user.followers_count} | tweets: ${tweet.user.statuses_count}`)
-  //console.log(t)  
+  //console.log(tweet)
 }
