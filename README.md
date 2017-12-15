@@ -1,8 +1,8 @@
 # CyberDash
 
-CyberSec news Twitter bot.
+CyberSec news Twitter bot: https://twitter.com/CyberDash
 
-You can use this simple Twitter bot code for creating your own news feed bot for your area of interest. Just follow the buid, config and test intstructions below.
+You can use this simple Twitter bot code for creating your own news feed bot for your area of interest. Just follow the buid, config and test instructions below.
 
 # Build
 
