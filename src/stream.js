@@ -40,16 +40,17 @@ filterStream.on('tweet', tweet => {
   if (Number(tweet.user.followers_count) >= minFollowers &&
       tweet.entities.urls.length > 0 && // has a link
       !tweet.retweeted) { // skip retweets
-    processTweet(tweet)
+    logTweet(tweet)
+    retweet(tweet)
   }
 })
 
 /**
  * Prints out tweet text and stats.
  * 
- * @param tweet Tweet to print out.
+ * @param tweet Tweet info to log.
  */
-function processTweet (tweet) {
+function logTweet (tweet) {
   console.log(`\n${tweet.user.screen_name}: ${tweet.text}`)
   
   // check keyword matches
@@ -67,3 +68,21 @@ function processTweet (tweet) {
   console.log(`followers: ${tweet.user.followers_count} | tweets: ${tweet.user.statuses_count}`)
   //console.log(tweet)
 }
+
+/**
+ * Retweets a given tweet.
+ * 
+ * @param tweet Tweet to retweet.
+ */
+function retweet(tweet) {
+  // retweet
+  Twitter.post('statuses/retweet/:id', {id: tweet.id_str}, function(err, response) {
+    if (response) {
+      console.log(tweet.user.screen_name, '>RT:', tweet.text)
+    }
+    if (err) {
+      console.error('failed to RT', tweet)
+    }
+  })
+}
+
