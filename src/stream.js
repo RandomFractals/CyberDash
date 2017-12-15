@@ -21,7 +21,7 @@ Twitter.get('followers/list', {
 })
 
 // get a list of configured track filter keywords
-const keywords = config.track_filter.split(',')
+const keywords = config.track_filter.split(',').map(keyword => keyword.toLowerCase())
 console.log('Filter:', keywords)
 
 // get min followers for processing a tweet
@@ -40,6 +40,7 @@ filterStream.on('tweet', tweet => {
   if (Number(tweet.user.followers_count) >= minFollowers &&
       tweet.entities.urls.length > 0 && // has a link
       tweet.in_reply_to_status_id_str === null && // not a reply
+      !tweet.text.startsWith('RT ') &&
       !tweet.retweeted) { // skip retweets
     logTweet(tweet)
     //retweet(tweet)
@@ -52,12 +53,18 @@ filterStream.on('tweet', tweet => {
  * @param tweet Tweet info to log.
  */
 function logTweet (tweet) {
-  console.log(`\n${tweet.user.screen_name}: ${tweet.text}`)
+  let tweetText = tweet.text
+  if (tweet.truncated) {
+    // get full text
+    tweetText = tweet.extended_tweet.full_text
+  }
+  console.log(`\n${tweet.user.screen_name}: ${tweetText}`)
   
   // check keyword matches
   let matches = ''
+  tweetText = tweetText.toLowerCase()
   keywords.forEach(keyword => {
-    if (tweet.text.indexOf(keyword) >= 0) {
+    if (tweetText.indexOf(keyword) >= 0) {
       matches += keyword + ' '
     }
   })
