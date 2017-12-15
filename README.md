@@ -16,8 +16,16 @@ Follow instructions and links in .env.template for procuring your own Twitter bo
 
 >node src/stream.js
 
-# References
+# Run Bot
+
+>TODO :)
+
+# Twitter Bots Tutorials
 
 https://github.com/amandeepmittal/awesome-twitter-bots
 
 https://medium.freecodecamp.org/how-to-build-and-deploy-a-multifunctional-twitter-bot-49e941bb3092
+
+## Fun Twitter Bots on Github
+
+https://github.com/aershov24/ibotsunburn
