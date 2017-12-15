@@ -13,7 +13,7 @@ Twitter.get('followers/list', {
   if (err) {
     console.log(err)
   } else {
-    console.log(`\n@${config.twitter_account} Followers:`)
+    console.log(`\n${config.twitter_account} Followers:`)
     data.users.forEach(user => {
       console.log(user.screen_name)
     })
@@ -34,44 +34,57 @@ const minFollowers = Number(config.min_followers)
  */
 const filterStream = Twitter.stream('statuses/filter', {
   track: config.track_filter
-});
+})
 
 filterStream.on('tweet', tweet => {
   if (Number(tweet.user.followers_count) >= minFollowers &&
-      tweet.entities.urls.length > 0 && // has a link
-      tweet.in_reply_to_status_id_str === null && // not a reply
-      !tweet.text.startsWith('RT ') &&
-      !tweet.retweeted) { // skip retweets
-    logTweet(tweet)
-    //retweet(tweet)
+    tweet.entities.urls.length > 0 && // has a link
+    tweet.in_reply_to_status_id_str === null && // not a reply
+    !tweet.text.startsWith('RT ') &&
+    !tweet.retweeted) { // skip retweets
+
+    // get full tweet text
+    let tweetText = tweet.text
+    if (tweet.truncated) {
+      tweetText = tweet.extended_tweet.full_text
+    }
+
+    // get keywords
+    const matchedKeywords = getKeywordMatches(tweetText)
+    if (matchedKeywords.length > 0) {
+      logTweet(tweet, tweetText, matchedKeywords)
+      //retweet(tweet)    
+    }              
   }
 })
 
 /**
- * Prints out tweet text and stats.
+ * Checks if tweet text actually matches filter keywords.
+ * Twitter can be finicky with those keyword matches sometimes.
  * 
- * @param tweet Tweet info to log.
+ * @param tweetText Full tweet text to check for keywords.
  */
-function logTweet (tweet) {
-  let tweetText = tweet.text
-  if (tweet.truncated) {
-    // get full text
-    tweetText = tweet.extended_tweet.full_text
-  }
-  console.log(`\n${tweet.user.screen_name}: ${tweetText}`)
-  
-  // check keyword matches
-  let matches = ''
+function getKeywordMatches(tweetText) {  
+  let keywordMatches = ''
   tweetText = tweetText.toLowerCase()
   keywords.forEach(keyword => {
     if (tweetText.indexOf(keyword) >= 0) {
-      matches += keyword + ' '
+      keywordMatches += keyword + ' '
     }
   })
-  if (matches.length > 0) {
-    console.log('matches:', matches)
-  }
-  
+  return keywordMatches
+}
+
+/**
+ * Prints out tweet text and stats.
+ * 
+ * @param tweet Tweet info to log
+ * @param tweetText Full tweet text
+ * @param keywords matched keywords
+ */
+function logTweet (tweet, tweetText, keywords) {
+  console.log(`\n${tweet.user.screen_name}: ${tweetText}`)
+  console.log('matches:', keywords)
   // print out other stats for analysis later
   console.log(`followers: ${tweet.user.followers_count} | tweets: ${tweet.user.statuses_count}`)
   //console.log(tweet)
@@ -93,4 +106,3 @@ function retweet(tweet) {
     }
   })
 }
-
