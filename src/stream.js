@@ -59,6 +59,10 @@ filterStream.on('tweet', tweet => {
       retweet(tweet)    
     }              
   }
+  else {
+    // log . for skipped tweets
+    process.stdout.write('.')
+  }
 })
 
 /**
