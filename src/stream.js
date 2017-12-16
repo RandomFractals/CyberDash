@@ -31,8 +31,9 @@ if (config.hashtags_filter) {
 console.log('RT Filter:\n------------------------------')
 console.log(keywords)
 
-// get min followers for processing a tweet
+// get required min followers for processing a tweet
 const minFollowers = Number(config.min_followers)
+console.log('minFollowers:', minFollowers)
 
 /**
  * Creates filtered realtime tweets feed for testing.
