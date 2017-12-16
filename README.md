@@ -6,6 +6,9 @@ This Twitter bot retweets posts with links related to cyber security.
 
 You can use this simple Twitter bot code for creating your own news feed bot for your area of interest. Just follow the buid, config and run instructions below.
 
+![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/CyberDash1.0.png?raw=true 
+ "@CyberDash")
+
 # Build
 
 >npm install
@@ -49,6 +52,12 @@ ACCESS_TOKEN_SECRET=
 # 1. Run realtime Twitter stream/filter bot
 
 >node src/stream.js
+
+trace output:
+
+![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/CyberDashTrace3.png?raw=true 
+ "trace")
+
 
 # 2. OR Run bot.js for periodic RT's
 
