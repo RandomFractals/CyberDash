@@ -55,7 +55,7 @@ ACCESS_TOKEN_SECRET=
 
 trace output:
 
-![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/CyberDashTrace3.png?raw=true 
+![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/CyberDashTrace4.png?raw=true 
  "trace")
 
 
