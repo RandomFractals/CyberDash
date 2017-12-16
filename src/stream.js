@@ -2,8 +2,11 @@ const Twit = require('twit')
 const config = require('./config')
 const Twitter = new Twit(config)
 
+const whitelist = {}
+const blacklist = {}
+
 /**
- * Prints out 20 followers for the configured Twitter account
+ * Print out 20 followers for the configured Twitter bot account
  * to test Twitter API OAth, etc.
  */
 Twitter.get('followers/list', {
@@ -11,12 +14,33 @@ Twitter.get('followers/list', {
   count: 20
 }, (err, data, response) => {
   if (err) {
-    console.log(err)
+    console.log('Failed to get followers/list', err)
   } else {
     console.log(`\n${config.twitter_account} Followers:`)
     console.log('------------------------------')
     data.users.forEach(user => {
       console.log(user.screen_name)
+    })
+    console.log('...')
+  }
+})
+
+/**
+ * Create a whitelist from the Twitter bot account friends/list.
+ */
+Twitter.get('friends/list', {
+  screen_name: config.twitter_account, 
+  count: 100 // max whitelist size
+}, (err, data, response) => {
+  if (err) {
+    console.log('Failed to get friends/list!', err)
+  } else {
+    console.log('\nWhitelist:')
+    console.log('------------------------------')
+    data.users.forEach(user => {
+      // add a 'friend' to the whitelist
+      whitelist[user.screen_name] = user
+      console.log(user.screen_name)      
     })
     console.log('...')
     console.log('Processing realtime tweets...')
@@ -26,21 +50,23 @@ Twitter.get('followers/list', {
 // get a list of configured track filter keywords
 let keywords = config.track_filter.split(',').map(keyword => keyword.toLowerCase())
 if (config.hashtags_filter) {
+  // convert them to hashtags
   keywords = keywords.map(keyword => ('#' + keyword))
 }
 console.log('RT Filter:\n------------------------------')
 console.log(keywords)
 
-// get required min followers for processing a tweet
+// get required min followers for processing a tweet from 'unknown' user
 const minFollowers = Number(config.min_followers)
 console.log('minFollowers:', minFollowers)
 
-// get blacklist from config
-const blacklist = config.blacklist
-console.log('blacklist:', blacklist)
+// create blacklist from configured Twitter blacklist list
+const blacklistName = config.blacklist
+console.log('blacklistName:', blacklistName)
+// TODO: create blacklisted Twitter usernames to skip their tweets
 
 /**
- * Creates filtered realtime tweets feed for testing.
+ * Start listenting for relevant tweets via realtime Twitter filter
  * 
  * see: https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference/post-statuses-filter.html
  */
@@ -48,14 +74,19 @@ const filterStream = Twitter.stream('statuses/filter', {
   track: config.track_filter
 })
 
+// process each tweet
 filterStream.on('tweet', tweet => {
-  if (!tweet.user.verified &&
-    tweet.user.followers_count >= minFollowers &&
-    tweet.entities.urls.length > 0 && // has a link
+  // check user stats
+  const userChecksOut = whitelist[tweet.user.screen_name] !== undefined ||
+    (!tweet.user.verified && tweet.user.followers_count >= minFollowers)
+
+  // check tweet stats
+  const worthRT = tweet.entities.urls.length > 0 && // has a link
     tweet.in_reply_to_status_id_str === null && // not a reply
     !tweet.text.startsWith('RT ') &&
-    !tweet.retweeted) { // skip retweets
+    !tweet.retweeted // skip retweets
 
+  if (userChecksOut && worthRT) {
     // get full tweet text
     let tweetText = tweet.text
     if (tweet.truncated) {
