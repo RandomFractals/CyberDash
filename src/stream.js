@@ -35,6 +35,10 @@ console.log(keywords)
 const minFollowers = Number(config.min_followers)
 console.log('minFollowers:', minFollowers)
 
+// get blacklist from config
+const blacklist = config.blacklist
+console.log('blacklist:', blacklist)
+
 /**
  * Creates filtered realtime tweets feed for testing.
  * 
