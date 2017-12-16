@@ -33,11 +33,14 @@ TRACK_FILTER=cyberSec,hacking
 # Hashtags only filter match toggle
 HASHTAGS_FILTER=true
 
-# Required minimum followers to process a matching tweet
+# Name of the blacklist Twitter list to skip tweets from
+BLACKLIST=bots
+
+# Minimum followers to RT a tweet from 'unknown' user
 MIN_FOLLOWERS=50000
 
-# Name of the blacklist to skip tweets from
-BLACKLIST=bots
+# Skip tweets from tweeps with these many friends
+MAX_FRIENDS=20000
 
 # Twitter bot API keys
 CONSUMER_KEY=

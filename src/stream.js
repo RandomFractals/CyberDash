@@ -69,6 +69,11 @@ console.log(keywords)
 const minFollowers = Number(config.min_followers)
 console.log('minFollowers:', minFollowers)
 
+// get max friends to check for tweeps that follow the universe
+const maxFriends = Number(config.maxFriends)
+console.log('maxFriends:', maxFriends)
+
+
 /**
  * Start listenting for relevant tweets via realtime Twitter filter
  * 
@@ -84,7 +89,8 @@ filterStream.on('tweet', tweet => {
   const userChecksOut = whitelist[tweet.user.screen_name] !== undefined ||
     (!tweet.user.verified && // skip verified users
       blacklist[tweet.user.screen_name] === undefined && // not blacklisted
-      tweet.user.followers_count >= minFollowers) // min required for 'unknown' tweeps
+      tweet.user.followers_count >= minFollowers && // min required for 'unknown' tweeps
+      tweet.user.friends_count < maxFriends) // skip tweets from tweeps that follow the universe
 
   // check tweet stats
   const worthRT = tweet.entities.urls.length > 0 && // has a link
