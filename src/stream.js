@@ -14,9 +14,12 @@ Twitter.get('followers/list', {
     console.log(err)
   } else {
     console.log(`\n${config.twitter_account} Followers:`)
+    console.log('------------------------------')
     data.users.forEach(user => {
       console.log(user.screen_name)
     })
+    console.log('...')
+    console.log('Processing realtime tweets...')
   }
 })
 
@@ -25,7 +28,8 @@ let keywords = config.track_filter.split(',').map(keyword => keyword.toLowerCase
 if (config.hashtags_filter) {
   keywords = keywords.map(keyword => ('#' + keyword))
 }
-console.log('Filter:', keywords)
+console.log('RT Filter:\n------------------------------')
+console.log(keywords)
 
 // get min followers for processing a tweet
 const minFollowers = Number(config.min_followers)
@@ -106,7 +110,7 @@ function retweet(tweet) {
   // retweet
   Twitter.post('statuses/retweet/:id', {id: tweet.id_str}, function(err, response) {
     if (response) {
-      console.log(tweet.user.screen_name, '>RT:', tweet.text)
+      console.log(`RT: @${tweet.user.screen_name}: ${tweet.text}`)
     }
     if (err) {
       console.error('failed to RT', tweet)
