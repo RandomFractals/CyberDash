@@ -1,15 +1,21 @@
 {
-  "name": "CyberDash",
+  "name": "cyber-dash",
+  "productName": "CyberDash Twitter Bot",
   "version": "1.0.0",
+  "description": "Retweets cyber security Twitter posts",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "repository": "https://github.com/RandomFractals/CyberDash.git",
-  "author": "Taras Novak <taras.novak@gmail.com>",
+  "author": "Random Fractals, Inc.",
   "license": "MIT",
   "dependencies": {
     "dotenv": "^4.0.0",
     "twit": "^2.2.9"
+  },
+  "engines": {
+    "node": ">= 6.9.5",
+    "npm": ">= 4.2.0"    
   }
 }
