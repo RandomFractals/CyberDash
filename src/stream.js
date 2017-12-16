@@ -6,35 +6,16 @@ const whitelist = {}
 const blacklist = {}
 
 /**
- * Print out 20 followers for the configured Twitter bot account
- * to test Twitter API OAth, etc.
- */
-Twitter.get('followers/list', {
-  screen_name: config.twitter_account, 
-  count: 20
-}, (err, data, response) => {
-  if (err) {
-    console.log('Failed to get followers/list', err)
-  } else {
-    console.log(`\n${config.twitter_account} Followers:`)
-    console.log('------------------------------')
-    data.users.forEach(user => {
-      console.log(user.screen_name)
-    })
-    console.log('...')
-  }
-})
-
-/**
  * Create a whitelist from the Twitter bot account friends/list.
  */
 Twitter.get('friends/list', {
   screen_name: config.twitter_account, 
-  count: 100 // max whitelist size
+  count: 100 // max whitelist size for now
 }, (err, data, response) => {
   if (err) {
     console.log('Failed to get friends/list!', err)
-  } else {
+  } 
+  else {
     console.log('\nWhitelist:')
     console.log('------------------------------')
     data.users.forEach(user => {
@@ -43,7 +24,35 @@ Twitter.get('friends/list', {
       console.log(user.screen_name)      
     })
     console.log('...')
-    console.log('Processing realtime tweets...')
+  }
+})
+
+// get blacklist Twitter list name from config
+const blacklistName = config.blacklist
+
+/**
+ * Create a blacklist from configured Twitter list members
+ */
+Twitter.get('lists/members', {
+  slug: blacklistName,
+  owner_screen_name: config.twitter_account, 
+  count: 100 // max blacklist size for now
+}, (err, data, response) => {
+  if (err) {
+    console.log(`Failed to get 'blacklist' lists/members!`, err)
+  } 
+  else {
+    console.log('\nBlacklist:')
+    console.log('------------------------------')    
+    console.log(`@${config.twitter_account}/lists/${blacklistName}`)
+    console.log('------------------------------')
+    data.users.forEach(user => {
+      // update blacklist
+      blacklist[user.screen_name] = user
+      console.log(user.screen_name)      
+    })
+    console.log('...')
+    console.log('Processing realtime tweets...')    
   }
 })
 
@@ -60,11 +69,6 @@ console.log(keywords)
 const minFollowers = Number(config.min_followers)
 console.log('minFollowers:', minFollowers)
 
-// create blacklist from configured Twitter blacklist list
-const blacklistName = config.blacklist
-console.log('blacklistName:', blacklistName)
-// TODO: create blacklisted Twitter usernames to skip their tweets
-
 /**
  * Start listenting for relevant tweets via realtime Twitter filter
  * 
@@ -78,7 +82,9 @@ const filterStream = Twitter.stream('statuses/filter', {
 filterStream.on('tweet', tweet => {
   // check user stats
   const userChecksOut = whitelist[tweet.user.screen_name] !== undefined ||
-    (!tweet.user.verified && tweet.user.followers_count >= minFollowers)
+    (!tweet.user.verified && // skip verified users
+      blacklist[tweet.user.screen_name] === undefined && // not blacklisted
+      tweet.user.followers_count >= minFollowers) // min required for 'unknown' tweeps
 
   // check tweet stats
   const worthRT = tweet.entities.urls.length > 0 && // has a link
@@ -151,6 +157,29 @@ function retweet(tweet) {
     }
     if (err) {
       console.error('failed to RT', tweet)
+    }
+  })
+}
+
+/**
+ * Prints out 20 followers for the configured Twitter bot account
+ * to test Twitter API OAth, etc.
+ */
+function listFollowers () {
+  Twitter.get('followers/list', {
+    screen_name: config.twitter_account, 
+    count: 20
+  }, (err, data, response) => {
+    if (err) {
+      console.log('Failed to get followers/list', err)
+    } 
+    else {
+      console.log(`\n${config.twitter_account} Followers:`)
+      console.log('------------------------------')
+      data.users.forEach(user => {
+        console.log(user.screen_name)
+      })
+      console.log('...')
     }
   })
 }
