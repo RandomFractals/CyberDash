@@ -70,7 +70,7 @@ const minFollowers = Number(config.min_followers)
 console.log('minFollowers:', minFollowers)
 
 // get max friends to check for tweeps that follow the universe
-const maxFriends = Number(config.maxFriends)
+const maxFriends = Number(config.max_friends)
 console.log('maxFriends:', maxFriends)
 
 
