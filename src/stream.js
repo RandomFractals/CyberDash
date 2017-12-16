@@ -44,7 +44,8 @@ const filterStream = Twitter.stream('statuses/filter', {
 })
 
 filterStream.on('tweet', tweet => {
-  if ((tweet.user.verified || tweet.user.followers_count >= minFollowers) &&
+  if (!tweet.user.verified &&
+    tweet.user.followers_count >= minFollowers &&
     tweet.entities.urls.length > 0 && // has a link
     tweet.in_reply_to_status_id_str === null && // not a reply
     !tweet.text.startsWith('RT ') &&
