@@ -46,12 +46,6 @@ MAX_FRIENDS=20000
 # Skip tweets with more than these many hashtags, most likely marketing bots spam
 MAX_HASHTAGS=6
 
-# Skip RT for tweets from users with these many tweets, most likely just another news bot
-MAX_TWEETS=50000
-
-# Skip tweets with more than these many hashtags, most likely marketing bots spam
-MAX_HASHTAGS=6
-
 # Skip tweets from users with these many posts, most likely just another news bot
 MAX_TWEETS=50000
 
