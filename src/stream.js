@@ -97,14 +97,21 @@ const filterStream = Twitter.stream('statuses/filter', {
 })
 
 // process each tweet
-filterStream.on('tweet', tweet => {
+filterStream.on('tweet', tweet => processTweet(tweet))
+
+/**
+ * Main process tweet method.
+ * 
+ * @param tweet Tweet json object
+ */
+function processTweet(tweet) {
   // check user stats
   const userChecksOut = whitelist[tweet.user.screen_name] !== undefined ||
-    (!tweet.user.verified && // skip verified users
-      blacklist[tweet.user.screen_name] === undefined && // not blacklisted
-      tweet.user.followers_count >= minFollowers && // min required for 'unknown' tweeps
-      tweet.user.friends_count < maxFriends && // skip tweets from tweeps that follow the universe
-      tweet.user.statuses_count < maxTweets) // most likely just another news bot
+  (!tweet.user.verified && // skip verified users
+    blacklist[tweet.user.screen_name] === undefined && // not blacklisted
+    tweet.user.followers_count >= minFollowers && // min required for 'unknown' tweeps
+    tweet.user.friends_count < maxFriends && // skip tweets from tweeps that follow the universe
+    tweet.user.statuses_count < maxTweets) // most likely just another news bot
 
   // check tweet stats
   const worthRT = tweet.entities.urls.length > 0 && // has a link
@@ -132,7 +139,8 @@ filterStream.on('tweet', tweet => {
     // log . for skipped tweets
     process.stdout.write('.')
   }
-})
+
+} // end of processTweet(tweet)
 
 /**
  * Checks if tweet text actually matches filter keywords.
