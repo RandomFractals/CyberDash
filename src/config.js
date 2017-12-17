@@ -8,6 +8,7 @@ module.exports = {
   min_followers: process.env.MIN_FOLLOWERS,
   max_friends: process.env.MAX_FRIENDS,
   max_hashtags: process.env.MAX_HASHTAGS,
+  max_tweets: process.env.MAX_TWEETS,
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
   access_token: process.env.ACCESS_TOKEN,

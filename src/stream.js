@@ -65,6 +65,8 @@ if (config.hashtags_filter) {
 console.log('RT Filter:\n------------------------------')
 console.log(keywords)
 
+// TODO: clean this up!!! after we get all the rules in place for a slim RT bot
+
 // get required min followers for processing a tweet from 'unknown' user
 const minFollowers = Number(config.min_followers)
 console.log('minFollowers:', minFollowers)
@@ -76,6 +78,10 @@ console.log('maxFriends:', maxFriends)
 // get max hashtags to skip tweets from marketing bots
 const maxHashtags = Number(config.max_hashtags)
 console.log('maxHashtags:', maxHashtags)
+
+// get max tweets to skip posts from users with too many tweets, most likely other news bots
+const maxTweets = Number(config.max_tweets)
+console.log('maxTweets:', maxTweets)
 
 /**
  * Start listenting for relevant tweets via realtime Twitter filter
@@ -93,7 +99,8 @@ filterStream.on('tweet', tweet => {
     (!tweet.user.verified && // skip verified users
       blacklist[tweet.user.screen_name] === undefined && // not blacklisted
       tweet.user.followers_count >= minFollowers && // min required for 'unknown' tweeps
-      tweet.user.friends_count < maxFriends) // skip tweets from tweeps that follow the universe
+      tweet.user.friends_count < maxFriends && // skip tweets from tweeps that follow the universe
+      tweet.user.statuses_count < maxTweets) // most likely just another news bot
 
   // check tweet stats
   const worthRT = tweet.entities.urls.length > 0 && // has a link
@@ -150,7 +157,7 @@ function logTweet (tweet, tweetText, keywords) {
   console.log(`\n${tweet.user.screen_name}: ${tweetText}`)
   console.log(`followers: ${tweet.user.followers_count} | tweets: ${tweet.user.statuses_count}`)  
   console.log('matches:', keywords)
-  console.log('hashtags:', tweet.entities.hashtags)
+  console.log('hashtags:\n', tweet.entities.hashtags)
   //console.log(tweet)
 }
 
