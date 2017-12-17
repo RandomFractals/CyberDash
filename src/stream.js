@@ -97,6 +97,7 @@ filterStream.on('tweet', tweet => {
 
   // check tweet stats
   const worthRT = tweet.entities.urls.length > 0 && // has a link
+    tweet.entities.hashtags.length <= maxHashtags && // not too spammy
     tweet.in_reply_to_status_id_str === null && // not a reply
     !tweet.text.startsWith('RT ') &&
     !tweet.retweeted // skip retweets
