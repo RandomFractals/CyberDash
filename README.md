@@ -55,6 +55,10 @@ ACCESS_TOKEN_SECRET=
 # Add your Twitter bot API keys and copy this file to .env for local testing of your Twitter bot with node.js
 
 ```
+> Read Twitter automation ground rules before you proceed to running your own bot
+https://help.twitter.com/en/rules-and-policies/twitter-automation
+
+The settings I've chosen for this Twitter bot limit the number of RT's your bot will send to comply with Twitter rules and rate limit regulations. Fine tune them at your own risk :(
 
 # 1. Run realtime Twitter stream/filter bot
 
