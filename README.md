@@ -33,10 +33,11 @@ TRACK_FILTER=cyberSec,hacking
 # Hashtags only filter match toggle
 HASHTAGS_FILTER=true
 
-# Name of the blacklist Twitter list to skip tweets from
+# Name of the 'blacklist' Twitter list to skip tweets from the members of
+# Note: can be any public or private Twitter list you create and curate
 BLACKLIST=bots
 
-# Minimum followers to RT a tweet from 'unknown' user
+# Minimum required followers to RT a tweet from 'unknown' user
 MIN_FOLLOWERS=50000
 
 # Skip tweets from tweeps with these many friends
@@ -48,7 +49,7 @@ CONSUMER_SECRET=
 ACCESS_TOKEN=
 ACCESS_TOKEN_SECRET=
 
-# Copy this file to .env for local testing of your Twitter bot with node.js
+# Add your Twitter bot API keys and copy this file to .env for local testing of your Twitter bot with node.js
 
 ```
 
