@@ -112,6 +112,7 @@ function processTweet(tweet) {
     tweet.user.followers_count >= minFollowers && // min required for 'unknown' tweeps
     tweet.user.friends_count < maxFriends && // skip tweets from tweeps that follow the universe
     tweet.user.statuses_count < maxTweets) // most likely just another news bot
+    // TODO: wire user description filter
 
   // check tweet stats
   const worthRT = tweet.entities.urls.length > 0 && // has a link
