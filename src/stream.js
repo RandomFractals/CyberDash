@@ -111,7 +111,8 @@ filterStream.on('tweet', tweet => {
     tweet.entities.hashtags.length <= maxHashtags && // not too spammy
     tweet.in_reply_to_status_id_str === null && // not a reply
     !tweet.text.startsWith('RT ') &&
-    !tweet.retweeted // skip retweets
+    tweet.retweeted_status === undefined // skip retweets
+    //!tweet.retweeted // RT only tweets without any retweets
 
   if (userChecksOut && worthRT) {
     // get full tweet text
