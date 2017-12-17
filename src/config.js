@@ -9,6 +9,7 @@ module.exports = {
   max_friends: process.env.MAX_FRIENDS,
   max_hashtags: process.env.MAX_HASHTAGS,
   max_tweets: process.env.MAX_TWEETS,
+  user_description_filter: process.env.USER_DESCRIPTION_FILTER,
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
   access_token: process.env.ACCESS_TOKEN,

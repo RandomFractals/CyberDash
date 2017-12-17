@@ -65,6 +65,10 @@ if (config.hashtags_filter) {
 console.log('RT Filter:\n------------------------------')
 console.log(keywords)
 
+// get a list of configured user description filter keywords
+let userFilter = config.user_description_filter.split(',').map(keyword => keyword.toLowerCase())
+console.log('userFilter:', config.user_description_filter)
+
 // TODO: clean this up!!! after we get all the rules in place for a slim RT bot
 
 // get required min followers for processing a tweet from 'unknown' user
@@ -157,7 +161,7 @@ function logTweet (tweet, tweetText, keywords) {
   console.log(`\n${tweet.user.screen_name}: ${tweetText}`)
   console.log(
     `followers: ${tweet.user.followers_count}`,
-    `| friends: ${tweet.user.friends_count}`    
+    `| friends: ${tweet.user.friends_count}`,    
     `| tweets: ${tweet.user.statuses_count}`
   )
   console.log('matches:', keywords)
