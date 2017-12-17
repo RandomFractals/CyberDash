@@ -155,7 +155,11 @@ function getKeywordMatches(tweetText) {
  */
 function logTweet (tweet, tweetText, keywords) {
   console.log(`\n${tweet.user.screen_name}: ${tweetText}`)
-  console.log(`followers: ${tweet.user.followers_count} | tweets: ${tweet.user.statuses_count}`)  
+  console.log(
+    `followers: ${tweet.user.followers_count}`,
+    `| friends: ${tweet.user.friends_count}`    
+    `| tweets: ${tweet.user.statuses_count}`
+  )
   console.log('matches:', keywords)
   console.log('hashtags:\n', tweet.entities.hashtags)
   //console.log(tweet)
