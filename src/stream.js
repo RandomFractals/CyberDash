@@ -73,6 +73,9 @@ console.log('minFollowers:', minFollowers)
 const maxFriends = Number(config.max_friends)
 console.log('maxFriends:', maxFriends)
 
+// get max hashtags to skip tweets from marketing bots
+const maxHashtags = Number(config.max_hashtags)
+console.log('maxHashtags:', maxHashtags)
 
 /**
  * Start listenting for relevant tweets via realtime Twitter filter

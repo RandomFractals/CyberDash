@@ -40,8 +40,11 @@ BLACKLIST=bots
 # Minimum required followers to RT a tweet from 'unknown' user
 MIN_FOLLOWERS=50000
 
-# Skip tweets from tweeps with these many friends
+# Skip tweets from tweeps with these many 'friends', bound to be Twitter spam users
 MAX_FRIENDS=20000
+
+# Skip tweets with more than these many hashtags, most likely marketing bots spam
+MAX_HASHTAGS=6
 
 # Twitter bot API keys
 CONSUMER_KEY=

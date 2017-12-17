@@ -7,6 +7,7 @@ module.exports = {
   blacklist: process.env.BLACKLIST,  
   min_followers: process.env.MIN_FOLLOWERS,
   max_friends: process.env.MAX_FRIENDS,
+  max_hashtags: process.env.MAX_HASHTAGS,
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
   access_token: process.env.ACCESS_TOKEN,
