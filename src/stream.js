@@ -172,9 +172,12 @@ function retweet(tweet) {
  * Sends 'Hello friend.' to new follower.
  */
 function helloFriend(event) {
-  const followerScreenName = event.source.screen_name
-  console.log('new follower:', followerScreenName)
-  // TODO: DM 'Hello friend.' to new follower
+  const friendName = event.source.name
+  const friendScreenName = event.source.screen_name
+  if (friendScreenName !== config.twitter_account) { // not us
+    console.log('new follower:', followerScreenName)
+    // TODO: DM 'Hello friend.' to new follower
+  }
 }
 
 
