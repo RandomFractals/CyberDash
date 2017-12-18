@@ -18,68 +18,29 @@ config.user_filter = config.user_description_filter.split(',').map(keyword => ke
 // log bot config for debug
 logConfig()
 
+// create a whitelist from the Twitter bot account 'friends' list
+updateWhitelist()
 
-/**
- * Create a whitelist from the Twitter bot account friends/list.
- */
-Twitter.get('friends/list', {
-  screen_name: config.twitter_account, 
-  count: 100 // max whitelist size for now
-}, (err, data, response) => {
-  if (err) {
-    console.log('Failed to get friends/list!', err)
-  } 
-  else {
-    console.log('\nWhitelist:')
-    console.log('------------------------------')
-    data.users.forEach(user => {
-      // add a 'friend' to the whitelist
-      whitelist[user.screen_name] = user
-      console.log(user.screen_name)      
-    })
-    console.log('...')
-  }
-})
+// create a blacklist from configured Twitter 'bot' list members
+updateBlacklist()
 
-
-/**
- * Create a blacklist from configured Twitter list members.
- */
-Twitter.get('lists/members', {
-  slug: config.blacklist,
-  owner_screen_name: config.twitter_account, 
-  count: 100 // max blacklist size for now
-}, (err, data, response) => {
-  if (err) {
-    console.log(`Failed to get 'blacklist' lists/members!`, err)
-  } 
-  else {
-    console.log('\nBlacklist:')
-    console.log('------------------------------')    
-    console.log(`@${config.twitter_account}/lists/${config.blacklist}`)
-    console.log('------------------------------')
-    data.users.forEach(user => {
-      // update blacklist
-      blacklist[user.screen_name] = user
-      console.log(user.screen_name)      
-    })
-    console.log('...')
-    console.log('Processing realtime tweets...')    
-  }
-})
-
-
-/**
- * Start listenting for relevant tweets via realtime Twitter filter
- * 
- * see: https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference/post-statuses-filter.html
- */
+// start listenting for relevant tweets via realtime Twitter filter
+// see: https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference/post-statuses-filter.html
 const filterStream = Twitter.stream('statuses/filter', {
   track: config.track_filter
 })
 
-// process each tweet
+// process each tweet from the filter stream
 filterStream.on('tweet', tweet => processTweet(tweet))
+
+// check blacklist every 15 minutes
+setInterval(updateBlacklist, 15 * 60 * 1000)
+
+// check whitelist every hour
+setInterval(updateWhitelist, 69 * 60 * 1000)
+
+
+/* ------------------------------- Stream Processing Methods ------------------------------------ */
 
 /**
  * Main process tweet method.
@@ -218,4 +179,58 @@ function logConfig () {
   console.log('max_friends:', config.max_friends.toLocaleString())
   console.log('min_followers:', config.min_followers.toLocaleString())
   console.log('max_hashtags:', config.max_hashtags.toLocaleString())
+}
+
+
+/**
+ * Updates whitelist with 'friends'.
+ */
+function updateWhitelist() {
+  Twitter.get('friends/list', {
+    screen_name: config.twitter_account, 
+    count: 100 // max whitelist size for now
+  }, (err, data, response) => {
+    if (err) {
+      console.log('Failed to get friends/list!', err)
+    } 
+    else {
+      console.log('\nWhitelist:')
+      console.log('------------------------------')
+      data.users.forEach(user => {
+        // add a 'friend' to the whitelist
+        whitelist[user.screen_name] = user
+        console.log(user.screen_name)      
+      })
+      console.log('...')
+    }
+  })  
+}
+
+
+/**
+ * Updates blacklist from Twitter 'bot' list.
+ */
+function updateBlacklist() {
+  Twitter.get('lists/members', {
+    slug: config.blacklist,
+    owner_screen_name: config.twitter_account, 
+    count: 100 // max blacklist size for now
+  }, (err, data, response) => {
+    if (err) {
+      console.log(`Failed to get 'blacklist' lists/members!`, err)
+    } 
+    else {
+      console.log('\nBlacklist:')
+      console.log('------------------------------')    
+      console.log(`@${config.twitter_account}/lists/${config.blacklist}`)
+      console.log('------------------------------')
+      data.users.forEach(user => {
+        // update blacklist
+        blacklist[user.screen_name] = user
+        console.log(user.screen_name)      
+      })
+      console.log('...')
+      console.log('Processing realtime tweets...')    
+    }
+  })    
 }
