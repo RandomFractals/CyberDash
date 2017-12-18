@@ -51,11 +51,11 @@ function processTweet(tweet) {
   // check user stats
   const userChecksOut = whitelist[tweet.user.screen_name] !== undefined ||
   (!tweet.user.verified && // skip verified users
+    passesUserFilter(tweet.user.description) && // see user filter keywords
     blacklist[tweet.user.screen_name] === undefined && // not blacklisted
     tweet.user.followers_count >= config.min_followers && // min required for 'unknown' tweeps
     tweet.user.friends_count < config.max_friends && // skip tweets from tweeps that follow the universe
     tweet.user.statuses_count < config.max_tweets) // most likely just another news bot
-    // TODO: wire user description filter
 
   // check tweet stats
   const worthRT = tweet.entities.urls.length > 0 && // has a link
@@ -86,6 +86,25 @@ function processTweet(tweet) {
   }
 
 } // end of processTweet(tweet)
+
+
+/**
+ * Checks user info for keywords to block.
+ * 
+ * @param userInfo Twitter user description.
+ */
+function passesUserFilter (userInfo) {
+  let keywordMatches = ''
+  if (userInfo) {
+    userInfo = userInfo.toLowerCase()
+    config.user_filter.forEach(keyword => {
+      if (userInfo.indexOf(keyword) >= 0) {
+        keywordMatches += keyword + ' '
+      }
+    })
+  }
+  return keywordMatches.length <= 0 // no keyword match
+}
 
 
 /**
