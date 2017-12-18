@@ -113,7 +113,8 @@ function processTweet(tweet) {
 
     // get keywords
     const matchedKeywords = getKeywordMatches(tweetText)
-    if (matchedKeywords.length > 0) {
+    if (matchedKeywords.length > 0 && 
+        matchedKeywords.split(' ').length <= config.max_hashtags) {
       logTweet(tweet, tweetText, matchedKeywords)
       retweet(tweet)    
     }              
