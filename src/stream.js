@@ -155,9 +155,9 @@ function getKeywordMatches(tweetText) {
 function logTweet (tweet, tweetText, keywords) {
   console.log(`\n${tweet.user.screen_name}: ${tweetText}`)
   console.log(
-    `followers: ${tweet.user.followers_count}`,
+    `tweets: ${tweet.user.statuses_count}`,
     `| friends: ${tweet.user.friends_count}`,    
-    `| tweets: ${tweet.user.statuses_count}`
+    `| followers: ${tweet.user.followers_count}`
   )
   console.log('matches:', keywords)
   console.log('hashtags:\n', tweet.entities.hashtags)
@@ -214,8 +214,8 @@ function logConfig () {
   console.log('RT Filter:\n------------------------------')
   console.log(config.keywords)
   console.log('user_filter:', config.user_description_filter)
-  console.log('min_followers:', config.min_followers.toLocaleString())
-  console.log('max_friends:', config.max_friends.toLocaleString())
-  console.log('max_hashtags:', config.max_hashtags.toLocaleString())
   console.log('max_tweets:', config.max_tweets.toLocaleString())
+  console.log('max_friends:', config.max_friends.toLocaleString())
+  console.log('min_followers:', config.min_followers.toLocaleString())
+  console.log('max_hashtags:', config.max_hashtags.toLocaleString())
 }

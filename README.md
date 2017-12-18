@@ -37,20 +37,20 @@ HASHTAGS_FILTER=true
 # Note: can be any public or private Twitter list you create and curate
 BLACKLIST=bots
 
-# Minimum required followers to RT a tweet from 'unknown' user
-MIN_FOLLOWERS=50000
+# Skip tweets from news bots. Add other user description keywords as desired
+USER_DESCRIPTION_FILTER=publishing,news
+
+# Skip tweets from users with these many posts, most likely just another news bot
+MAX_TWEETS=40000
 
 # Skip tweets from tweeps with these many 'friends', bound to be Twitter spam users
-MAX_FRIENDS=20000
+MAX_FRIENDS=30000
+
+# Minimum followers to RT a tweet from 'unknown' user
+MIN_FOLLOWERS=10000
 
 # Skip tweets with more than these many hashtags, most likely marketing bots spam
 MAX_HASHTAGS=6
-
-# Skip tweets from users with these many posts, most likely just another news bot
-MAX_TWEETS=50000
-
-# Skip tweets from news bots. Add other user description keywords as desired
-USER_DESCRIPTION_FILTER=publishing,news
 
 # Twitter bot API keys
 CONSUMER_KEY=
