@@ -5,6 +5,20 @@ const Twitter = new Twit(config)
 const whitelist = {}
 const blacklist = {}
 
+// get a list of configured track filter keywords
+config.keywords = config.track_filter.split(',').map(keyword => keyword.toLowerCase())
+if (config.hashtags_filter) {
+  // convert them to hashtags
+  config.keywords = config.keywords.map(keyword => ('#' + keyword))
+}
+
+// get a list of configured user description filter keywords
+config.user_filter = config.user_description_filter.split(',').map(keyword => keyword.toLowerCase())
+
+// log bot config for debug
+logConfig()
+
+
 /**
  * Create a whitelist from the Twitter bot account friends/list.
  */
@@ -27,14 +41,12 @@ Twitter.get('friends/list', {
   }
 })
 
-// get blacklist Twitter list name from config
-const blacklistName = config.blacklist
 
 /**
- * Create a blacklist from configured Twitter list members
+ * Create a blacklist from configured Twitter list members.
  */
 Twitter.get('lists/members', {
-  slug: blacklistName,
+  slug: config.blacklist,
   owner_screen_name: config.twitter_account, 
   count: 100 // max blacklist size for now
 }, (err, data, response) => {
@@ -44,7 +56,7 @@ Twitter.get('lists/members', {
   else {
     console.log('\nBlacklist:')
     console.log('------------------------------')    
-    console.log(`@${config.twitter_account}/lists/${blacklistName}`)
+    console.log(`@${config.twitter_account}/lists/${config.blacklist}`)
     console.log('------------------------------')
     data.users.forEach(user => {
       // update blacklist
@@ -56,36 +68,6 @@ Twitter.get('lists/members', {
   }
 })
 
-// get a list of configured track filter keywords
-let keywords = config.track_filter.split(',').map(keyword => keyword.toLowerCase())
-if (config.hashtags_filter) {
-  // convert them to hashtags
-  keywords = keywords.map(keyword => ('#' + keyword))
-}
-console.log('RT Filter:\n------------------------------')
-console.log(keywords)
-
-// get a list of configured user description filter keywords
-let userFilter = config.user_description_filter.split(',').map(keyword => keyword.toLowerCase())
-console.log('userFilter:', config.user_description_filter)
-
-// TODO: clean this up!!! after we get all the rules in place for a slim RT bot
-
-// get required min followers for processing a tweet from 'unknown' user
-const minFollowers = Number(config.min_followers)
-console.log('minFollowers:', minFollowers)
-
-// get max friends to check for tweeps that follow the universe
-const maxFriends = Number(config.max_friends)
-console.log('maxFriends:', maxFriends)
-
-// get max hashtags to skip tweets from marketing bots
-const maxHashtags = Number(config.max_hashtags)
-console.log('maxHashtags:', maxHashtags)
-
-// get max tweets to skip posts from users with too many tweets, most likely other news bots
-const maxTweets = Number(config.max_tweets)
-console.log('maxTweets:', maxTweets)
 
 /**
  * Start listenting for relevant tweets via realtime Twitter filter
@@ -109,14 +91,14 @@ function processTweet(tweet) {
   const userChecksOut = whitelist[tweet.user.screen_name] !== undefined ||
   (!tweet.user.verified && // skip verified users
     blacklist[tweet.user.screen_name] === undefined && // not blacklisted
-    tweet.user.followers_count >= minFollowers && // min required for 'unknown' tweeps
-    tweet.user.friends_count < maxFriends && // skip tweets from tweeps that follow the universe
-    tweet.user.statuses_count < maxTweets) // most likely just another news bot
+    tweet.user.followers_count >= config.min_followers && // min required for 'unknown' tweeps
+    tweet.user.friends_count < config.max_friends && // skip tweets from tweeps that follow the universe
+    tweet.user.statuses_count < config.max_tweets) // most likely just another news bot
     // TODO: wire user description filter
 
   // check tweet stats
   const worthRT = tweet.entities.urls.length > 0 && // has a link
-    tweet.entities.hashtags.length <= maxHashtags && // not too spammy
+    tweet.entities.hashtags.length <= config.max_hashtags && // not too spammy
     tweet.in_reply_to_status_id_str === null && // not a reply
     !tweet.text.startsWith('RT ') &&
     tweet.retweeted_status === undefined // skip retweets
@@ -143,6 +125,7 @@ function processTweet(tweet) {
 
 } // end of processTweet(tweet)
 
+
 /**
  * Checks if tweet text actually matches filter keywords.
  * Twitter can be finicky with those keyword matches sometimes.
@@ -152,13 +135,14 @@ function processTweet(tweet) {
 function getKeywordMatches(tweetText) {  
   let keywordMatches = ''
   tweetText = tweetText.toLowerCase()
-  keywords.forEach(keyword => {
+  config.keywords.forEach(keyword => {
     if (tweetText.indexOf(keyword) >= 0) {
       keywordMatches += keyword + ' '
     }
   })
   return keywordMatches
 }
+
 
 /**
  * Prints out tweet text and stats.
@@ -179,10 +163,11 @@ function logTweet (tweet, tweetText, keywords) {
   //console.log(tweet)
 }
 
+
 /**
  * Retweets a given tweet.
  * 
- * @param tweet Tweet to retweet.
+ * @param tweet Tweet to retweet
  */
 function retweet(tweet) {
   // retweet
@@ -195,6 +180,7 @@ function retweet(tweet) {
     }
   })
 }
+
 
 /**
  * Prints out 20 followers for the configured Twitter bot account
@@ -217,4 +203,18 @@ function listFollowers () {
       console.log('...')
     }
   })
+}
+
+
+/**
+ * Logs bot config for debug.
+ */
+function logConfig () {
+  console.log('RT Filter:\n------------------------------')
+  console.log(config.keywords)
+  console.log('user_filter:', config.user_description_filter)
+  console.log('min_followers:', config.min_followers.toLocaleString())
+  console.log('max_friends:', config.max_friends.toLocaleString())
+  console.log('max_hashtags:', config.max_hashtags.toLocaleString())
+  console.log('max_tweets:', config.max_tweets.toLocaleString())
 }
