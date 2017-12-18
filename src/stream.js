@@ -33,6 +33,10 @@ const filterStream = Twitter.stream('statuses/filter', {
 // process each tweet from the filter stream
 filterStream.on('tweet', tweet => processTweet(tweet))
 
+// subscirbe to user events
+const userStream = Twitter.stream('user')
+userStream.on('follow', helloFriend) // say hello :)
+
 // check blacklist every 15 minutes
 setInterval(updateBlacklist, 15 * 60 * 1000)
 
@@ -161,6 +165,16 @@ function retweet(tweet) {
       console.error('failed to RT', tweet)
     }
   })
+}
+
+
+/**
+ * Sends 'Hello friend.' to new follower.
+ */
+function helloFriend(event) {
+  const followerScreenName = event.source.screen_name
+  console.log('new follower:', followerScreenName)
+  // TODO: DM 'Hello friend.' to new follower
 }
 
 
