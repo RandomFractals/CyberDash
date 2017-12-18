@@ -77,7 +77,7 @@ function processTweet(tweet) {
     if (matchedKeywords.length > 0 && 
         matchedKeywords.split(' ').length <= config.max_hashtags) {
       logTweet(tweet, tweetText, matchedKeywords)
-      //retweet(tweet)    
+      retweet(tweet)    
     }              
   }
   else {
