@@ -175,7 +175,7 @@ function helloFriend(event) {
   const friendName = event.source.name
   const friendScreenName = event.source.screen_name
   if (friendScreenName !== config.twitter_account) { // not us
-    console.log('new friend:', friendScreenName)
+    console.log('\nnew friend:', friendScreenName)
     // TODO: DM 'Hello friend.' to new follower
   }
 }
