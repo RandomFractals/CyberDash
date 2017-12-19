@@ -38,7 +38,7 @@ HASHTAGS_FILTER=true
 BLACKLIST=bots
 
 # Skip tweets from news bots and 'celebrities'. Add other user description keywords as desired
-USER_DESCRIPTION_FILTER=publishing,news,award-winning,best-selling,co-author,speaker,firm
+USER_DESCRIPTION_FILTER=publishing,news,award-winning,best-selling,co-author,speaker,firm,company
 
 # Skip tweets from users with these many posts, most likely just another news bot
 MAX_TWEETS=40000
