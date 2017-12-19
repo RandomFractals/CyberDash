@@ -183,8 +183,18 @@ function helloFriend(event) {
   const friendName = event.source.name
   const friendScreenName = event.source.screen_name
   if (friendScreenName !== config.twitter_account) { // not us
-    console.log('\nnew friend:', friendScreenName)
-    // TODO: DM 'Hello friend.' to new follower
+    console.log('\nnew follower:', friendScreenName)
+    // DM our greeting to new follower
+    Twitter.post('direct_messages/new', {
+      screen_name: friendScreenName,
+      text: config.greeting
+    }, (err, data, response) => {
+      if (err) {
+        console.log('Failed to send greeting DM', err)
+      } else {
+        console.log('Greeting DM sent.', data)
+      }
+    })
   }
 }
 

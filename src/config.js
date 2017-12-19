@@ -2,6 +2,7 @@ require('dotenv').config()
 
 module.exports = {
   twitter_account: process.env.TWITTER_ACCOUNT,
+  greeting: process.env.GREETING,
   track_filter: process.env.TRACK_FILTER,
   hashtags_filter: process.env.HASHTAGS_FILTER,
   blacklist: process.env.BLACKLIST,  

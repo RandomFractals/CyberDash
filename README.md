@@ -25,6 +25,9 @@ Follow instructions in .env.template for your Twitter bot config:
 # Your Twitter bot name
 TWITTER_ACCOUNT=CyberDash
 
+# Greeting to DM new followers
+GREETING=Hello friend.
+
 # Realtime tweets track filter
 # see https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference/post-statuses-filter.html
 # List of keywords to match for your Twitter bot to retweet
