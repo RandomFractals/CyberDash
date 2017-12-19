@@ -43,7 +43,7 @@ userStream.on('follow', helloFriend) // say hello :)
 setInterval(updateBlacklist, 15 * 60 * 1000)
 
 // check whitelist every hour
-setInterval(updateWhitelist, 69 * 60 * 1000)
+setInterval(updateWhitelist, 60 * 60 * 1000)
 
 
 /* ------------------------------- Stream Processing Methods ------------------------------------ */
@@ -56,10 +56,10 @@ setInterval(updateWhitelist, 69 * 60 * 1000)
 function processTweet(tweet) {
   // check user stats
   const isFriend = (whitelist[tweet.user.screen_name] !== undefined)
-  const userChecksOut = isFriend ||
-  (!tweet.user.verified && // skip verified users
+  const blacklisted = (blacklist[tweet.user.screen_name] !== undefined)
+  const userChecksOut = (isFriend && !blacklisted) || // friends can be blacklisted :(
+  (!blacklisted && !tweet.user.verified && // skip blacklisted and verified 'unknown' users
     passesUserFilter(tweet.user.description) && // see user filter keywords
-    blacklist[tweet.user.screen_name] === undefined && // not blacklisted
     tweet.user.followers_count >= config.min_followers && // min required for 'unknown' tweeps
     tweet.user.friends_count < config.max_friends && // skip tweets from tweeps that follow the universe
     tweet.user.statuses_count < config.max_tweets) // most likely just another news bot

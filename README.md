@@ -35,7 +35,7 @@ HASHTAGS_FILTER=true
 
 # Name of the 'blacklist' Twitter list to skip tweets from the members of
 # Note: can be any public or private Twitter list you create and curate
-BLACKLIST=bots
+BLACKLIST=blacklist
 
 # Skip tweets from news bots and 'celebrities'. Add other user description keywords as desired
 USER_DESCRIPTION_FILTER=publishing,news,award-winning,best-selling,co-author,speaker,firm,company
