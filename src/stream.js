@@ -6,6 +6,7 @@ const whitelist = {}
 const blacklist = {}
 const dashes = '------------------------------'
 const dots = '...'
+const hashtags = /(^|\s)#([^ ]*)/g
 
 // get a list of configured track filter keywords
 config.keywords = config.track_filter.split(',').map(keyword => keyword.toLowerCase())
@@ -65,11 +66,11 @@ function processTweet(tweet) {
     tweet.user.statuses_count < config.max_tweets) // most likely just another news bot
 
   // check tweet stats
+  const isRetweet = (tweet.retweeted_status !== undefined)
   const worthRT = (isFriend || tweet.entities.urls.length > 0) && // RT friends and tweets with links
     tweet.entities.hashtags.length <= config.max_hashtags && // not too spammy
     tweet.in_reply_to_status_id_str === null && // not a reply
-    !tweet.text.startsWith('RT ') &&
-    tweet.retweeted_status === undefined // skip retweets
+    !tweet.text.startsWith('RT ') && !isRetweet // skip retweets
     //!tweet.retweeted // RT only tweets without any retweets
 
   if (userChecksOut && worthRT) {
@@ -82,7 +83,8 @@ function processTweet(tweet) {
     // get keywords
     const matchedKeywords = getKeywordMatches(tweetText)
     if (matchedKeywords.length > 0 &&
-        matchedKeywords.split(' ').length <= config.max_hashtags) {
+        matchedKeywords.split(' ').length <= config.max_hashtags &&
+        tweetText.match(hashtags).length <= config.max_hashtags) {
       logTweet(tweet, tweetText, matchedKeywords)
       retweet(tweet)
     }
