@@ -53,7 +53,8 @@ setInterval(updateWhitelist, 69 * 60 * 1000)
  */
 function processTweet(tweet) {
   // check user stats
-  const userChecksOut = whitelist[tweet.user.screen_name] !== undefined ||
+  const isFriend = (whitelist[tweet.user.screen_name] !== undefined)
+  const userChecksOut = isFriend ||
   (!tweet.user.verified && // skip verified users
     passesUserFilter(tweet.user.description) && // see user filter keywords
     blacklist[tweet.user.screen_name] === undefined && // not blacklisted
@@ -62,7 +63,7 @@ function processTweet(tweet) {
     tweet.user.statuses_count < config.max_tweets) // most likely just another news bot
 
   // check tweet stats
-  const worthRT = tweet.entities.urls.length > 0 && // has a link
+  const worthRT = (isFriend || tweet.entities.urls.length > 0) && // RT friends and tweets with links
     tweet.entities.hashtags.length <= config.max_hashtags && // not too spammy
     tweet.in_reply_to_status_id_str === null && // not a reply
     !tweet.text.startsWith('RT ') &&
@@ -144,8 +145,7 @@ function logTweet (tweet, tweetText, keywords) {
     `| followers: ${tweet.user.followers_count}`
   )
   console.log('user:', tweet.user.description)
-  console.log('matches:', keywords)
-  console.log('hashtags:\n', tweet.entities.hashtags)
+  console.log(`matches: ${keywords} | links: ${tweet.entities.urls.length}`)
   //console.log(tweet)
 }
 
