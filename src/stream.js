@@ -146,6 +146,7 @@ function logTweet (tweet, tweetText, keywords) {
   )
   console.log('user:', tweet.user.description)
   console.log(`matches: ${keywords} | links: ${tweet.entities.urls.length}`)
+  console.log('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
   //console.log(tweet)
 }
 
