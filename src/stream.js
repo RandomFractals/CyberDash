@@ -4,6 +4,7 @@ const Twitter = new Twit(config)
 
 const whitelist = {}
 const blacklist = {}
+const lineSeparator = '------------------------------'
 
 // get a list of configured track filter keywords
 config.keywords = config.track_filter.split(',').map(keyword => keyword.toLowerCase())
@@ -160,7 +161,9 @@ function retweet(tweet) {
   // retweet
   Twitter.post('statuses/retweet/:id', {id: tweet.id_str}, function(err, response) {
     if (response) {
-      console.log(`RT: @${tweet.user.screen_name}: ${tweet.text}`)
+      console.log(lineSeparator)      
+      console.log(`>RT: @${tweet.user.screen_name}: ${tweet.text}`)
+      console.log(lineSeparator)      
     }
     if (err) {
       console.error('failed to RT', tweet)
@@ -196,7 +199,7 @@ function listFollowers () {
     } 
     else {
       console.log(`\n${config.twitter_account} Followers:`)
-      console.log('------------------------------')
+      console.log(lineSeparator)      
       data.users.forEach(user => {
         console.log(user.screen_name)
       })
@@ -210,7 +213,8 @@ function listFollowers () {
  * Logs bot config for debug.
  */
 function logConfig () {
-  console.log('RT Filter:\n------------------------------')
+  console.log('RT Filter:')
+  console.log(lineSeparator)
   console.log(config.keywords)
   console.log('user_filter:', config.user_description_filter)
   console.log('max_tweets:', config.max_tweets.toLocaleString())
@@ -233,7 +237,7 @@ function updateWhitelist() {
     } 
     else {
       console.log('\nWhitelist:')
-      console.log('------------------------------')
+      console.log(lineSeparator)
       data.users.forEach(user => {
         // add a 'friend' to the whitelist
         whitelist[user.screen_name] = user
@@ -259,9 +263,9 @@ function updateBlacklist() {
     } 
     else {
       console.log('\nBlacklist:')
-      console.log('------------------------------')    
+      console.log(lineSeparator)
       console.log(`@${config.twitter_account}/lists/${config.blacklist}`)
-      console.log('------------------------------')
+      console.log(lineSeparator)
       data.users.forEach(user => {
         // update blacklist
         blacklist[user.screen_name] = user
