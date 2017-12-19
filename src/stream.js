@@ -4,7 +4,8 @@ const Twitter = new Twit(config)
 
 const whitelist = {}
 const blacklist = {}
-const lineSeparator = '------------------------------'
+const dashes = '------------------------------'
+const dots = '...'
 
 // get a list of configured track filter keywords
 config.keywords = config.track_filter.split(',').map(keyword => keyword.toLowerCase())
@@ -80,17 +81,16 @@ function processTweet(tweet) {
 
     // get keywords
     const matchedKeywords = getKeywordMatches(tweetText)
-    if (matchedKeywords.length > 0 && 
+    if (matchedKeywords.length > 0 &&
         matchedKeywords.split(' ').length <= config.max_hashtags) {
       logTweet(tweet, tweetText, matchedKeywords)
-      retweet(tweet)    
-    }              
+      retweet(tweet)
+    }
   }
   else {
     // log . for skipped tweets
     process.stdout.write('.')
   }
-
 } // end of processTweet(tweet)
 
 
@@ -119,7 +119,7 @@ function passesUserFilter (userInfo) {
  * 
  * @param tweetText Full tweet text to check for keywords.
  */
-function getKeywordMatches(tweetText) {  
+function getKeywordMatches(tweetText) {
   let keywordMatches = ''
   tweetText = tweetText.toLowerCase()
   config.keywords.forEach(keyword => {
@@ -139,15 +139,17 @@ function getKeywordMatches(tweetText) {
  * @param keywords matched keywords
  */
 function logTweet (tweet, tweetText, keywords) {
-  console.log(`\n${tweet.user.screen_name}: ${tweetText}`)
-  console.log(
-    `tweets: ${tweet.user.statuses_count}`,
-    `| friends: ${tweet.user.friends_count}`,    
-    `| followers: ${tweet.user.followers_count}`
-  )
-  console.log('user:', tweet.user.description)
+  console.log(`\n@${tweet.user.screen_name}: ${tweetText}`)
+  console.log(dots)
   console.log(`matches: ${keywords} | links: ${tweet.entities.urls.length}`)
   console.log('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
+  console.log(dots)
+  console.log(`@${tweet.user.screen_name}:`,
+    `tweets: ${tweet.user.statuses_count}`,
+    `| friends: ${tweet.user.friends_count}`,
+    `| followers: ${tweet.user.followers_count}`
+  )
+  console.log(tweet.user.description)
   //console.log(tweet)
 }
 
@@ -161,9 +163,9 @@ function retweet(tweet) {
   // retweet
   Twitter.post('statuses/retweet/:id', {id: tweet.id_str}, function(err, response) {
     if (response) {
-      console.log(lineSeparator)      
+      console.log(dashes)
       console.log(`>RT: @${tweet.user.screen_name}: ${tweet.text}`)
-      console.log(lineSeparator)      
+      console.log(dashes)
     }
     if (err) {
       console.error('failed to RT', tweet)
@@ -191,19 +193,19 @@ function helloFriend(event) {
  */
 function listFollowers () {
   Twitter.get('followers/list', {
-    screen_name: config.twitter_account, 
+    screen_name: config.twitter_account,
     count: 20
   }, (err, data, response) => {
     if (err) {
       console.log('Failed to get followers/list', err)
-    } 
+    }
     else {
       console.log(`\n${config.twitter_account} Followers:`)
-      console.log(lineSeparator)      
+      console.log(dashes)
       data.users.forEach(user => {
         console.log(user.screen_name)
       })
-      console.log('...')
+      console.log(dots)
     }
   })
 }
@@ -214,7 +216,7 @@ function listFollowers () {
  */
 function logConfig () {
   console.log('RT Filter:')
-  console.log(lineSeparator)
+  console.log(dashes)
   console.log(config.keywords)
   console.log('user_filter:', config.user_description_filter)
   console.log('max_tweets:', config.max_tweets.toLocaleString())
@@ -229,23 +231,23 @@ function logConfig () {
  */
 function updateWhitelist() {
   Twitter.get('friends/list', {
-    screen_name: config.twitter_account, 
+    screen_name: config.twitter_account,
     count: 100 // max whitelist size for now
   }, (err, data, response) => {
     if (err) {
       console.log('Failed to get friends/list!', err)
-    } 
+    }
     else {
       console.log('\nWhitelist:')
-      console.log(lineSeparator)
+      console.log(dashes)
       data.users.forEach(user => {
         // add a 'friend' to the whitelist
         whitelist[user.screen_name] = user
-        console.log(user.screen_name)      
+        console.log(user.screen_name)
       })
-      console.log('...')
+      console.log(dots)
     }
-  })  
+  })
 }
 
 
@@ -255,24 +257,24 @@ function updateWhitelist() {
 function updateBlacklist() {
   Twitter.get('lists/members', {
     slug: config.blacklist,
-    owner_screen_name: config.twitter_account, 
+    owner_screen_name: config.twitter_account,
     count: 100 // max blacklist size for now
   }, (err, data, response) => {
     if (err) {
       console.log(`Failed to get 'blacklist' lists/members!`, err)
-    } 
+    }
     else {
       console.log('\nBlacklist:')
-      console.log(lineSeparator)
+      console.log(dashes)
       console.log(`@${config.twitter_account}/lists/${config.blacklist}`)
-      console.log(lineSeparator)
+      console.log(dashes)
       data.users.forEach(user => {
         // update blacklist
         blacklist[user.screen_name] = user
-        console.log(user.screen_name)      
+        console.log(user.screen_name)
       })
-      console.log('...')
-      console.log('Processing realtime tweets...')    
+      console.log(dots)
+      console.log('Processing realtime tweets...')
     }
-  })    
+  })
 }
