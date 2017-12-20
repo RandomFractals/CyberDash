@@ -72,8 +72,9 @@ function processTweet(tweet) {
       !tweet.user.verified && // skip verified 'unknown' users for now
       !muteUser &&
       tweet.user.followers_count >= config.min_followers && // min required for 'unknown' tweeps
-      tweet.user.friends_count < config.max_friends && // skip tweets from tweeps that follow the universe
-      tweet.user.statuses_count < config.max_tweets) // most likely just another Twitter bot
+      tweet.user.friends_count <= config.max_friends && // skip tweets from tweeps that follow the universe
+      tweet.user.statuses_count >= config.min_tweets && // min required for 'unknown' user to RT
+      tweet.user.statuses_count <= config.max_tweets) // most likely just another Twitter bot
 
   // check tweet stats
   const isRetweet = (tweet.retweeted_status !== undefined)
@@ -228,9 +229,10 @@ function logConfig () {
   console.log(config.track_keywords)
   console.log('mute_tweet_filter:', config.mute_tweet_filter)
   console.log('mute_user_filter:', config.mute_user_filter)
+  console.log('min_followers:', config.min_followers.toLocaleString())  
+  console.log('max_friends:', config.max_friends.toLocaleString())  
+  console.log('min_tweets:', config.min_tweets.toLocaleString())
   console.log('max_tweets:', config.max_tweets.toLocaleString())
-  console.log('max_friends:', config.max_friends.toLocaleString())
-  console.log('min_followers:', config.min_followers.toLocaleString())
   console.log('max_hashtags:', config.max_hashtags.toLocaleString())
 }
 
