@@ -44,7 +44,7 @@ TRACK_FILTER=cyberSec,infoSec,hacking,penTest,cyberNews,cyberThreat,cyberAttack,
 HASHTAGS_FILTER=true
 
 # Skip tweets with these keywords
-MUTE_TWEET_FILTER=attend,join us,join our,summit,webinar
+MUTE_TWEET_FILTER=attend,join us,join our,summit,webinar,daily
 
 # Name of the 'blacklist' Twitter list to skip tweets from the members of
 # Note: can be any public or private Twitter list you create and curate
