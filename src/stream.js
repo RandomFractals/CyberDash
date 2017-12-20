@@ -2,12 +2,13 @@ const Twit = require('twit')
 const config = require('./config')
 const Twitter = new Twit(config)
 
-const whitelist = {}
-const blacklist = {}
-const retweets = {}
+const whitelist = {} // RT users whitelist
+const blacklist = {} // RT users blacklist
 const dashes = '------------------------------'
 const dots = '...'
 const hashtags = /(^|\s)#([^ ]*)/g
+
+let retweets = {} // hourly per user RT counters
 
 // get a list of configured track filter keywords
 config.track_keywords = config.track_filter.split(',').map(keyword => keyword.toLowerCase())
@@ -61,33 +62,7 @@ setInterval(updateWhitelist, 60 * 60 * 1000)
  * @param tweet Tweet json object
  */
 function processTweet(tweet) {
-  // check user stats
-  const isFriend = (whitelist[tweet.user.screen_name] !== undefined)
-  const blacklisted = (blacklist[tweet.user.screen_name] !== undefined)
-  const muteUser = (
-    getKeywordMatches(
-      tweet.user.description, 
-      config.mute_user_keywords
-    ).length > 0
-  )
-  const userChecksOut = (isFriend && !blacklisted) || // friends can be blacklisted :(
-    (!blacklisted && 
-      !tweet.user.verified && // skip verified 'unknown' users for now
-      !muteUser &&
-      tweet.user.followers_count >= config.min_followers && // min required for 'unknown' tweeps
-      tweet.user.friends_count <= config.max_friends && // skip tweets from tweeps that follow the universe
-      tweet.user.statuses_count >= config.min_user_tweets && // min required for 'unknown' user to RT
-      tweet.user.statuses_count <= config.max_user_tweets) // most likely just another Twitter bot
-
-  // check tweet stats
-  const isRetweet = (tweet.retweeted_status !== undefined)
-  const worthRT = (isFriend || tweet.entities.urls.length > 0) && // RT friends and tweets with links
-    tweet.entities.hashtags.length <= config.max_hashtags && // not too spammy
-    tweet.in_reply_to_status_id_str === null && // not a reply
-    !tweet.text.startsWith('RT ') && !isRetweet // skip retweets
-    //!tweet.retweeted // RT only tweets without any retweets
-
-  if (userChecksOut && worthRT) {
+  if (userChecksOut(tweet) && worthRT(tweet)) {
     // get full tweet text
     let tweetText = tweet.text
     if (tweet.truncated) {
@@ -110,6 +85,52 @@ function processTweet(tweet) {
     process.stdout.write('.')
   }
 } // end of processTweet(tweet)
+
+
+/**
+ * Checks user stats.
+ * 
+ * @param tweet Tweet with user stats.
+ */
+function userChecksOut(tweet) {
+  // check user stats
+  const isFriend = (whitelist[tweet.user.screen_name] !== undefined)
+  const blacklisted = (blacklist[tweet.user.screen_name] !== undefined)
+  const userQuotaExceeded = (retweets[tweet.user.screen_name] !== undefined &&
+    retweets[tweet.user.screen_name] >= config.hourly_user_quota)
+
+  const muteUser = (
+    getKeywordMatches(
+      tweet.user.description, 
+      config.mute_user_keywords
+    ).length > 0
+  )
+
+  return (isFriend && !blacklisted && !userQuotaExceeded) || // friends can be blacklisted :(
+    (!blacklisted && !muteUser && !userQuotaExceeded &&
+      !tweet.user.verified && // skip verified 'unknown' users for now
+      tweet.user.followers_count >= config.min_followers && // min required for 'unknown' tweeps
+      tweet.user.friends_count <= config.max_friends && // skip tweets from tweeps that follow the universe
+      tweet.user.statuses_count >= config.min_user_tweets && // min required for 'unknown' user to RT
+      tweet.user.statuses_count <= config.max_user_tweets) // most likely just another Twitter bot
+}
+
+
+/**
+ * Checks if a tweet is worth RTing.
+ * 
+ * @param tweet Tweet to check for RT.
+ */
+function worthRT(tweet) {
+  // check tweet stats
+  const isFriend = (whitelist[tweet.user.screen_name] !== undefined)  
+  const isRetweet = (tweet.retweeted_status !== undefined)
+  return (isFriend || tweet.entities.urls.length > 0) && // RT friends and tweets with links
+    tweet.entities.hashtags.length <= config.max_hashtags && // not too spammy
+    tweet.in_reply_to_status_id_str === null && // not a reply
+    !tweet.text.startsWith('RT ') && !isRetweet // skip retweets
+    //!tweet.retweeted // RT only tweets without any retweets
+}
 
 
 /**
@@ -168,6 +189,15 @@ function retweet(tweet) {
       console.log(dashes)
       console.log(`>RT: @${tweet.user.screen_name}: ${tweet.text}`)
       console.log(dashes)
+
+      // update hourly user quota
+      const userQuota = retweets[tweet.user.screen_name]
+      if (userQuota === undefined) {
+        retweets[tweet.user.screen_name] = 1 // first RT
+      }
+      else {
+        retweets[tweet.user.screen_name]++ // increment
+      }
     }
     if (err) {
       console.error('failed to RT', tweet)
@@ -236,12 +266,13 @@ function logConfig () {
   console.log('min_user_tweets:', config.min_user_tweets.toLocaleString())
   console.log('max_user_tweets:', config.max_user_tweets.toLocaleString())
   console.log('max_hashtags:', config.max_hashtags.toLocaleString())
-  console.log('max_hourly_user_retweets:', config.max_hourly_user_retweets.toLocaleString())
+  console.log('hourly_user_quota:', config.hourly_user_quota.toLocaleString())
 }
 
 
 /**
- * Updates whitelist with 'friends'.
+ * Updates whitelist with 'friends'
+ * and resets retweet per user hourly counters.
  */
 function updateWhitelist() {
   Twitter.get('friends/list', {
@@ -257,6 +288,9 @@ function updateWhitelist() {
       console.log(user.screen_name)
     })
     console.log(dots)
+
+    // reset retweet per user counters
+    retweets = {}
   })
   .catch( err => {
     console.log('Failed to get friends/list!', err)    
