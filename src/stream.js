@@ -4,6 +4,7 @@ const Twitter = new Twit(config)
 
 const whitelist = {}
 const blacklist = {}
+const retweets = {}
 const dashes = '------------------------------'
 const dots = '...'
 const hashtags = /(^|\s)#([^ ]*)/g
@@ -75,8 +76,8 @@ function processTweet(tweet) {
       !muteUser &&
       tweet.user.followers_count >= config.min_followers && // min required for 'unknown' tweeps
       tweet.user.friends_count <= config.max_friends && // skip tweets from tweeps that follow the universe
-      tweet.user.statuses_count >= config.min_tweets && // min required for 'unknown' user to RT
-      tweet.user.statuses_count <= config.max_tweets) // most likely just another Twitter bot
+      tweet.user.statuses_count >= config.min_user_tweets && // min required for 'unknown' user to RT
+      tweet.user.statuses_count <= config.max_user_tweets) // most likely just another Twitter bot
 
   // check tweet stats
   const isRetweet = (tweet.retweeted_status !== undefined)
@@ -232,9 +233,10 @@ function logConfig () {
   console.log('mute_user_filter:', config.mute_user_filter)
   console.log('min_followers:', config.min_followers.toLocaleString())  
   console.log('max_friends:', config.max_friends.toLocaleString())  
-  console.log('min_tweets:', config.min_tweets.toLocaleString())
-  console.log('max_tweets:', config.max_tweets.toLocaleString())
+  console.log('min_user_tweets:', config.min_user_tweets.toLocaleString())
+  console.log('max_user_tweets:', config.max_user_tweets.toLocaleString())
   console.log('max_hashtags:', config.max_hashtags.toLocaleString())
+  console.log('max_hourly_user_retweets:', config.max_hourly_user_retweets.toLocaleString())
 }
 
 

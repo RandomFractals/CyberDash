@@ -44,7 +44,7 @@ TRACK_FILTER=cyberSec,infoSec,hacking,penTest,cyberNews,cyberThreat,cyberAttack,
 HASHTAGS_FILTER=true
 
 # Skip tweets with these keywords
-MUTE_TWEET_FILTER=attend,join us,join our,summit,webinar,daily
+MUTE_TWEET_FILTER=attend,join us,join our,summit,webinar,daily,predictions,easy steps,top
 
 # Name of the 'blacklist' Twitter list to skip tweets from the members of
 # Note: can be any public or private Twitter list you create and curate
@@ -61,13 +61,16 @@ MIN_FOLLOWERS=5000
 MAX_FRIENDS=25000
 
 # Minimum required user tweets to RT a post from 'unknown' user
-MIN_TWEETS=5000
+MIN_USER_TWEETS=5000
 
-# Skip tweets from users with these many posts, most likely just another news bot
-MAX_TWEETS=40000
+# Skip tweets from users with these many posts, most likely just another bot
+MAX_USER_TWEETS=40000
 
-# Skip tweets with more than these many hashtags, most likely marketing bots spam
+# Skip tweets with more than these many hashtags, most likely marketing spam bot
 MAX_HASHTAGS=6
+
+# Max retweets per user per hour
+MAX_HOURLY_USER_RETWEETS=3
 
 # Twitter bot API keys
 CONSUMER_KEY=
