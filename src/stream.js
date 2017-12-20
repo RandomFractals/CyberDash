@@ -9,16 +9,16 @@ const dots = '...'
 const hashtags = /(^|\s)#([^ ]*)/g
 
 // get a list of configured track filter keywords
-config.keywords = config.track_filter.split(',').map(keyword => keyword.toLowerCase())
+config.track_keywords = config.track_filter.split(',').map(keyword => keyword.toLowerCase())
 if (config.hashtags_filter) {
   // convert them to hashtags
-  config.keywords = config.keywords.map(keyword => ('#' + keyword))
+  config.track_keywords = config.track_keywords.map(keyword => ('#' + keyword))
 }
 
 // get 'mute' tweet filter keywords
 config.mute_tweet_keywords = config.mute_tweet_filter.split(',').map(keyword => keyword.toLowerCase())
 
-// get a list of configured user description filter keywords
+// get a list of configured user profile description filter keywords
 config.mute_user_keywords = config.mute_user_filter.split(',').map(keyword => keyword.toLowerCase())
 
 // log bot config for debug
@@ -27,7 +27,7 @@ logConfig()
 // create a whitelist from the Twitter bot account 'friends' list
 updateWhitelist()
 
-// create a blacklist from configured Twitter 'bot' list members
+// create a blacklist from configured Twitter 'blacklist' list members
 updateBlacklist()
 
 // start listenting for relevant tweets via realtime Twitter filter
@@ -50,7 +50,7 @@ setInterval(updateBlacklist, 15 * 60 * 1000)
 setInterval(updateWhitelist, 60 * 60 * 1000)
 
 
-/* ------------------------------- Stream Processing Methods ------------------------------------ */
+/* --------------------------- Tweeter Streams Processing Methods ----------------------------------- */
 
 /**
  * Main process tweet method.
@@ -68,12 +68,12 @@ function processTweet(tweet) {
     ).length > 0
   )
   const userChecksOut = (isFriend && !blacklisted) || // friends can be blacklisted :(
-  (!blacklisted && 
-    !tweet.user.verified && // skip verified 'unknown' users for now
-    !muteUser &&
-    tweet.user.followers_count >= config.min_followers && // min required for 'unknown' tweeps
-    tweet.user.friends_count < config.max_friends && // skip tweets from tweeps that follow the universe
-    tweet.user.statuses_count < config.max_tweets) // most likely just another news bot
+    (!blacklisted && 
+      !tweet.user.verified && // skip verified 'unknown' users for now
+      !muteUser &&
+      tweet.user.followers_count >= config.min_followers && // min required for 'unknown' tweeps
+      tweet.user.friends_count < config.max_friends && // skip tweets from tweeps that follow the universe
+      tweet.user.statuses_count < config.max_tweets) // most likely just another Twitter bot
 
   // check tweet stats
   const isRetweet = (tweet.retweeted_status !== undefined)
@@ -91,7 +91,7 @@ function processTweet(tweet) {
     }
 
     // get keywords
-    const matchedKeywords = getKeywordMatches(tweetText, config.keywords)
+    const matchedKeywords = getKeywordMatches(tweetText, config.track_keywords)
     const muteKeywords = getKeywordMatches(tweetText, config.mute_tweet_keywords)
     if (muteKeywords.length <= 0 &&
         matchedKeywords.length > 0 &&
@@ -225,7 +225,7 @@ function listFollowers () {
 function logConfig () {
   console.log('RT Filter:')
   console.log(dashes)
-  console.log(config.keywords)
+  console.log(config.track_keywords)
   console.log('mute_tweet_filter:', config.mute_tweet_filter)
   console.log('mute_user_filter:', config.mute_user_filter)
   console.log('max_tweets:', config.max_tweets.toLocaleString())
