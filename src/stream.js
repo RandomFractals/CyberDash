@@ -15,8 +15,11 @@ if (config.hashtags_filter) {
   config.keywords = config.keywords.map(keyword => ('#' + keyword))
 }
 
+// get 'mute' tweet filter keywords
+config.mute_tweet_keywords = config.mute_tweet_filter.split(',').map(keyword => keyword.toLowerCase())
+
 // get a list of configured user description filter keywords
-config.user_filter = config.user_description_filter.split(',').map(keyword => keyword.toLowerCase())
+config.mute_user_keywords = config.mute_user_filter.split(',').map(keyword => keyword.toLowerCase())
 
 // log bot config for debug
 logConfig()
@@ -58,9 +61,16 @@ function processTweet(tweet) {
   // check user stats
   const isFriend = (whitelist[tweet.user.screen_name] !== undefined)
   const blacklisted = (blacklist[tweet.user.screen_name] !== undefined)
+  const muteUser = (
+    getKeywordMatches(
+      tweet.user.description, 
+      config.mute_user_keywords
+    ).length > 0
+  )
   const userChecksOut = (isFriend && !blacklisted) || // friends can be blacklisted :(
-  (!blacklisted && !tweet.user.verified && // skip blacklisted and verified 'unknown' users
-    passesUserFilter(tweet.user.description) && // see user filter keywords
+  (!blacklisted && 
+    !tweet.user.verified && // skip verified 'unknown' users for now
+    !muteUser && // 
     tweet.user.followers_count >= config.min_followers && // min required for 'unknown' tweeps
     tweet.user.friends_count < config.max_friends && // skip tweets from tweeps that follow the universe
     tweet.user.statuses_count < config.max_tweets) // most likely just another news bot
@@ -81,8 +91,10 @@ function processTweet(tweet) {
     }
 
     // get keywords
-    const matchedKeywords = getKeywordMatches(tweetText)
-    if (matchedKeywords.length > 0 &&
+    const matchedKeywords = getKeywordMatches(tweetText, config.keywords)
+    const muteKeywords = getKeywordMatches(tweetText, config.mute_tweet_keywords)
+    if (muteKeywords.length <= 0 &&
+        matchedKeywords.length > 0 &&
         matchedKeywords.split(' ').length <= config.max_hashtags &&
         tweetText.match(hashtags).length <= config.max_hashtags) {
       logTweet(tweet, tweetText, matchedKeywords)
@@ -97,38 +109,22 @@ function processTweet(tweet) {
 
 
 /**
- * Checks user info for keywords to block.
+ * Checks if tweet text or user description matches filter keywords.
+ * Twitter can be finicky with those keyword matches sometimes.
  * 
- * @param userInfo Twitter user description.
+ * @param text Full tweet text or user info to check for keywords.
+ * @param keywords Keywords list to check.
  */
-function passesUserFilter (userInfo) {
+function getKeywordMatches(text, keywords) {
   let keywordMatches = ''
-  if (userInfo) {
-    userInfo = userInfo.toLowerCase()
-    config.user_filter.forEach(keyword => {
-      if (userInfo.indexOf(keyword) >= 0) {
+  if (text) {
+    text = text.toLowerCase()
+    keywords.forEach(keyword => {
+      if (text.indexOf(keyword) >= 0) {
         keywordMatches += keyword + ' '
       }
     })
   }
-  return keywordMatches.length <= 0 // no keyword match
-}
-
-
-/**
- * Checks if tweet text actually matches filter keywords.
- * Twitter can be finicky with those keyword matches sometimes.
- * 
- * @param tweetText Full tweet text to check for keywords.
- */
-function getKeywordMatches(tweetText) {
-  let keywordMatches = ''
-  tweetText = tweetText.toLowerCase()
-  config.keywords.forEach(keyword => {
-    if (tweetText.indexOf(keyword) >= 0) {
-      keywordMatches += keyword + ' '
-    }
-  })
   return keywordMatches
 }
 
@@ -230,7 +226,8 @@ function logConfig () {
   console.log('RT Filter:')
   console.log(dashes)
   console.log(config.keywords)
-  console.log('user_filter:', config.user_description_filter)
+  console.log('mute_tweet_filter:', config.mute_tweet_filter)
+  console.log('mute_user_filter:', config.mute_user_filter)
   console.log('max_tweets:', config.max_tweets.toLocaleString())
   console.log('max_friends:', config.max_friends.toLocaleString())
   console.log('min_followers:', config.min_followers.toLocaleString())
