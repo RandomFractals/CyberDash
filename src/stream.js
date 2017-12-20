@@ -189,7 +189,7 @@ function helloFriend(event) {
       if (err) {
         console.log('Failed to send greeting DM', err)
       } else {
-        console.log('Greeting DM sent.', data)
+        console.log(`Greeting DM sent to @${data.recipient_screen_name}: '${data.text}'`)
       }
     })
   }
