@@ -24,6 +24,8 @@ config.mute_user_keywords = config.mute_user_filter.split(',').map(keyword => ke
 // log bot config for debug
 logConfig()
 
+// listFollowers()
+
 // create a whitelist from the Twitter bot account 'friends' list
 updateWhitelist()
 
@@ -204,18 +206,17 @@ function listFollowers () {
   Twitter.get('followers/list', {
     screen_name: config.twitter_account,
     count: 20
-  }, (err, data, response) => {
-    if (err) {
-      console.log('Failed to get followers/list', err)
-    }
-    else {
-      console.log(`\n${config.twitter_account} Followers:`)
-      console.log(dashes)
-      data.users.forEach(user => {
-        console.log(user.screen_name)
-      })
-      console.log(dots)
-    }
+  })
+  .then( response => {
+    console.log(`\n${config.twitter_account} Followers:`)
+    console.log(dashes)
+    response.data.users.forEach(user => {
+      console.log(user.screen_name)
+    })
+    console.log(dots)
+  })
+  .catch( err => {
+    console.log('Failed to get followers/list', err)    
   })
 }
 
@@ -244,20 +245,19 @@ function updateWhitelist() {
   Twitter.get('friends/list', {
     screen_name: config.twitter_account,
     count: 100 // max whitelist size for now
-  }, (err, data, response) => {
-    if (err) {
-      console.log('Failed to get friends/list!', err)
-    }
-    else {
-      console.log('\nWhitelist:')
-      console.log(dashes)
-      data.users.forEach(user => {
-        // add a 'friend' to the whitelist
-        whitelist[user.screen_name] = user
-        console.log(user.screen_name)
-      })
-      console.log(dots)
-    }
+  })
+  .then( response => {
+    console.log('\nWhitelist:')
+    console.log(dashes)
+    response.data.users.forEach(user => {
+      // add a 'friend' to the whitelist
+      whitelist[user.screen_name] = user
+      console.log(user.screen_name)
+    })
+    console.log(dots)
+  })
+  .catch( err => {
+    console.log('Failed to get friends/list!', err)    
   })
 }
 
@@ -270,22 +270,22 @@ function updateBlacklist() {
     slug: config.blacklist,
     owner_screen_name: config.twitter_account,
     count: 100 // max blacklist size for now
-  }, (err, data, response) => {
-    if (err) {
-      console.log(`Failed to get 'blacklist' lists/members!`, err)
-    }
-    else {
-      console.log('\nBlacklist:')
-      console.log(dashes)
-      console.log(`@${config.twitter_account}/lists/${config.blacklist}`)
-      console.log(dashes)
-      data.users.forEach(user => {
-        // update blacklist
-        blacklist[user.screen_name] = user
-        console.log(user.screen_name)
-      })
-      console.log(dots)
-      console.log('Processing realtime tweets...')
-    }
   })
+  .then( response => {
+    console.log('\nBlacklist:')
+    console.log(dashes)
+    console.log(`@${config.twitter_account}/lists/${config.blacklist}`)
+    console.log(dashes)
+    response.data.users.forEach(user => {
+      // update blacklist
+      blacklist[user.screen_name] = user
+      console.log(user.screen_name)
+    })
+    console.log(dots)
+    console.log('Processing realtime tweets...')
+  })
+  .catch( err => {
+    console.log(`Failed to get 'blacklist' lists/members!`, err)
+  })
+  
 }
