@@ -31,7 +31,7 @@ GREETING=Hello friend.
 # Realtime tweets track filter
 # see https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference/post-statuses-filter.html
 # List of keywords to match for your Twitter bot to retweet
-TRACK_FILTER=cyberSec,hacking
+TRACK_FILTER=cyberSec,infoSec,hacking,penTest,cyberNews,cyberThreat,cyberAttack,cyberCrime,dataBreach,MrRobot
 
 # Hashtags only filter match toggle
 HASHTAGS_FILTER=true
