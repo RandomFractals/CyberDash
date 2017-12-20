@@ -6,7 +6,14 @@ This keywords search Twitter bot retweets posts with links related to cyber secu
 
 You can use this simple node.js Twitter bot code to create your own news feed bot for the areas of your interest. Just follow the buid, config and run instructions below.
 
+Where I started:
+
 ![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/CyberDash1.0.png?raw=true 
+ "@CyberDash")
+
+After 2 days of bot training and config tweaking :)
+
+![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/CyberDashTrainingDay2.png?raw=true 
  "@CyberDash")
 
 # Build
