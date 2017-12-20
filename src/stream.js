@@ -70,7 +70,7 @@ function processTweet(tweet) {
   const userChecksOut = (isFriend && !blacklisted) || // friends can be blacklisted :(
   (!blacklisted && 
     !tweet.user.verified && // skip verified 'unknown' users for now
-    !muteUser && // 
+    !muteUser &&
     tweet.user.followers_count >= config.min_followers && // min required for 'unknown' tweeps
     tweet.user.friends_count < config.max_friends && // skip tweets from tweeps that follow the universe
     tweet.user.statuses_count < config.max_tweets) // most likely just another news bot
