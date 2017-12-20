@@ -263,7 +263,7 @@ function updateWhitelist() {
 
 
 /**
- * Updates blacklist from Twitter 'bot' list.
+ * Updates blacklist from configured Twitter 'blacklist' list.
  */
 function updateBlacklist() {
   Twitter.get('lists/members', {
