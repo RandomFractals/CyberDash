@@ -111,10 +111,10 @@ Also, new followers get a greeting DM, and 'blacklist' is updated every 15 minut
 
 # V1.0 TODO
 
-- auto-like mentions
 - move core bot config and tweet processing logic to new TwitterBot.js kit module
 - implement search.js for periodic RT's using Twitter search/tweets interface instead
 - add unit tests
+- use log4js for logging
 
 # V2.0 TODO
 

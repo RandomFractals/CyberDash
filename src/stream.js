@@ -4,10 +4,14 @@ const Twitter = new Twit(config)
 
 const whitelist = {} // RT users whitelist
 const blacklist = {} // RT users blacklist
+const favorites = {} // favorite tweets
+
+// log and tweet parse vars
 const dashes = '------------------------------'
 const dots = '...'
 const hashtags = /(^|\s)#([^ ]*)/g
 
+// retweet counters
 let retweets = {} // hourly per user RT counters
 let retweetCount = 0
 
@@ -35,6 +39,9 @@ updateWhitelist()
 // create a blacklist from configured Twitter 'blacklist' list members
 updateBlacklist()
 
+// check and like recent mentions
+likeMentions()
+
 // start listenting for relevant tweets via realtime Twitter filter
 // see: https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference/post-statuses-filter.html
 const filterStream = Twitter.stream('statuses/filter', {
@@ -49,12 +56,14 @@ filterStream.on('tweet', tweet => processTweet(tweet))
 const userStream = Twitter.stream('user')
 userStream.on('follow', helloFriend) // say hello :)
 
-// check blacklist every 15 minutes
-setInterval(updateBlacklist, 15 * 60 * 1000)
-
 // check whitelist every hour
 setInterval(updateWhitelist, 60 * 60 * 1000)
 
+// check blacklist every 15 minutes
+setInterval(updateBlacklist, 15 * 60 * 1000)
+
+// check for mentions every 10 minutes
+setInterval(likeMentions, 10 * 60 * 1000)
 
 /* --------------------------- Tweeter Streams Processing Methods ----------------------------------- */
 
@@ -221,6 +230,27 @@ function retweet(tweet) {
   }
 }
 
+
+/**
+ * Gets the latest mentions and likes them.
+ */
+function likeMentions() {
+  Twitter.get('statuses/mentions_timeline', {
+    count: 20 // max mentions to like in 10 time span
+  })
+  .then(response => {
+    console.log('\nMentions:', response.data.length)
+    response.data.map(tweet => {
+      if (favorites[tweet.id_str] === undefined) {
+        likeTweet(tweet)
+      }
+    })
+  })
+  .catch( err => {
+    console.error(`Failed to get mentions for: @${config.twitter_account}`)
+  })
+}
+
 /**
  * Adds a tweet to user favorites.
  * 
@@ -231,6 +261,8 @@ function likeTweet(tweet) {
     id: tweet.id_str
   })
   .then( response => {
+    // add to favorites
+    favorites[tweet.id_str] = tweet
     console.log(dashes)
     console.log(`>Liked: @${tweet.user.screen_name}: ${tweet.text}`)
     console.log(dashes)
