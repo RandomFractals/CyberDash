@@ -95,6 +95,9 @@ sample trace output:
 ![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/CyberDashTrace7.png?raw=true 
  "trace")
 
+Note: every . in that trace denotes a matching tweet analyzed and skipped according to the bot config rules. See 'Dasher's' :) timeline for actual RT's: https://twitter.com/CyberDash
+
+Also, new followers get a greeting DM, and 'blacklist' is updated every 15 minutes to currate that channel.
 
 # 2. OR Run bot.js for periodic RT's
 
