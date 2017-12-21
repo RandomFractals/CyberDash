@@ -167,8 +167,9 @@ function getKeywordMatches(text, keywords) {
 function logTweet (tweet, tweetText, keywords) {
   console.log(`\n@${tweet.user.screen_name}: ${tweetText}`)
   console.log(dots)
-  console.log(`matches: ${keywords} | links: ${tweet.entities.urls.length}`)
+  console.log(`matches: ${keywords}`)
   console.log('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
+  console.log(`links: ${tweet.entities.urls.length} | lang: ${tweet.lang}`)
   console.log(dots)
   console.log(`@${tweet.user.screen_name}:`,
     `tweets: ${tweet.user.statuses_count}`,
