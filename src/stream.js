@@ -189,26 +189,27 @@ function logTweet (tweet, tweetText, keywords) {
 function retweet(tweet) {
   if (retweetCount < config.hourly_retweet_quota) {
     // retweet
-    Twitter.post('statuses/retweet/:id', {id: tweet.id_str}, function(err, response) {
-      if (response) {
-        console.log(dashes)
-        console.log(`>RT: @${tweet.user.screen_name}: ${tweet.text}`)
-        console.log(dashes)
+    Twitter.post('statuses/retweet/:id', {
+      id: tweet.id_str
+    })
+    .then( response => {
+      console.log(dashes)
+      console.log(`>RT: @${tweet.user.screen_name}: ${tweet.text}`)
+      console.log(dashes)
 
-        // update hourly user quota
-        const userQuota = retweets[tweet.user.screen_name]
-        if (userQuota === undefined) {
-          retweets[tweet.user.screen_name] = 1 // first RT
-        }
-        else {
-          retweets[tweet.user.screen_name]++ // increment
-        }
-        // update total hourly retweets counter
-        retweetCount++
+      // update hourly user quota
+      const userQuota = retweets[tweet.user.screen_name]
+      if (userQuota === undefined) {
+        retweets[tweet.user.screen_name] = 1 // first RT
       }
-      if (err) {
-        console.error('failed to RT', tweet)
+      else {
+        retweets[tweet.user.screen_name]++ // increment
       }
+      // update total hourly retweets counter
+      retweetCount++
+    })
+    .catch(err => {
+      console.error('failed to RT', tweet)      
     })
   }
   else { // skip retweet due to hourly retweet quota reached
@@ -232,12 +233,12 @@ function helloFriend(event) {
     Twitter.post('direct_messages/new', {
       screen_name: friendScreenName,
       text: config.greeting
-    }, (err, data, response) => {
-      if (err) {
-        console.log('Failed to send greeting DM', err)
-      } else {
-        console.log(`Greeting DM sent to @${data.recipient_screen_name}: '${data.text}'`)
-      }
+    })
+    .then( response  => {
+      console.log(`Greeting DM sent to @${response.data.recipient_screen_name}: '${response.data.text}'`)
+    })
+    .catch( err => {
+      console.log('Failed to send greeting DM', err)      
     })
   }
 }
