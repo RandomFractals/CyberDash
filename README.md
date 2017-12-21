@@ -90,9 +90,9 @@ The settings I've chosen for this Twitter bot limit the number of RT's your bot 
 
 >node src/stream.js
 
-trace output:
+sample trace output:
 
-![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/CyberDashTrace4.png?raw=true 
+![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/CyberDashTrace7.png?raw=true 
  "trace")
 
 
