@@ -210,7 +210,7 @@ function retweet(tweet) {
       retweetCount++
     })
     .catch(err => {
-      console.error('failed to RT', tweet)      
+      console.error('Failed to RT!', tweet)      
     })
   }
   else { // skip retweet due to hourly retweet quota reached
@@ -221,6 +221,24 @@ function retweet(tweet) {
   }
 }
 
+/**
+ * Adds a tweet to user favorites.
+ * 
+ * @param tweet Tweet to add to favorites.
+ */
+function likeTweet(tweet) {
+  Twitter.post('favorites/create', {
+    id: tweet.id_str
+  })
+  .then( response => {
+    console.log(dashes)
+    console.log(`>Liked: @${tweet.user.screen_name}: ${tweet.text}`)
+    console.log(dashes)
+  })
+  .catch( err => {
+    console.error('Failed to Like!', tweet)
+  })
+}
 
 /**
  * Sends 'Hello friend.' to new follower.
