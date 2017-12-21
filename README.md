@@ -97,7 +97,7 @@ sample trace output:
 
 Note: every . in that trace denotes a matching tweet analyzed and skipped according to the bot config rules. See 'Dasher's' :) timeline for actual RT's: https://twitter.com/CyberDash
 
-Also, new followers get a greeting DM, and 'blacklist' is updated every 15 minutes to currate that channel.
+Also, new followers get a greeting DM, and 'blacklist' is updated every 15 minutes to curate that channel.
 
 # 2. OR Run search.js for periodic RT's
 
