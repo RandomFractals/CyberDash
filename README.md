@@ -116,9 +116,10 @@ Also, new followers get a greeting DM, and 'blacklist' is updated every 15 minut
 - implement search.js for periodic RT's using Twitter search/tweets interface instead
 - add unit tests
 
-# V2.0 TODO Maybe? :)
+# V2.0 TODO
 
 - auto-like tweets without links from friends
+- hook up redis and check for tweet duplicates from tweeps that post same articles every day for promo
 
 # This Twitter Bot API References
 
