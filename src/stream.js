@@ -236,7 +236,7 @@ function retweet(tweet) {
  */
 function likeMentions() {
   Twitter.get('statuses/mentions_timeline', {
-    count: 20 // max mentions to like in 10 time span
+    count: 2 // max mentions to like in 10 time span
   })
   .then(response => {
     console.log('\nMentions:', response.data.length)
