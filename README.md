@@ -75,6 +75,9 @@ HOURLY_USER_QUOTA=3
 # Max bot retweets per hour
 HOURLY_RETWEET_QUOTA=10
 
+# Bot language to skip RT of foreign tweets
+LANGUAGE=en
+
 # Twitter bot API keys
 CONSUMER_KEY=
 CONSUMER_SECRET=
@@ -108,7 +111,6 @@ Also, new followers get a greeting DM, and 'blacklist' is updated every 15 minut
 
 # V1.0 TODO
 
-- add bot language config to skip foreign language tweets
 - auto-like mentions
 - move core bot config and tweet processing logic to new TwitterBot.js kit module
 - implement search.js for periodic RT's using Twitter search/tweets interface instead

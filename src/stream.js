@@ -129,7 +129,9 @@ function worthRT(tweet) {
   return (isFriend || tweet.entities.urls.length > 0) && // RT friends and tweets with links
     tweet.entities.hashtags.length <= config.max_hashtags && // not too spammy
     tweet.in_reply_to_status_id_str === null && // not a reply
-    !tweet.text.startsWith('RT ') && !isRetweet // skip retweets
+    tweet.lang === config.language && // skip foreign tweets    
+    !tweet.text.startsWith('RT ') && 
+    !isRetweet // skip retweets
     //!tweet.retweeted // RT only tweets without any retweets
 }
 
@@ -279,6 +281,7 @@ function logConfig () {
   console.log('max_hashtags:', config.max_hashtags.toLocaleString())
   console.log('hourly_user_quota:', config.hourly_user_quota.toLocaleString())
   console.log('hourly_retweet_quota:', config.hourly_retweet_quota.toLocaleString())
+  console.log('language:', config.language)
 }
 
 

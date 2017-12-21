@@ -15,6 +15,7 @@ module.exports = {
   max_hashtags: Number(process.env.MAX_HASHTAGS),
   hourly_user_quota: Number(process.env.HOURLY_USER_QUOTA),
   hourly_retweet_quota: Number(process.env.HOURLY_RETWEET_QUOTA),
+  language: process.env.LANGUAGE,
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
   access_token: process.env.ACCESS_TOKEN,
