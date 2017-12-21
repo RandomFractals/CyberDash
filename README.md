@@ -99,9 +99,16 @@ Note: every . in that trace denotes a matching tweet analyzed and skipped accord
 
 Also, new followers get a greeting DM, and 'blacklist' is updated every 15 minutes to currate that channel.
 
-# 2. OR Run bot.js for periodic RT's
+# 2. OR Run search.js for periodic RT's
 
 >TODO :)
+
+# V1.0 TODO
+
+- add hourly bot quota to limit number of RT's per hour
+- move core bot config and tweet processing logic to new TwitterBot.js kit module
+- implement search.js for periodic RT's using Twitter search/tweets interface instead
+- add unit tests
 
 # Twitter Bots Tutorials
 
