@@ -9,6 +9,7 @@ const dots = '...'
 const hashtags = /(^|\s)#([^ ]*)/g
 
 let retweets = {} // hourly per user RT counters
+let retweetCount = 0
 
 // get a list of configured track filter keywords
 config.track_keywords = config.track_filter.split(',').map(keyword => keyword.toLowerCase())
@@ -183,26 +184,36 @@ function logTweet (tweet, tweetText, keywords) {
  * @param tweet Tweet to retweet
  */
 function retweet(tweet) {
-  // retweet
-  Twitter.post('statuses/retweet/:id', {id: tweet.id_str}, function(err, response) {
-    if (response) {
-      console.log(dashes)
-      console.log(`>RT: @${tweet.user.screen_name}: ${tweet.text}`)
-      console.log(dashes)
+  if (retweetCount < config.hourly_retweet_quota) {
+    // retweet
+    Twitter.post('statuses/retweet/:id', {id: tweet.id_str}, function(err, response) {
+      if (response) {
+        console.log(dashes)
+        console.log(`>RT: @${tweet.user.screen_name}: ${tweet.text}`)
+        console.log(dashes)
 
-      // update hourly user quota
-      const userQuota = retweets[tweet.user.screen_name]
-      if (userQuota === undefined) {
-        retweets[tweet.user.screen_name] = 1 // first RT
+        // update hourly user quota
+        const userQuota = retweets[tweet.user.screen_name]
+        if (userQuota === undefined) {
+          retweets[tweet.user.screen_name] = 1 // first RT
+        }
+        else {
+          retweets[tweet.user.screen_name]++ // increment
+        }
+        // update total hourly retweets counter
+        retweetCount++
       }
-      else {
-        retweets[tweet.user.screen_name]++ // increment
+      if (err) {
+        console.error('failed to RT', tweet)
       }
-    }
-    if (err) {
-      console.error('failed to RT', tweet)
-    }
-  })
+    })
+  }
+  else { // skip retweet due to hourly retweet quota reached
+    console.log(dashes)
+    console.log('Skipping RT: hourly retweet quota reached!')
+    console.log(`>skip RT: @${tweet.user.screen_name}: ${tweet.text}`)
+    console.log(dashes)    
+  }
 }
 
 
@@ -267,6 +278,7 @@ function logConfig () {
   console.log('max_user_tweets:', config.max_user_tweets.toLocaleString())
   console.log('max_hashtags:', config.max_hashtags.toLocaleString())
   console.log('hourly_user_quota:', config.hourly_user_quota.toLocaleString())
+  console.log('hourly_retweet_quota:', config.hourly_retweet_quota.toLocaleString())
 }
 
 
@@ -291,6 +303,10 @@ function updateWhitelist() {
 
     // reset retweet per user counters
     retweets = {}
+
+    // reset hourly retweets counter
+    retweetCount = 0
+
   })
   .catch( err => {
     console.log('Failed to get friends/list!', err)    

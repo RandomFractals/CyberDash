@@ -14,6 +14,7 @@ module.exports = {
   max_user_tweets: Number(process.env.MAX_USER_TWEETS),
   max_hashtags: Number(process.env.MAX_HASHTAGS),
   hourly_user_quota: Number(process.env.HOURLY_USER_QUOTA),
+  hourly_retweet_quota: Number(process.env.HOURLY_RETWEET_QUOTA),
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
   access_token: process.env.ACCESS_TOKEN,
