@@ -114,6 +114,18 @@ Also, new followers get a greeting DM, and 'blacklist' is updated every 15 minut
 - implement search.js for periodic RT's using Twitter search/tweets interface instead
 - add unit tests
 
+# This Twitter Bot API References
+
+https://github.com/motdotla/dotenv - used for bot config
+
+https://github.com/ttezel/twit - used for Twitter API calls
+
+Official 'Standard' Twitter filter and search tweets APIs:
+
+https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference/post-statuses-filter.html
+
+https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets.html
+
 # Twitter Bots Tutorials
 
 https://github.com/amandeepmittal/awesome-twitter-bots
