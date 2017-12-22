@@ -1,1 +1,1 @@
-require('./src/bot')
+require('./src/stream')
