@@ -7,9 +7,20 @@
   "scripts": {
     "start": "node index.js"
   },
-  "repository": "https://github.com/RandomFractals/CyberDash.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RandomFractals/CyberDash.git"
+  },
   "author": "Random Fractals, Inc.",
   "license": "MIT",
+  "keywords": [
+    "cyberSec",
+    "twitter",
+    "stream",
+    "filter",
+    "news",
+    "bot"
+  ],
   "dependencies": {
     "dotenv": "^4.0.0",
     "log4js": "^2.4.1",
