@@ -235,24 +235,22 @@ function retweet(tweet) {
  * Gets the latest mentions and likes them.
  */
 function likeMentions() {
-  if (!config.like_mentions) {
-    return; // abort :)
-  }
-
-  Twitter.get('statuses/mentions_timeline', {
-    count: 2 // max mentions to like in 10 time span
-  })
-  .then(response => {
-    console.log('\nMentions:', response.data.length)
-    response.data.map(tweet => {
-      if (favorites[tweet.id_str] === undefined) {
-        likeTweet(tweet)
-      }
+  if (config.like_mentions) {
+    Twitter.get('statuses/mentions_timeline', {
+      count: 2 // max mentions to like in 10 time span
     })
-  })
-  .catch( err => {
-    console.error(`Failed to get mentions for: @${config.twitter_account}`)
-  })
+    .then(response => {
+      console.log('\nMentions:', response.data.length)
+      response.data.map(tweet => {
+        if (favorites[tweet.id_str] === undefined) {
+          likeTweet(tweet)
+        }
+      })
+    })
+    .catch( err => {
+      console.error(`Failed to get mentions for: @${config.twitter_account}`)
+    })
+  }
 }
 
 /**

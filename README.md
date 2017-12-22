@@ -76,7 +76,7 @@ HOURLY_USER_QUOTA=3
 HOURLY_RETWEET_QUOTA=10
 
 # Search and like mentions flag
-LIKE_MENTIONS=1
+LIKE_MENTIONS=true
 
 # Bot language to skip RT of foreign tweets
 LANGUAGE=en
