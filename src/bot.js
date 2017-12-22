@@ -22,6 +22,9 @@ const TwitterBot = function (botConfig) {
   this.retweets = {} // hourly per user RT counters
   this.retweetCount = 0
 
+  // since tweet id marker for search/tweets
+  this.sinceTweetId = 0
+
   // create log and tweet parse vars
   this.dashes = '------------------------------'
   this.dots = '...'
@@ -59,6 +62,36 @@ const TwitterBot = function (botConfig) {
   this.likeMentions()
 }
 
+
+/**
+ * Searches Twitter for matching tweets to RT.
+ * 
+ * See: https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets.html
+ */
+TwitterBot.prototype.searchTweets = function() {
+  this.logger.info('searching...')
+  this.twitter.get('search/tweets', {
+    q: `#cyberSec #hacking AND -filter:replies AND -filter:retweets`,
+    count: 20, // max tweets to analyze every 15 minutes
+    result_type: 'recent',
+    since_id: this.sinceTweetId,
+    lang: this.config.language
+  })
+  .then(response => {
+    // process tweet search results
+    //console.log(JSON.stringify(response.data, null, '\t'))
+    response.data.statuses.forEach(tweet => {
+      this.processTweet(tweet)
+      this.logger.info(`>@${tweet.user.screen_name}: \n${tweet.text}`)
+    })
+    // update since tweet id for the next twitter search call
+    this.sinceTweetId = response.data.search_metadata.max_id_str
+    this.logger.info('search_metadata:', response.data.search_metadata)
+  })
+  .catch(err => {
+    this.logger.error(`Failed to get 'search/tweets' results!`, err)
+  })
+}
 
 /* --------------------------- Tweeets Processing Methods ----------------------------------- */
 
