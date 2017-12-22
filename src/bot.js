@@ -83,7 +83,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
         matchedKeywords.split(' ').length <= this.config.max_hashtags &&
         tweetText.match(this.hashtags).length <= this.config.max_hashtags) {
       this.logTweet(tweet, tweetText, matchedKeywords)
-      //this.retweet(tweet)
+      this.retweet(tweet)
     }
   }
   else {
