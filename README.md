@@ -114,6 +114,7 @@ Also, new followers get a greeting DM, and 'blacklist' is updated every 15 minut
 
 # V1.0 TODO
 
+- add different match algo's: contains, regex, or http://compromise.cool/
 - move core bot config and tweet processing logic to new TwitterBot.js kit module
 - implement search.js for periodic RT's using Twitter search/tweets interface instead
 - add unit tests
