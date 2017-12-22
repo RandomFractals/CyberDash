@@ -132,7 +132,7 @@ TwitterBot.prototype.worthRT = function (tweet) {
   const isFriend = (this.whitelist[tweet.user.screen_name] !== undefined)  
   const isRetweet = (tweet.retweeted_status !== undefined)
   return (isFriend || tweet.entities.urls.length > 0) && // RT friends and tweets with links
-    tweet.entities.hashtags.length <= this.config.max_hashtags && // not too spammy
+    tweet.entities.hashtags.length <= this.config.max_tweet_hashtags && // not too spammy
     tweet.in_reply_to_status_id_str === null && // not a reply
     tweet.lang === this.config.language && // skip foreign tweets    
     !tweet.text.startsWith('RT ') && 
