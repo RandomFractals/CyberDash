@@ -75,6 +75,9 @@ HOURLY_USER_QUOTA=3
 # Max bot retweets per hour
 HOURLY_RETWEET_QUOTA=10
 
+# Search and like mentions flag
+LIKE_MENTIONS=1
+
 # Bot language to skip RT of foreign tweets
 LANGUAGE=en
 

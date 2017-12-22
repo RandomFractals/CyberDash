@@ -235,6 +235,10 @@ function retweet(tweet) {
  * Gets the latest mentions and likes them.
  */
 function likeMentions() {
+  if (!config.like_mentions) {
+    return; // abort :)
+  }
+
   Twitter.get('statuses/mentions_timeline', {
     count: 2 // max mentions to like in 10 time span
   })
@@ -334,6 +338,7 @@ function logConfig () {
   console.log('max_hashtags:', config.max_hashtags.toLocaleString())
   console.log('hourly_user_quota:', config.hourly_user_quota.toLocaleString())
   console.log('hourly_retweet_quota:', config.hourly_retweet_quota.toLocaleString())
+  console.log('like_mentions:', config.like_mentions)
   console.log('language:', config.language)
 }
 

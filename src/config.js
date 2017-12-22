@@ -1,10 +1,11 @@
 require('dotenv').config()
 
+// see .env for config options info
 module.exports = {
   twitter_account: process.env.TWITTER_ACCOUNT,
   greeting: process.env.GREETING,
   track_filter: process.env.TRACK_FILTER,
-  hashtags_filter: process.env.HASHTAGS_FILTER,  
+  hashtags_filter: Boolean(process.env.HASHTAGS_FILTER),
   mute_tweet_filter: process.env.MUTE_TWEET_FILTER,
   blacklist: process.env.BLACKLIST,
   mute_user_filter: process.env.MUTE_USER_FILTER,  
@@ -15,6 +16,7 @@ module.exports = {
   max_hashtags: Number(process.env.MAX_HASHTAGS),
   hourly_user_quota: Number(process.env.HOURLY_USER_QUOTA),
   hourly_retweet_quota: Number(process.env.HOURLY_RETWEET_QUOTA),
+  like_mentions: Boolean(process.env.LIKE_MENTIONS),
   language: process.env.LANGUAGE,
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
