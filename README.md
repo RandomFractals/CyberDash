@@ -123,11 +123,13 @@ Also, new followers get a greeting DM, and 'blacklist' is updated every 15 minut
 
 - hook up redis and check for tweet duplicates from tweeps that post same articles every day for promo
 
-# This Twitter Bot API References
+# This Twitter Bot 3rd party API References
 
 https://github.com/motdotla/dotenv - used for bot config
 
 https://github.com/ttezel/twit - used for Twitter API calls
+
+https://github.com/log4js-node/log4js-node - used for bot info, debug and error logging
 
 Official 'Standard' Twitter filter and search tweets APIs:
 
