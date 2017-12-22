@@ -1,6 +1,6 @@
 require('dotenv').config()
 
-// see .env for config options info
+// see .env for bot config options info
 module.exports = {
   twitter_account: process.env.TWITTER_ACCOUNT,
   greeting: process.env.GREETING,
