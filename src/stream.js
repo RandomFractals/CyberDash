@@ -11,3 +11,16 @@ const filterStream = bot.twitter.stream('statuses/filter', {
 
 // process each tweet from the filter stream
 filterStream.on('tweet', tweet => bot.processTweet(tweet))
+
+// subscirbe to user events
+const userStream = bot.twitter.stream('user')
+userStream.on('follow', event => bot.helloFriend(event)) // say hello :)
+
+// check whitelist every hour
+setInterval(() => bot.updateWhitelist, 60 * 60 * 1000)
+
+// check blacklist every 15 minutes
+setInterval(() => bot.updateBlacklist, 15 * 60 * 1000)
+
+// check for mentions every 10 minutes
+setInterval(() => bot.likeMentions, 10 * 60 * 1000)
