@@ -71,7 +71,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
   if (this.userChecksOut(tweet) && this.worthRT(tweet)) {
     // get full tweet text
     let tweetText = tweet.text
-    if (tweet.truncated) {
+    if (tweet.truncated && tweet.extended_tweet !== undefined) {
       tweetText = tweet.extended_tweet.full_text
     }
 
@@ -83,7 +83,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
         matchedKeywords.split(' ').length <= this.config.max_tweet_hashtags &&
         tweetText.match(this.hashtagsRegEx).length <= this.config.max_tweet_hashtags) {
       this.logTweet(tweet, tweetText, matchedKeywords)
-      this.retweet(tweet)
+      //this.retweet(tweet)
     }
   }
   else {
