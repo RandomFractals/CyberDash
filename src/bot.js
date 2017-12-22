@@ -57,6 +57,19 @@ const TwitterBot = function (botConfig) {
 
   // check and like recent mentions
   this.likeMentions()
+
+  // subscirbe to user events
+  const userStream = this.twitter.stream('user')
+  userStream.on('follow', this.helloFriend) // say hello :)
+
+  // check whitelist every hour
+  setInterval(this.updateWhitelist, 60 * 60 * 1000)
+
+  // check blacklist every 15 minutes
+  setInterval(this.updateBlacklist, 15 * 60 * 1000)
+
+  // check for mentions every 10 minutes
+  setInterval(this.likeMentions, 10 * 60 * 1000)
 }
 
 
