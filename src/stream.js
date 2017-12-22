@@ -193,6 +193,9 @@ function logTweet (tweet, tweetText, keywords) {
   )
   logger.debug(tweet.user.description)
   //logger.debug(tweet)
+
+  // log | for each RT to stdout
+  process.stdout.write('|')
 }
 
 
