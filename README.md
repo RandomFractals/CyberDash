@@ -98,9 +98,9 @@ https://help.twitter.com/en/rules-and-policies/twitter-automation
 
 The settings I've chosen for this Twitter bot limit the number of RT's your bot will send to comply with Twitter rules and rate limit regulations. Fine tune them at your own risk :(
 
-# 1. Run realtime Twitter stream/filter bot
+# 1. Run realtime Twitter stream/filter bot (default)
 
->node src/stream.js
+>node src/stream
 
 sample trace output:
 
@@ -113,12 +113,13 @@ Also, new followers get a greeting DM, and 'blacklist' is updated every 15 minut
 
 # 2. OR Run search.js for periodic RT's
 
->TODO :)
+>node src/search
 
 # V1.0 TODO
 
+- finish search.js testing and filters config for periodic RT's using Twitter search/tweets interface
 - add different match algo's: contains, regex, or http://compromise.cool/
-- implement search.js for periodic RT's using Twitter search/tweets interface instead
+- follow some good cybersec experts and update 'blacklist' for better and more diverse cybersec news RT results
 
 # V2.0 TODO
 
