@@ -29,7 +29,7 @@ const TwitterBot = function (botConfig) {
     
   // create logger
   this.logger = log4js.getLogger('bot')
-  this.logger.level = 'debug'
+  this.logger.level = this.config.log_level
   
   // get a list of configured track filter keywords
   this.config.track_keywords = this.config.track_filter.split(',').map(keyword => keyword.toLowerCase())

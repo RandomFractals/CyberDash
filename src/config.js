@@ -18,6 +18,7 @@ module.exports = {
   hourly_retweet_quota: Number(process.env.HOURLY_RETWEET_QUOTA),
   like_mentions: Boolean(process.env.LIKE_MENTIONS),
   language: process.env.LANGUAGE,
+  log_level: process.env.LOG_LEVEL,
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
   access_token: process.env.ACCESS_TOKEN,

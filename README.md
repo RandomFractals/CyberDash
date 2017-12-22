@@ -81,6 +81,9 @@ LIKE_MENTIONS=true
 # Bot language to skip RT of foreign tweets
 LANGUAGE=en
 
+# Bot log level
+LOG_LEVEL=info
+
 # Twitter bot API keys
 CONSUMER_KEY=
 CONSUMER_SECRET=
