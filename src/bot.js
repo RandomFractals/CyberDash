@@ -25,7 +25,7 @@ const TwitterBot = function (botConfig) {
   // create log and tweet parse vars
   this.dashes = '------------------------------'
   this.dots = '...'
-  this.hashtags = /(^|\s)#([^ ]*)/g
+  this.hashtagsRegEx = /(^|\s)#([^ ]*)/g
     
   // create logger
   this.logger = log4js.getLogger('bot')
@@ -80,8 +80,8 @@ TwitterBot.prototype.processTweet = function (tweet) {
     const muteKeywords = this.getKeywordMatches(tweetText, this.config.mute_tweet_keywords)
     if (muteKeywords.length <= 0 &&
         matchedKeywords.length > 0 &&
-        matchedKeywords.split(' ').length <= this.config.max_hashtags &&
-        tweetText.match(this.hashtags).length <= this.config.max_hashtags) {
+        matchedKeywords.split(' ').length <= this.config.max_tweet_hashtags &&
+        tweetText.match(this.hashtagsRegEx).length <= this.config.max_tweet_hashtags) {
       this.logTweet(tweet, tweetText, matchedKeywords)
       this.retweet(tweet)
     }
@@ -115,8 +115,8 @@ TwitterBot.prototype.userChecksOut = function (tweet) {
   return (isFriend && !blacklisted && !userQuotaExceeded) || // friends can be blacklisted :(
     (!blacklisted && !muteUser && !userQuotaExceeded &&
       !tweet.user.verified && // skip verified 'unknown' users for now
-      tweet.user.followers_count >= this.config.min_followers && // min required for 'unknown' tweeps
-      tweet.user.friends_count <= this.config.max_friends && // skip tweets from tweeps that follow the universe
+      tweet.user.followers_count >= this.config.min_user_followers && // min required for 'unknown' tweeps
+      tweet.user.friends_count <= this.config.max_user_friends && // skip tweets from tweeps that follow the universe
       tweet.user.statuses_count >= this.config.min_user_tweets && // min required for 'unknown' user to RT
       tweet.user.statuses_count <= this.config.max_user_tweets) // most likely just another Twitter bot
 }
@@ -329,11 +329,11 @@ TwitterBot.prototype.logConfig = function () {
   this.logger.info(this.config.track_keywords)
   this.logger.info('mute_tweet_filter:', this.config.mute_tweet_filter)
   this.logger.info('mute_user_filter:', this.config.mute_user_filter)
-  this.logger.info('min_followers:', this.config.min_followers.toLocaleString())  
-  this.logger.info('max_friends:', this.config.max_friends.toLocaleString())  
+  this.logger.info('min_user_followers:', this.config.min_user_followers.toLocaleString())  
+  this.logger.info('max_user_friends:', this.config.max_user_friends.toLocaleString())  
   this.logger.info('min_user_tweets:', this.config.min_user_tweets.toLocaleString())
   this.logger.info('max_user_tweets:', this.config.max_user_tweets.toLocaleString())
-  this.logger.info('max_hashtags:', this.config.max_hashtags.toLocaleString())
+  this.logger.info('max_tweet_hashtags:', this.config.max_tweet_hashtags.toLocaleString())
   this.logger.info('hourly_user_quota:', this.config.hourly_user_quota.toLocaleString())
   this.logger.info('hourly_retweet_quota:', this.config.hourly_retweet_quota.toLocaleString())
   this.logger.info('like_mentions:', this.config.like_mentions)
