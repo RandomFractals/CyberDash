@@ -34,9 +34,10 @@ searchTweets()
  */
 function searchTweets() {
   bot.twitter.get('search/tweets', {
-    q: '#hacking AND -filter:replies AND -filter:retweets', // config.track_filter,
+    q: `#cyberSec #hacking AND -filter:replies AND -filter:retweets`,
     count: 20, // max tweets to analyze every 15 minutes
     result_type: 'recent',
+    since_id: since_tweet_id,
     lang: config.language
   })
   .then( response => {
