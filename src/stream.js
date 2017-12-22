@@ -2,18 +2,23 @@ const Twit = require('twit')
 const config = require('./config')
 const Twitter = new Twit(config)
 
+const log4js = require('log4js')
+const logger = log4js.getLogger()
+logger.level = 'info'
+
+// bot collections 
 const whitelist = {} // RT users whitelist
 const blacklist = {} // RT users blacklist
 const favorites = {} // favorite tweets
+
+// retweet counters
+let retweets = {} // hourly per user RT counters
+let retweetCount = 0
 
 // log and tweet parse vars
 const dashes = '------------------------------'
 const dots = '...'
 const hashtags = /(^|\s)#([^ ]*)/g
-
-// retweet counters
-let retweets = {} // hourly per user RT counters
-let retweetCount = 0
 
 // get a list of configured track filter keywords
 config.track_keywords = config.track_filter.split(',').map(keyword => keyword.toLowerCase())
@@ -175,19 +180,19 @@ function getKeywordMatches(text, keywords) {
  * @param keywords matched keywords
  */
 function logTweet (tweet, tweetText, keywords) {
-  console.log(`\n@${tweet.user.screen_name}: ${tweetText}`)
-  console.log(dots)
-  console.log(`matches: ${keywords}`)
-  console.log('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
-  console.log(`links: ${tweet.entities.urls.length} | lang: ${tweet.lang}`)
-  console.log(dots)
-  console.log(`@${tweet.user.screen_name}:`,
+  logger.debug(`\n@${tweet.user.screen_name}: ${tweetText}`)
+  logger.debug(dots)
+  logger.debug(`matches: ${keywords}`)
+  logger.debug('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
+  logger.debug(`links: ${tweet.entities.urls.length} | lang: ${tweet.lang}`)
+  logger.debug(dots)
+  logger.debug(`@${tweet.user.screen_name}:`,
     `tweets: ${tweet.user.statuses_count}`,
     `| friends: ${tweet.user.friends_count}`,
     `| followers: ${tweet.user.followers_count}`
   )
-  console.log(tweet.user.description)
-  //console.log(tweet)
+  logger.debug(tweet.user.description)
+  //logger.debug(tweet)
 }
 
 
@@ -203,9 +208,9 @@ function retweet(tweet) {
       id: tweet.id_str
     })
     .then( response => {
-      console.log(dashes)
-      console.log(`>RT: @${tweet.user.screen_name}: ${tweet.text}`)
-      console.log(dashes)
+      logger.debug(dashes)
+      logger.debug(`>RT: @${tweet.user.screen_name}: ${tweet.text}`)
+      logger.debug(dashes)
 
       // update hourly user quota
       const userQuota = retweets[tweet.user.screen_name]
@@ -219,14 +224,14 @@ function retweet(tweet) {
       retweetCount++
     })
     .catch(err => {
-      console.error('Failed to RT!', tweet)      
+      logger.error('Failed to RT!', tweet)      
     })
   }
   else { // skip retweet due to hourly retweet quota reached
-    console.log(dashes)
-    console.log('Skipping RT: hourly retweet quota reached!')
-    console.log(`>skip RT: @${tweet.user.screen_name}: ${tweet.text}`)
-    console.log(dashes)    
+    logger.debug(dashes)
+    logger.debug('Skipping RT: hourly retweet quota reached!')
+    logger.debug(`>skip RT: @${tweet.user.screen_name}: ${tweet.text}`)
+    logger.debug(dashes)    
   }
 }
 
@@ -240,7 +245,7 @@ function likeMentions() {
       count: 2 // max mentions to like in 10 time span
     })
     .then(response => {
-      console.log('\nMentions:', response.data.length)
+      logger.debug('\nMentions:', response.data.length)
       response.data.map(tweet => {
         if (favorites[tweet.id_str] === undefined) {
           likeTweet(tweet)
@@ -248,7 +253,7 @@ function likeMentions() {
       })
     })
     .catch( err => {
-      console.error(`Failed to get mentions for: @${config.twitter_account}`)
+      logger.error(`Failed to get mentions for: @${config.twitter_account}`)
     })
   }
 }
@@ -265,12 +270,12 @@ function likeTweet(tweet) {
   .then( response => {
     // add to favorites
     favorites[tweet.id_str] = tweet
-    console.log(dashes)
-    console.log(`>Liked: @${tweet.user.screen_name}: ${tweet.text}`)
-    console.log(dashes)
+    logger.debug(dashes)
+    logger.debug(`>Liked: @${tweet.user.screen_name}: ${tweet.text}`)
+    logger.debug(dashes)
   })
   .catch( err => {
-    console.error('Failed to Like!', tweet)
+    logger.error('Failed to Like!', tweet)
   })
 }
 
@@ -281,17 +286,17 @@ function helloFriend(event) {
   const friendName = event.source.name
   const friendScreenName = event.source.screen_name
   if (friendScreenName !== config.twitter_account) { // not us
-    console.log('\nnew follower:', friendScreenName)
+    logger.info('\nnew follower:', friendScreenName)
     // DM our greeting to new follower
     Twitter.post('direct_messages/new', {
       screen_name: friendScreenName,
       text: config.greeting
     })
     .then( response  => {
-      console.log(`Greeting DM sent to @${response.data.recipient_screen_name}: '${response.data.text}'`)
+      logger.info(`Greeting DM sent to @${response.data.recipient_screen_name}: '${response.data.text}'`)
     })
     .catch( err => {
-      console.log('Failed to send greeting DM', err)      
+      logger.error('Failed to send greeting DM', err)      
     })
   }
 }
@@ -307,37 +312,37 @@ function listFollowers () {
     count: 20
   })
   .then( response => {
-    console.log(`\n${config.twitter_account} Followers:`)
-    console.log(dashes)
+    logger.debug(`\n${config.twitter_account} Followers:`)
+    logger.debug(dashes)
     response.data.users.forEach(user => {
-      console.log(user.screen_name)
+      logger.debug(user.screen_name)
     })
-    console.log(dots)
+    logger.debug(dots)
   })
   .catch( err => {
-    console.log('Failed to get followers/list', err)    
+    logger.error('Failed to get followers/list', err)    
   })
 }
 
 
 /**
- * Logs bot config for debug.
+ * Logs bot config.
  */
 function logConfig () {
-  console.log('RT Filter:')
-  console.log(dashes)
-  console.log(config.track_keywords)
-  console.log('mute_tweet_filter:', config.mute_tweet_filter)
-  console.log('mute_user_filter:', config.mute_user_filter)
-  console.log('min_followers:', config.min_followers.toLocaleString())  
-  console.log('max_friends:', config.max_friends.toLocaleString())  
-  console.log('min_user_tweets:', config.min_user_tweets.toLocaleString())
-  console.log('max_user_tweets:', config.max_user_tweets.toLocaleString())
-  console.log('max_hashtags:', config.max_hashtags.toLocaleString())
-  console.log('hourly_user_quota:', config.hourly_user_quota.toLocaleString())
-  console.log('hourly_retweet_quota:', config.hourly_retweet_quota.toLocaleString())
-  console.log('like_mentions:', config.like_mentions)
-  console.log('language:', config.language)
+  logger.info('RT Filter:')
+  logger.info(dashes)
+  logger.info(config.track_keywords)
+  logger.info('mute_tweet_filter:', config.mute_tweet_filter)
+  logger.info('mute_user_filter:', config.mute_user_filter)
+  logger.info('min_followers:', config.min_followers.toLocaleString())  
+  logger.info('max_friends:', config.max_friends.toLocaleString())  
+  logger.info('min_user_tweets:', config.min_user_tweets.toLocaleString())
+  logger.info('max_user_tweets:', config.max_user_tweets.toLocaleString())
+  logger.info('max_hashtags:', config.max_hashtags.toLocaleString())
+  logger.info('hourly_user_quota:', config.hourly_user_quota.toLocaleString())
+  logger.info('hourly_retweet_quota:', config.hourly_retweet_quota.toLocaleString())
+  logger.info('like_mentions:', config.like_mentions)
+  logger.info('language:', config.language)
 }
 
 
@@ -351,14 +356,14 @@ function updateWhitelist() {
     count: 100 // max whitelist size for now
   })
   .then( response => {
-    console.log('\nWhitelist:')
-    console.log(dashes)
+    logger.debug('\nWhitelist:')
+    logger.debug(dashes)
     response.data.users.forEach(user => {
       // add a 'friend' to the whitelist
       whitelist[user.screen_name] = user
-      console.log(user.screen_name)
+      logger.debug(user.screen_name)
     })
-    console.log(dots)
+    logger.debug(dots)
 
     // reset retweet per user counters
     retweets = {}
@@ -368,7 +373,7 @@ function updateWhitelist() {
 
   })
   .catch( err => {
-    console.log('Failed to get friends/list!', err)    
+    logger.error('Failed to get friends/list!', err)    
   })
 }
 
@@ -383,20 +388,20 @@ function updateBlacklist() {
     count: 100 // max blacklist size for now
   })
   .then( response => {
-    console.log('\nBlacklist:')
-    console.log(dashes)
-    console.log(`@${config.twitter_account}/lists/${config.blacklist}`)
-    console.log(dashes)
+    logger.debug('\nBlacklist:')
+    logger.debug(dashes)
+    logger.debug(`@${config.twitter_account}/lists/${config.blacklist}`)
+    logger.debug(dashes)
     response.data.users.forEach(user => {
       // update blacklist
       blacklist[user.screen_name] = user
-      console.log(user.screen_name)
+      logger.debug(user.screen_name)
     })
-    console.log(dots)
-    console.log('Processing realtime tweets...')
+    logger.debug(dots)
+    logger.debug('Processing realtime tweets...')
   })
   .catch( err => {
-    console.log(`Failed to get 'blacklist' lists/members!`, err)
+    logger.error(`Failed to get 'blacklist' lists/members!`, err)
   })
   
 }
