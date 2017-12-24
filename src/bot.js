@@ -429,11 +429,13 @@ TwitterBot.prototype.updateBlacklist = function () {
     this.logger.debug(this.dashes)
     this.logger.debug(`@${this.config.twitter_account}/lists/${this.config.blacklist}`)
     this.logger.debug(this.dashes)
-    response.data.users.forEach(user => {
-      // update blacklist
-      this.blacklist[user.screen_name] = user
-      this.logger.debug(user.screen_name)
-    })
+    if (response.data.users !== undefined) {
+      response.data.users.forEach(user => {
+        // update blacklist
+        this.blacklist[user.screen_name] = user
+        this.logger.debug(user.screen_name)
+      })
+    }
     this.logger.debug(this.dots)
     this.logger.debug('Processing realtime tweets...')
   })
