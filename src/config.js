@@ -5,6 +5,7 @@ module.exports = {
   twitter_account: process.env.TWITTER_ACCOUNT,
   greeting: process.env.GREETING,
   track_filter: process.env.TRACK_FILTER,
+  search_query: process.env.SEARCH_QUERY,
   hashtags_filter: Boolean(process.env.HASHTAGS_FILTER),
   mute_tweet_filter: process.env.MUTE_TWEET_FILTER,
   blacklist: process.env.BLACKLIST,

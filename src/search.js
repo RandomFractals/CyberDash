@@ -16,10 +16,10 @@ setInterval(() => bot.updateBlacklist, 15 * 60 * 1000)
 setInterval(() => bot.likeMentions, 10 * 60 * 1000)
 
 // search tweets every 15 minutes
+bot.searchTweets()
 setInterval(() => bot.searchTweets, 15 * 60 * 1000)
 console.log('Search started! Will run every 15 minutes. Standby!')
 
 setInterval(() => {
   process.stdout.write('.')
-}, 1000)
-
+}, 60 * 1000)

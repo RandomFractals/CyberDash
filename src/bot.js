@@ -76,7 +76,7 @@ const TwitterBot = function (botConfig) {
 TwitterBot.prototype.searchTweets = function() {
   this.logger.info('searching...')
   this.twitter.get('search/tweets', {
-    q: `#cyberSec #hacking AND -filter:replies AND -filter:retweets`,
+    q: this.config.search_query,
     count: 20, // max tweets to analyze every 15 minutes
     result_type: 'recent',
     since_id: this.sinceTweetId,
@@ -369,6 +369,7 @@ TwitterBot.prototype.logConfig = function () {
   this.logger.info('RT Filter:')
   this.logger.info(this.dashes)
   this.logger.info(this.config.track_keywords)
+  this.logger.info('search_query:', this.config.search_query)
   this.logger.info('mute_tweet_filter:', this.config.mute_tweet_filter)
   this.logger.info('mute_user_filter:', this.config.mute_user_filter)
   this.logger.info('min_user_followers:', this.config.min_user_followers.toLocaleString())  

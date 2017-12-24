@@ -40,6 +40,9 @@ GREETING=Hello friend.
 # List of keywords to match for your Twitter bot to retweet
 TRACK_FILTER=cyberSec,infoSec,hacking,penTest,cyberThreat,cyberAttack,cyberCrime,MrRobot
 
+# Twitter bot search query for search/tweets interface
+SEARCH_QUERY=#cyberSec #hacking AND -filter:replies AND -filter:retweets
+
 # Hashtags only filter match toggle
 HASHTAGS_FILTER=true
 
