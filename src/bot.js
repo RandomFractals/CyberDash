@@ -1,6 +1,10 @@
 const log4js = require('log4js')
 const Twit = require('twit')
 
+// log levels
+const INFO = 'info'
+const DEBUG = 'debug'
+
 /**
  * Creates new Twitter bot instance.
  * 
@@ -33,7 +37,8 @@ const TwitterBot = function (botConfig) {
   // create logger
   this.logger = log4js.getLogger('bot')
   this.logger.level = this.config.log_level
-  
+  console.log('Log:', this.logger.level)
+
   // get a list of configured track filter keywords
   this.config.track_keywords = this.config.track_filter.split(',').map(keyword => keyword.toLowerCase())
   if (this.config.hashtags_filter) {
@@ -116,7 +121,9 @@ TwitterBot.prototype.processTweet = function (tweet) {
         matchedKeywords.split(' ').length <= this.config.max_tweet_hashtags &&
         tweetText.match(this.hashtagsRegEx).length <= this.config.max_tweet_hashtags) {
       this.logTweet(tweet, tweetText, matchedKeywords)
-      this.retweet(tweet)
+      if (this.logger.level.isGreaterThanOrEqualTo(INFO)) {
+        this.retweet(tweet)
+      }
     }
   }
   else {
@@ -203,19 +210,21 @@ TwitterBot.prototype.getKeywordMatches = function (text, keywords) {
  * @param keywords matched keywords
  */
 TwitterBot.prototype.logTweet = function (tweet, tweetText, keywords) {
-  this.logger.debug(`\n@${tweet.user.screen_name}: ${tweetText}`)
-  this.logger.debug(this.dots)
-  this.logger.debug(`matches: ${keywords}`)
-  this.logger.debug('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
-  this.logger.debug(`links: ${tweet.entities.urls.length} | lang: ${tweet.lang}`)
-  this.logger.debug(this.dots)
-  this.logger.debug(`@${tweet.user.screen_name}:`,
-    `tweets: ${tweet.user.statuses_count}`,
-    `| friends: ${tweet.user.friends_count}`,
-    `| followers: ${tweet.user.followers_count}`
-  )
-  this.logger.debug(tweet.user.description)
-  //this.logger.debug(tweet)
+  if (this.logger.level.isLessThanOrEqualTo(DEBUG)) {
+    this.logger.debug(`\n@${tweet.user.screen_name}: ${tweetText}`)
+    this.logger.debug(this.dots)
+    this.logger.debug(`matches: ${keywords}`)
+    this.logger.debug('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
+    this.logger.debug(`links: ${tweet.entities.urls.length} | lang: ${tweet.lang}`)
+    this.logger.debug(this.dots)
+    this.logger.debug(`@${tweet.user.screen_name}:`,
+      `tweets: ${tweet.user.statuses_count}`,
+      `| friends: ${tweet.user.friends_count}`,
+      `| followers: ${tweet.user.followers_count}`
+    )
+    this.logger.debug(tweet.user.description)
+    //this.logger.debug(tweet)
+  }
 
   // log | for each RT to stdout
   process.stdout.write('|')
