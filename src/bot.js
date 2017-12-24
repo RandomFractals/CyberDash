@@ -210,7 +210,7 @@ TwitterBot.prototype.getKeywordMatches = function (text, keywords) {
  * @param keywords matched keywords
  */
 TwitterBot.prototype.logTweet = function (tweet, tweetText, keywords) {
-  if (this.logger.level.isLessThanOrEqualTo(DEBUG)) {
+  if (this.logger.level.isEqualTo(DEBUG)) {
     this.logger.debug(`\n@${tweet.user.screen_name}: ${tweetText}`)
     this.logger.debug(this.dots)
     this.logger.debug(`matches: ${keywords}`)
