@@ -97,7 +97,7 @@ TwitterBot.prototype.searchTweets = function() {
     //console.log(JSON.stringify(response.data, null, '\t'))
     response.data.statuses.forEach(tweet => {
       this.processTweet(tweet)
-      this.logger.info(`>@${tweet.user.screen_name}: \n${tweet.text}`)
+      //this.logger.info(`>@${tweet.user.screen_name}: \n${tweet.text}`)
     })
     // update since tweet id for the next twitter search call
     this.sinceTweetId = response.data.search_metadata.max_id_str
@@ -239,7 +239,7 @@ TwitterBot.prototype.getKeywordMatches = function (text, keywords) {
  * @param tweet Tweet info to log
  */
 TwitterBot.prototype.logTweet = function (tweet) {
-  this.logger.debug(`\n${this.line}\n@${tweet.user.screen_name}: ${tweet.fullText}`)
+  this.logger.debug(`\n${this.line}\n${tweet.fullText}`)
   this.logger.debug(this.dashes)
   this.logger.debug(`matches: ${tweet.keywords}`)
   this.logger.debug('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
@@ -252,7 +252,6 @@ TwitterBot.prototype.logTweet = function (tweet) {
     `| followers: ${tweet.user.followers_count}`
   )
   this.logger.debug(tweet.user.description)
-  this.logger.debug(this.dashes)  
   //this.logger.debug(tweet)
 }
 
