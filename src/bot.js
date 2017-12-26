@@ -35,8 +35,9 @@ const TwitterBot = function (botConfig) {
   this.rateRT = (this.config.mode === RATE)
 
   // create log and tweet parse vars
-  this.dashes = '------------------------------'
+  this.dashes = '------------------------------'  
   this.dots = '...'
+  this.line = this.dashes + this.dashes + this.dashes
   this.hashtagsRegEx = /(^|\s)#([^ ]*)/g
     
   // create logger
@@ -237,19 +238,20 @@ TwitterBot.prototype.getKeywordMatches = function (text, keywords) {
  * @param tweet Tweet info to log
  */
 TwitterBot.prototype.logTweet = function (tweet) {
-  this.logger.debug(`\n@${tweet.user.screen_name}: ${tweet.fullText}`)
-  this.logger.debug(this.dots)
+  this.logger.debug(`\n${this.line}\n@${tweet.user.screen_name}: ${tweet.fullText}`)
+  this.logger.debug(this.dashes)
   this.logger.debug(`matches: ${tweet.keywords}`)
   this.logger.debug('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
   this.logger.debug(`links: ${tweet.entities.urls.length} | lang: ${tweet.lang}`)
   this.logger.debug(`sentiment: score=${tweet.sentiment.score} comparative=${tweet.sentiment.comparative}`)
-  this.logger.debug(this.dots)
+  this.logger.debug(this.dashes)
   this.logger.debug(`@${tweet.user.screen_name}:`,
     `tweets: ${tweet.user.statuses_count}`,
     `| friends: ${tweet.user.friends_count}`,
     `| followers: ${tweet.user.followers_count}`
   )
   this.logger.debug(tweet.user.description)
+  this.logger.debug(this.dashes)  
   //this.logger.debug(tweet)
 }
 
