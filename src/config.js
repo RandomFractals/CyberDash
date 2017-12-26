@@ -21,6 +21,7 @@ module.exports = {
   language: process.env.LANGUAGE,
   log_level: process.env.LOG_LEVEL,
   mode: process.env.MODE,
+  sentiment_test: process.env.SENTIMENT_TEST,
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
   access_token: process.env.ACCESS_TOKEN,
