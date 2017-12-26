@@ -101,7 +101,8 @@ TwitterBot.prototype.searchTweets = function() {
     })
     // update since tweet id for the next twitter search call
     this.sinceTweetId = response.data.search_metadata.max_id_str
-    this.logger.info('search_metadata:', response.data.search_metadata)
+    this.logger.info(`\n${this.line}\nsearch_metadata: `, 
+      response.data.search_metadata, `\n${this.dots}`)
   })
   .catch(err => {
     this.logger.error(`Failed to get 'search/tweets' results!`, err)
