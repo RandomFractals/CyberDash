@@ -251,6 +251,7 @@ TwitterBot.prototype.logTweet = function (tweet) {
     `| friends: ${tweet.user.friends_count}`,
     `| followers: ${tweet.user.followers_count}`
   )
+  this.logger.debug(this.dashes)  
   this.logger.debug(tweet.user.description)
   //this.logger.debug(tweet)
 }
