@@ -1,9 +1,11 @@
 const log4js = require('log4js')
 const Twit = require('twit')
+const sentiment = require('sentiment')
 
 // log levels
 const INFO = 'info'
 const DEBUG = 'debug'
+const RATE = 'rate'
 
 /**
  * Creates new Twitter bot instance.
@@ -29,6 +31,9 @@ const TwitterBot = function (botConfig) {
   // since tweet id marker for search/tweets
   this.sinceTweetId = 0
 
+  // set rate RT flag
+  this.rateRT = (this.config.mode === RATE)
+
   // create log and tweet parse vars
   this.dashes = '------------------------------'
   this.dots = '...'
@@ -51,6 +56,10 @@ const TwitterBot = function (botConfig) {
 
   // get a list of configured user profile description filter keywords
   this.config.mute_user_keywords = this.config.mute_user_filter.split(',').map(keyword => keyword.toLowerCase())
+
+  // get filter retweets and replies config
+  this.config.filter_retweets = this.config.search_query.indexOf('-filter:retweets') >= 0
+  this.config.filter_replies = this.config.search_query.indexOf('-filter:replies') >= 0
 
   // log bot config for debug
   this.logConfig()
@@ -106,29 +115,48 @@ TwitterBot.prototype.searchTweets = function() {
  * @param tweet Tweet json object
  */
 TwitterBot.prototype.processTweet = function (tweet) {
-  if (this.userChecksOut(tweet) && this.worthRT(tweet)) {
+  if ((this.rateRT && tweet.lang === this.config.language) || // for tweets rating
+      (this.userChecksOut(tweet) && this.worthRT(tweet))) { // for straight up RT
+
     // get full tweet text
-    let tweetText = tweet.text
+    tweet.fullText = tweet.text
     if (tweet.truncated && tweet.extended_tweet !== undefined) {
-      tweetText = tweet.extended_tweet.full_text
+      tweet.fullText = tweet.extended_tweet.full_text
     }
 
-    // get keywords
-    const matchedKeywords = this.getKeywordMatches(tweetText, this.config.track_keywords)
-    const muteKeywords = this.getKeywordMatches(tweetText, this.config.mute_tweet_keywords)
-    if (muteKeywords.length <= 0 &&
-        matchedKeywords.length > 0 &&
-        matchedKeywords.split(' ').length <= this.config.max_tweet_hashtags &&
-        tweetText.match(this.hashtagsRegEx).length <= this.config.max_tweet_hashtags) {
-      this.logTweet(tweet, tweetText, matchedKeywords)
-      if (this.logger.level.isGreaterThanOrEqualTo(INFO)) {
-        this.retweet(tweet)
-      }
+    // get sentiment
+    tweet.sentiment = sentiment(tweet.fullText, {
+      'webpack': 5 // set 'webpack' word sentiment to max positive rating to boost RTs
+    })
+
+    // get matched/mute keywords
+    tweet.keywords = this.getKeywordMatches(tweet.fullText, this.config.track_keywords)
+    tweet.muteKeywords = this.getKeywordMatches(tweet.fullText, this.config.mute_tweet_keywords)
+
+    // extract all hashtags from full tweet text
+    // b/c tweet.entities.hashtags are iffy and finicky sometimes :)
+    tweet.hashtags = tweet.fullText.match(this.hashtagsRegEx)
+
+    if (this.logger.level.isEqualTo(DEBUG)) {
+      this.logTweet(tweet)
+    }
+
+    // run last keywords and hashtags checks for RT
+    if (tweet.muteKeywords.length <= 0 &&
+        tweet.keywords.length > 0 &&
+        tweet.keywords.split(' ').length <= this.config.max_tweet_hashtags &&
+        (this.config.hashtags_filter && tweet.hashtags && 
+          tweet.hashtags.length <= this.config.max_tweet_hashtags) &&
+        this.logger.level.isGreaterThanOrEqualTo(INFO) ) { // RT only in info mode!        
+      this.retweet(tweet)
     }
   }
   else {
     // log . for skipped tweets
     process.stdout.write('.')
+    if (this.logger.level.isEqualTo(DEBUG)) {
+      this.logger.debug(`\n@${tweet.user.screen_name}: ${tweet.text}`)
+    }
   }
 } // end of processTweet(tweet)
 
@@ -170,14 +198,15 @@ TwitterBot.prototype.userChecksOut = function (tweet) {
 TwitterBot.prototype.worthRT = function (tweet) {
   // check tweet stats
   const isFriend = (this.whitelist[tweet.user.screen_name] !== undefined)  
-  const isRetweet = (tweet.retweeted_status !== undefined)
+  const isRetweet = (tweet.retweeted_status !== undefined || tweet.text.startsWith('RT '))
+  const isReply = (tweet.in_reply_to_status_id_str !== null)
+  const skipRT = this.config.filter_retweets ? isRetweet: false
+  const skipReply = this.config.filter_replies ? isReply: false
+  const hashtagsCount = tweet.entities.hashtags.length
   return (isFriend || tweet.entities.urls.length > 0) && // RT friends and tweets with links
-    tweet.entities.hashtags.length <= this.config.max_tweet_hashtags && // not too spammy
-    tweet.in_reply_to_status_id_str === null && // not a reply
-    tweet.lang === this.config.language && // skip foreign tweets    
-    !tweet.text.startsWith('RT ') && 
-    !isRetweet // skip retweets
-    //!tweet.retweeted // RT only tweets without any retweets
+    hashtagsCount <= this.config.max_tweet_hashtags && // not too spammy
+    !skipRT && !skipReply &&
+    tweet.lang === this.config.language // skip foreign lang tweets
 }
 
 
@@ -203,31 +232,25 @@ TwitterBot.prototype.getKeywordMatches = function (text, keywords) {
 
 
 /**
- * Prints out tweet text and stats.
+ * Logs tweet text and stats.
  * 
  * @param tweet Tweet info to log
- * @param tweetText Full tweet text
- * @param keywords matched keywords
  */
-TwitterBot.prototype.logTweet = function (tweet, tweetText, keywords) {
-  if (this.logger.level.isEqualTo(DEBUG)) {
-    this.logger.debug(`\n@${tweet.user.screen_name}: ${tweetText}`)
-    this.logger.debug(this.dots)
-    this.logger.debug(`matches: ${keywords}`)
-    this.logger.debug('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
-    this.logger.debug(`links: ${tweet.entities.urls.length} | lang: ${tweet.lang}`)
-    this.logger.debug(this.dots)
-    this.logger.debug(`@${tweet.user.screen_name}:`,
-      `tweets: ${tweet.user.statuses_count}`,
-      `| friends: ${tweet.user.friends_count}`,
-      `| followers: ${tweet.user.followers_count}`
-    )
-    this.logger.debug(tweet.user.description)
-    //this.logger.debug(tweet)
-  }
-
-  // log | for each RT to stdout
-  process.stdout.write('|')
+TwitterBot.prototype.logTweet = function (tweet) {
+  this.logger.debug(`\n@${tweet.user.screen_name}: ${tweet.fullText}`)
+  this.logger.debug(this.dots)
+  this.logger.debug(`matches: ${tweet.keywords}`)
+  this.logger.debug('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
+  this.logger.debug(`links: ${tweet.entities.urls.length} | lang: ${tweet.lang}`)
+  this.logger.debug(`sentiment: score=${tweet.sentiment.score} comparative=${tweet.sentiment.comparative}`)
+  this.logger.debug(this.dots)
+  this.logger.debug(`@${tweet.user.screen_name}:`,
+    `tweets: ${tweet.user.statuses_count}`,
+    `| friends: ${tweet.user.friends_count}`,
+    `| followers: ${tweet.user.followers_count}`
+  )
+  this.logger.debug(tweet.user.description)
+  //this.logger.debug(tweet)
 }
 
 
@@ -243,9 +266,12 @@ TwitterBot.prototype.retweet = function (tweet) {
       id: tweet.id_str
     })
     .then( response => {
-      this.logger.debug(this.dashes)
-      this.logger.debug(`>RT: @${tweet.user.screen_name}: ${tweet.text}`)
-      this.logger.debug(this.dashes)
+      if (this.logger.level.isEqualTo(DEBUG)) {
+        // log new RT
+        this.logger.debug(this.dashes)
+        this.logger.debug(`>RT: @${tweet.user.screen_name}: ${tweet.text}`)
+        this.logger.debug(this.dashes)
+      }
 
       // update hourly user quota
       const userQuota = this.retweets[tweet.user.screen_name]
@@ -255,18 +281,26 @@ TwitterBot.prototype.retweet = function (tweet) {
       else {
         this.retweets[tweet.user.screen_name]++ // increment
       }
+
       // update total hourly retweets counter
       this.retweetCount++
+
+      // log | for each RT to stdout
+      process.stdout.write('|')      
     })
     .catch(err => {
       this.logger.error('Failed to RT!', tweet)      
     })
   }
   else { // skip retweet due to hourly retweet quota reached
-    this.logger.debug(this.dashes)
-    this.logger.debug('Skipping RT: hourly retweet quota reached!')
-    this.logger.debug(`>skip RT: @${tweet.user.screen_name}: ${tweet.text}`)
-    this.logger.debug(this.dashes)
+    if (this.logger.level.isEqualTo(DEBUG)) {
+      this.logger.debug(this.dashes)
+      this.logger.debug('Skipping RT: hourly retweet quota reached!')
+      this.logger.debug(`>skip RT: @${tweet.user.screen_name}: ${tweet.text}`)
+      this.logger.debug(this.dashes)
+    }
+    // log - for skipped RT due to RT quota
+    process.stdout.write('-')
   }
 }
 
@@ -366,10 +400,13 @@ TwitterBot.prototype.listFollowers = function () {
  * Logs bot this.config.
  */
 TwitterBot.prototype.logConfig = function () {
-  this.logger.info('RT Filter:')
+  this.logger.info('Bot Config:')
   this.logger.info(this.dashes)
-  this.logger.info(this.config.track_keywords)
-  this.logger.info('search_query:', this.config.search_query)
+  this.logger.info('track_filter:', this.config.track_keywords)
+  this.logger.info('search_query:', this.config.search_query)      
+  this.logger.info('hashtags_filter:', this.config.hashtags_filter)
+  this.logger.info('filter_retweets:', this.config.filter_retweets)
+  this.logger.info('filter_replies:', this.config.filter_replies)
   this.logger.info('mute_tweet_filter:', this.config.mute_tweet_filter)
   this.logger.info('mute_user_filter:', this.config.mute_user_filter)
   this.logger.info('min_user_followers:', this.config.min_user_followers.toLocaleString())  
@@ -381,6 +418,8 @@ TwitterBot.prototype.logConfig = function () {
   this.logger.info('hourly_retweet_quota:', this.config.hourly_retweet_quota.toLocaleString())
   this.logger.info('like_mentions:', this.config.like_mentions)
   this.logger.info('language:', this.config.language)
+  this.logger.info('mode:', this.config.mode)
+  this.logger.info('🔹🔹🔹◽◽|🔸🔸◽◽◽')
 }
 
 
