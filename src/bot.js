@@ -89,6 +89,7 @@ TwitterBot.prototype.searchTweets = function() {
     q: this.config.search_query,
     count: 20, // max tweets to analyze every 15 minutes
     result_type: 'recent',
+    tweet_mode: 'extended',
     since_id: this.sinceTweetId,
     lang: this.config.language
   })
@@ -121,9 +122,14 @@ TwitterBot.prototype.processTweet = function (tweet) {
       (this.userChecksOut(tweet) && this.worthRT(tweet))) { // for straight up RT
 
     // get full tweet text
+    // see: https://developer.twitter.com/en/docs/tweets/tweet-updates for more info
     tweet.fullText = tweet.text
     if (tweet.truncated && tweet.extended_tweet !== undefined) {
       tweet.fullText = tweet.extended_tweet.full_text
+    } 
+    else if (tweet.full_text !== undefined) {
+      // get new extended tweet full_text from tweet json object directly
+      tweet.fullText = tweet.full_text
     }
 
     // get sentiment
