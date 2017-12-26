@@ -425,7 +425,7 @@ TwitterBot.prototype.logConfig = function () {
   this.logger.info('🔹🔹🔹◽◽|🔸🔸◽◽◽')
   // create and log sentiment test
   sentimentTest = sentiment(this.config.sentiment_test, {
-    'webpack': 5 // set 'webpack' word sentiment to max positive rating to boost RTs
+    //'webpack': 5 // set 'webpack' word sentiment to max positive rating to boost RTs
   })
   this.logger.info('sentiment_test:', this.config.sentiment_test)
   this.logger.info(`sentiment: score=${sentimentTest.score} comparative=${sentimentTest.comparative}`)
