@@ -125,7 +125,7 @@ TwitterBot.prototype.searchTweets = function() {
   this.logger.info('searching...')
   this.twitter.get('search/tweets', {
     q: this.config.search_query,
-    count: 2, // max tweets to analyze every 15 minutes
+    count: 3, // max tweets to analyze every 15 minutes
     result_type: 'recent',
     tweet_mode: 'extended',
     since_id: this.sinceTweetId,
@@ -206,7 +206,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
         // just retweeted it for 'breaking' news bots :)
       this.retweet(tweet)
     }
-    
+
   }
   else {
     // log . for skipped tweets
@@ -429,7 +429,7 @@ TwitterBot.prototype.quoteTweet = function (quoteText, tweet) {
     .then( response => {
       // log new quoted tweet
       this.logRetweet(quoteText, tweet)
-      this.logger.debug(`>${quotedText}: @${tweet.user.screen_name}: ${tweet.text}`)
+      this.logger.debug(`>${quoteText}: @${tweet.user.screen_name}: ${tweet.text}`)
 
       // update bot quotas
       this.updateQuotas(tweet)
