@@ -7,6 +7,11 @@ const INFO = 'info'
 const DEBUG = 'debug'
 const RATE = 'rate'
 
+// tweet rating emojis
+const POSITIVE = '🔹'
+const NEGATIVE = '🔸'
+const NEUTRAL = '◽'
+
 /**
  * Creates new Twitter bot instance.
  * 
@@ -170,6 +175,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
       'webpack': 5 // set 'webpack' word sentiment to max positive rating to boost RTs
     })
     tweet.sentiment.rating = Math.round(tweet.sentiment.comparative * 100 / 20) // for 5 start rating
+    tweet.sentiment.ratingText = this.getRatingText(tweet.sentiment.rating)
 
     // get matched/mute keywords
     tweet.keywords = this.getKeywordMatches(tweet.fullText, this.config.track_keywords)
@@ -274,6 +280,27 @@ TwitterBot.prototype.getKeywordMatches = function (text, keywords) {
 
 
 /**
+ * Gets tweet rating emojis text.
+ * 
+ * @param rating Integer tweet sentiment rating in -5,5 range.
+ */
+TwitterBot.prototype.getRatingText = function(rating) {
+  let ratingChar = rating >= 0 ? POSITIVE: NEGATIVE
+  let ratingText = ''
+  const absRating = Math.abs(rating)
+  for (let i=0; i<5; i++) { // for -5/+5 int ratings
+    if (absRating > i) {
+      ratingText += ratingChar
+    }
+    else {
+      ratingText += NEUTRAL
+    }
+  }
+  return ratingText
+}
+
+
+/**
  * Logs tweet text and stats.
  * 
  * @param tweet Tweet info to log
@@ -284,7 +311,8 @@ TwitterBot.prototype.logTweet = function (tweet) {
   this.logger.debug(`matches: ${tweet.keywords}`)
   this.logger.debug('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
   this.logger.debug(`links: ${tweet.entities.urls.length} | lang: ${tweet.lang}`)
-  this.logger.debug(`sentiment: rating=${tweet.sentiment.rating}`,
+  this.logger.debug(`sentiment: ${tweet.sentiment.ratingText}`,
+    `| rating=${tweet.sentiment.rating}`,
     `| score=${tweet.sentiment.score}`,
     `| comparative=${tweet.sentiment.comparative}`)
   this.logger.debug(this.dashes)
