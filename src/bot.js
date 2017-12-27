@@ -136,6 +136,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
     tweet.sentiment = sentiment(tweet.fullText, {
       'webpack': 5 // set 'webpack' word sentiment to max positive rating to boost RTs
     })
+    tweet.sentiment.rating = Math.round(tweet.sentiment.comparative * 100 / 20) // for 5 start rating
 
     // get matched/mute keywords
     tweet.keywords = this.getKeywordMatches(tweet.fullText, this.config.track_keywords)
@@ -250,7 +251,9 @@ TwitterBot.prototype.logTweet = function (tweet) {
   this.logger.debug(`matches: ${tweet.keywords}`)
   this.logger.debug('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
   this.logger.debug(`links: ${tweet.entities.urls.length} | lang: ${tweet.lang}`)
-  this.logger.debug(`sentiment: score=${tweet.sentiment.score} comparative=${tweet.sentiment.comparative}`)
+  this.logger.debug(`sentiment: rating=${tweet.sentiment.rating}`,
+    `| score=${tweet.sentiment.score}`,
+    `| comparative=${tweet.sentiment.comparative}`)
   this.logger.debug(this.dashes)
   this.logger.debug(`@${tweet.user.screen_name}:`,
     `tweets: ${tweet.user.statuses_count}`,
