@@ -422,14 +422,15 @@ TwitterBot.prototype.retweet = function (tweet) {
 TwitterBot.prototype.quoteTweet = function (quoteText, tweet) {
   if (this.retweetCount < this.config.hourly_retweet_quota) {
     // send quoted tweet
+    const quoteTweetUrl = `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`
     this.twitter.post('statuses/update', {
       status: tweet.sentiment.ratingEmojis,
-      attachment_url: `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`
+      attachment_url: quoteTweetUrl
     })
     .then( response => {
       // log new quoted tweet
       this.logRetweet(quoteText, tweet)
-      this.logger.debug(`>${quoteText}: @${tweet.user.screen_name}: ${tweet.text}`)
+      this.logger.info(`>${quoteText}: @${tweet.user.screen_name}: ${quoteTweetUrl}`)
 
       // update bot quotas
       this.updateQuotas(tweet)
