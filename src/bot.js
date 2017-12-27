@@ -176,7 +176,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
     })
     tweet.sentiment.rating = Math.round(tweet.sentiment.comparative * 100 / 20) // for 5 start rating
     tweet.sentiment.ratingText = this.getRatingText(tweet.sentiment.rating)
-
+    
     // get matched/mute keywords
     tweet.keywords = this.getKeywordMatches(tweet.fullText, this.config.track_keywords)
     tweet.muteKeywords = this.getKeywordMatches(tweet.fullText, this.config.mute_tweet_keywords)
@@ -301,12 +301,34 @@ TwitterBot.prototype.getRatingText = function(rating) {
 
 
 /**
+ * Writes tweet rating text to stdout.
+ * 
+ * @param rating Integer tweet sentiment rating in -5,5 range.
+ */
+TwitterBot.prototype.writeRatingText = function(rating) {
+  process.stdout.write('|')
+  let ratingChar = rating >= 0 ? '+': '-'
+  const absRating = Math.abs(rating)
+  for (let i=0; i<5; i++) { // for -5/+5 int ratings
+    if (absRating > i) {
+      process.stdout.write(ratingChar)
+    }
+    else {
+      process.stdout.write('.') // neutral
+    }
+  }  
+  process.stdout.write('|')
+}
+
+
+/**
  * Logs tweet text and stats.
  * 
  * @param tweet Tweet info to log
  */
 TwitterBot.prototype.logTweet = function (tweet) {
   this.logger.debug(`\n${this.line}\n${tweet.fullText}`)
+  this.writeRatingText(tweet.sentiment.rating)  
   this.logger.debug(this.dashes)
   this.logger.debug(`matches: ${tweet.keywords}`)
   this.logger.debug('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
