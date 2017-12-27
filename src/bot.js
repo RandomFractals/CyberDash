@@ -8,9 +8,9 @@ const DEBUG = 'debug'
 const RATE = 'rate'
 
 // tweet rating emojis
-const POSITIVE = '🔹'
-const NEGATIVE = '🔸'
-const NEUTRAL = '◽'
+const POSITIVE_EMOJI = '🔹'
+const NEGATIVE_EMOJI = '🔸'
+const NEUTRAL_EMOJI = '◽'
 
 /**
  * Creates new Twitter bot instance.
@@ -125,7 +125,7 @@ TwitterBot.prototype.searchTweets = function() {
   this.logger.info('searching...')
   this.twitter.get('search/tweets', {
     q: this.config.search_query,
-    count: 20, // max tweets to analyze every 15 minutes
+    count: 2, // max tweets to analyze every 15 minutes
     result_type: 'recent',
     tweet_mode: 'extended',
     since_id: this.sinceTweetId,
@@ -174,7 +174,10 @@ TwitterBot.prototype.processTweet = function (tweet) {
     tweet.sentiment = sentiment(tweet.fullText, {
       'webpack': 5 // set 'webpack' word sentiment to max positive rating to boost RTs
     })
-    tweet.sentiment.rating = Math.round(tweet.sentiment.comparative * 100 / 20) // for 5 start rating
+
+    // create tweet rating info
+    tweet.sentiment.rating = Math.round(tweet.sentiment.comparative * 100 / 20) // for 5 star rating
+    tweet.sentiment.ratingEmojis = this.getRatingEmojis(tweet.sentiment.rating)
     tweet.sentiment.ratingText = this.getRatingText(tweet.sentiment.rating)
     
     // get matched/mute keywords
@@ -195,8 +198,15 @@ TwitterBot.prototype.processTweet = function (tweet) {
         tweet.keywords.split(' ').length <= this.config.max_tweet_hashtags &&
         (this.config.hashtags_filter && tweet.hashtags && 
           tweet.hashtags.length <= this.config.max_tweet_hashtags) &&
-        this.logger.level.isGreaterThanOrEqualTo(INFO) ) { // RT only in info mode!        
-      this.retweet(tweet)
+        this.logger.level.isGreaterThanOrEqualTo(INFO) ) { // RT only in info mode!
+      if (this.config.mode == RATE) {
+        // send rated quote tweet
+        this.quoteTweet(tweet.sentiment.ratingEmojis, tweet)
+      }
+      else {
+        // just retweeted it for 'breaking' news bots :)
+        this.retweet(tweet)
+      }
     }
   }
   else {
@@ -284,16 +294,16 @@ TwitterBot.prototype.getKeywordMatches = function (text, keywords) {
  * 
  * @param rating Integer tweet sentiment rating in -5,5 range.
  */
-TwitterBot.prototype.getRatingText = function(rating) {
-  let ratingChar = rating >= 0 ? POSITIVE: NEGATIVE
+TwitterBot.prototype.getRatingEmojis = function(rating) {
   let ratingText = ''
+  let ratingChar = rating >= 0 ? POSITIVE_EMOJI: NEGATIVE_EMOJI
   const absRating = Math.abs(rating)
   for (let i=0; i<5; i++) { // for -5/+5 int ratings
     if (absRating > i) {
       ratingText += ratingChar
     }
     else {
-      ratingText += NEUTRAL
+      ratingText += NEUTRAL_EMOJI
     }
   }
   return ratingText
@@ -301,23 +311,23 @@ TwitterBot.prototype.getRatingText = function(rating) {
 
 
 /**
- * Writes tweet rating text to stdout.
+ * Gets console friendly tweet rating text.
  * 
  * @param rating Integer tweet sentiment rating in -5,5 range.
  */
-TwitterBot.prototype.writeRatingText = function(rating) {
-  process.stdout.write('|')
+TwitterBot.prototype.getRatingText = function(rating) {
+  let ratingText = '|'
   let ratingChar = rating >= 0 ? '+': '-'
   const absRating = Math.abs(rating)
   for (let i=0; i<5; i++) { // for -5/+5 int ratings
     if (absRating > i) {
-      process.stdout.write(ratingChar)
+      ratingText += ratingChar
     }
     else {
-      process.stdout.write('.') // neutral
+      ratingText += '.' // neutral
     }
   }  
-  process.stdout.write('|')
+  return ratingText + '|'
 }
 
 
@@ -328,7 +338,7 @@ TwitterBot.prototype.writeRatingText = function(rating) {
  */
 TwitterBot.prototype.logTweet = function (tweet) {
   this.logger.debug(`\n${this.line}\n${tweet.fullText}`)
-  this.writeRatingText(tweet.sentiment.rating)  
+  process.stdout.write(this.getRatingText(tweet.sentiment.rating))
   this.logger.debug(this.dashes)
   this.logger.debug(`matches: ${tweet.keywords}`)
   this.logger.debug('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
@@ -350,6 +360,22 @@ TwitterBot.prototype.logTweet = function (tweet) {
 
 
 /**
+ * Logs retweet or quoted tweet.
+ * 
+ * @param status Retweet status message
+ * @param tweet Tweet info to log
+ */
+TwitterBot.prototype.logRetweet = function (status, tweet) {
+  if (this.logger.level.isEqualTo(DEBUG)) {
+    // log new RT
+    this.logger.debug(this.dashes)
+    this.logger.debug(`>${status}: @${tweet.user.screen_name}: ${tweet.text}`)
+    this.logger.debug(this.dashes)
+  }
+}
+
+
+/**
  * Retweets a given tweet.
  * 
  * @param tweet Tweet to retweet
@@ -361,24 +387,11 @@ TwitterBot.prototype.retweet = function (tweet) {
       id: tweet.id_str
     })
     .then( response => {
-      if (this.logger.level.isEqualTo(DEBUG)) {
-        // log new RT
-        this.logger.debug(this.dashes)
-        this.logger.debug(`>RT: @${tweet.user.screen_name}: ${tweet.text}`)
-        this.logger.debug(this.dashes)
-      }
+      // log new RT
+      this.logRetweet('RT', tweet)
 
-      // update hourly user quota
-      const userQuota = this.retweets[tweet.user.screen_name]
-      if (userQuota === undefined) {
-        this.retweets[tweet.user.screen_name] = 1 // first RT
-      }
-      else {
-        this.retweets[tweet.user.screen_name]++ // increment
-      }
-
-      // update total hourly retweets counter
-      this.retweetCount++
+      // update bot quotas
+      this.updateQuotas(tweet)
 
       // log | for each RT to stdout
       process.stdout.write('|')      
@@ -389,14 +402,73 @@ TwitterBot.prototype.retweet = function (tweet) {
   }
   else { // skip retweet due to hourly retweet quota reached
     if (this.logger.level.isEqualTo(DEBUG)) {
-      this.logger.debug(this.dashes)
       this.logger.debug('Skipping RT: hourly retweet quota reached!')
-      this.logger.debug(`>skip RT: @${tweet.user.screen_name}: ${tweet.text}`)
-      this.logger.debug(this.dashes)
+      this.logRetweet('skip RT', tweet)
     }
     // log - for skipped RT due to RT quota
     process.stdout.write('-')
   }
+} // end of retweet()
+
+
+/**
+ * Sends quoted tweet status update using
+ * new attachment_url param for the quoted tweet.
+ * 
+ * see: https://developer.twitter.com/en/docs/tweets/tweet-updates for more info.
+ * 
+ * @param quoteText Tweet text for the quoted tweet
+ * @param tweet Quoted tweet
+ */
+TwitterBot.prototype.quoteTweet = function (quoteText, tweet) {
+  if (this.retweetCount < this.config.hourly_retweet_quota) {
+    // send quoted tweet
+    this.twitter.post('statuses/update', {
+      text: tweet.sentiment.ratingEmojis,
+      attachment_url: `https://twitter.com/${tweet.user.screen_name}/${tweet.id_str}`
+    })
+    .then( response => {
+      // log new quoted tweet
+      this.logRetweet(quoteText, tweet)
+
+      // update bot quotas
+      this.updateQuotas(tweet)
+
+      // log | for each RT to stdout
+      process.stdout.write('|')      
+    })
+    .catch(err => {
+      this.logger.error('Failed to RT!', tweet)      
+    })
+  }
+  else { // skip retweet due to hourly retweet quota reached
+    if (this.logger.level.isEqualTo(DEBUG)) {
+      this.logger.debug('Skipping RT: hourly retweet quota reached!')
+      this.logRetweet('skip RT', tweet)
+    }
+    // log - for skipped RT due to RT quota
+    process.stdout.write('-')
+  }
+} // end of quoteTweet()
+
+
+/**
+ * Updates bot tweets quotas.
+ * 
+ * @param tweet Last sent tweet to update bot tweets quotas.
+ */
+TwitterBot.prototype.updateQuotas = function (tweet) {
+  // update hourly user quota
+  const userQuota = this.retweets[tweet.user.screen_name]
+  if (userQuota === undefined) {
+    this.retweets[tweet.user.screen_name] = 1 // first RT
+  }
+  else {
+    this.retweets[tweet.user.screen_name]++ // increment
+  }
+
+  // update total hourly retweets counter
+  this.retweetCount++
 }
 
 
