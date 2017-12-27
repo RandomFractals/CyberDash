@@ -79,6 +79,39 @@ const TwitterBot = function (botConfig) {
 
 
 /**
+ * Logs bot this.config.
+ */
+TwitterBot.prototype.logConfig = function () {
+  this.logger.info('Bot Config:')
+  this.logger.info(this.dashes)
+  this.logger.info('track_filter:', this.config.track_keywords)
+  this.logger.info('search_query:', this.config.search_query)      
+  this.logger.info('hashtags_filter:', this.config.hashtags_filter)
+  this.logger.info('filter_retweets:', this.config.filter_retweets)
+  this.logger.info('filter_replies:', this.config.filter_replies)
+  this.logger.info('mute_tweet_filter:', this.config.mute_tweet_filter)
+  this.logger.info('mute_user_filter:', this.config.mute_user_filter)
+  this.logger.info('min_user_followers:', this.config.min_user_followers.toLocaleString())  
+  this.logger.info('max_user_friends:', this.config.max_user_friends.toLocaleString())  
+  this.logger.info('min_user_tweets:', this.config.min_user_tweets.toLocaleString())
+  this.logger.info('max_user_tweets:', this.config.max_user_tweets.toLocaleString())
+  this.logger.info('max_tweet_hashtags:', this.config.max_tweet_hashtags.toLocaleString())
+  this.logger.info('hourly_user_quota:', this.config.hourly_user_quota.toLocaleString())
+  this.logger.info('hourly_retweet_quota:', this.config.hourly_retweet_quota.toLocaleString())
+  this.logger.info('like_mentions:', this.config.like_mentions)
+  this.logger.info('language:', this.config.language)
+  this.logger.info('mode:', this.config.mode)
+  this.logger.info('🔹🔹🔹◽◽|🔸🔸◽◽◽')
+  // create and log sentiment test
+  sentimentTest = sentiment(this.config.sentiment_test, {
+    //'webpack': 5 // set 'webpack' word sentiment to max positive rating to boost RTs
+  })
+  this.logger.info('sentiment_test:', this.config.sentiment_test)
+  this.logger.info(`sentiment: score=${sentimentTest.score} comparative=${sentimentTest.comparative}`)
+}
+
+
+/**
  * Searches Twitter for matching tweets to RT.
  * 
  * See: https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets.html
@@ -405,39 +438,6 @@ TwitterBot.prototype.listFollowers = function () {
   .catch( err => {
     this.logger.error('Failed to get followers/list', err)    
   })
-}
-
-
-/**
- * Logs bot this.config.
- */
-TwitterBot.prototype.logConfig = function () {
-  this.logger.info('Bot Config:')
-  this.logger.info(this.dashes)
-  this.logger.info('track_filter:', this.config.track_keywords)
-  this.logger.info('search_query:', this.config.search_query)      
-  this.logger.info('hashtags_filter:', this.config.hashtags_filter)
-  this.logger.info('filter_retweets:', this.config.filter_retweets)
-  this.logger.info('filter_replies:', this.config.filter_replies)
-  this.logger.info('mute_tweet_filter:', this.config.mute_tweet_filter)
-  this.logger.info('mute_user_filter:', this.config.mute_user_filter)
-  this.logger.info('min_user_followers:', this.config.min_user_followers.toLocaleString())  
-  this.logger.info('max_user_friends:', this.config.max_user_friends.toLocaleString())  
-  this.logger.info('min_user_tweets:', this.config.min_user_tweets.toLocaleString())
-  this.logger.info('max_user_tweets:', this.config.max_user_tweets.toLocaleString())
-  this.logger.info('max_tweet_hashtags:', this.config.max_tweet_hashtags.toLocaleString())
-  this.logger.info('hourly_user_quota:', this.config.hourly_user_quota.toLocaleString())
-  this.logger.info('hourly_retweet_quota:', this.config.hourly_retweet_quota.toLocaleString())
-  this.logger.info('like_mentions:', this.config.like_mentions)
-  this.logger.info('language:', this.config.language)
-  this.logger.info('mode:', this.config.mode)
-  this.logger.info('🔹🔹🔹◽◽|🔸🔸◽◽◽')
-  // create and log sentiment test
-  sentimentTest = sentiment(this.config.sentiment_test, {
-    //'webpack': 5 // set 'webpack' word sentiment to max positive rating to boost RTs
-  })
-  this.logger.info('sentiment_test:', this.config.sentiment_test)
-  this.logger.info(`sentiment: score=${sentimentTest.score} comparative=${sentimentTest.comparative}`)
 }
 
 
