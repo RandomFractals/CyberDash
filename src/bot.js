@@ -157,7 +157,7 @@ TwitterBot.prototype.searchTweets = function() {
  */
 TwitterBot.prototype.processTweet = function (tweet) {
   if ((this.rateRT && tweet.lang === this.config.language) || // for tweets rating
-      (this.userChecksOut(tweet) && this.worthRT(tweet))) { // for straight up RT
+      (this.userChecksOut(tweet) && this.worthRT(tweet)) ) { // for straight up RT
 
     // get full tweet text
     // see: https://developer.twitter.com/en/docs/tweets/tweet-updates for more info
@@ -192,22 +192,21 @@ TwitterBot.prototype.processTweet = function (tweet) {
       this.logTweet(tweet)
     }
 
+    if (this.config.mode === RATE) {
+      // send rated quote tweet
+      this.quoteTweet(tweet.sentiment.ratingEmojis, tweet)
+    } 
     // run last keywords and hashtags checks for RT
-    if (tweet.muteKeywords.length <= 0 &&
+    else if (tweet.muteKeywords.length <= 0 &&
         tweet.keywords.length > 0 &&
         tweet.keywords.split(' ').length <= this.config.max_tweet_hashtags &&
         (this.config.hashtags_filter && tweet.hashtags && 
           tweet.hashtags.length <= this.config.max_tweet_hashtags) &&
         this.logger.level.isGreaterThanOrEqualTo(INFO) ) { // RT only in info mode!
-      if (this.config.mode == RATE) {
-        // send rated quote tweet
-        this.quoteTweet(tweet.sentiment.ratingEmojis, tweet)
-      }
-      else {
         // just retweeted it for 'breaking' news bots :)
-        this.retweet(tweet)
-      }
+      this.retweet(tweet)
     }
+    
   }
   else {
     // log . for skipped tweets
@@ -424,21 +423,22 @@ TwitterBot.prototype.quoteTweet = function (quoteText, tweet) {
   if (this.retweetCount < this.config.hourly_retweet_quota) {
     // send quoted tweet
     this.twitter.post('statuses/update', {
-      text: tweet.sentiment.ratingEmojis,
-      attachment_url: `https://twitter.com/${tweet.user.screen_name}/${tweet.id_str}`
+      status: tweet.sentiment.ratingEmojis,
+      attachment_url: `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`
     })
     .then( response => {
       // log new quoted tweet
       this.logRetweet(quoteText, tweet)
+      this.logger.debug(`>${quotedText}: @${tweet.user.screen_name}: ${tweet.text}`)
 
       // update bot quotas
       this.updateQuotas(tweet)
 
       // log | for each RT to stdout
-      process.stdout.write('|')      
+      process.stdout.write('|')
     })
     .catch(err => {
-      this.logger.error('Failed to RT!', tweet)      
+      this.logger.error('Failed to send quoted tweet!', err)
     })
   }
   else { // skip retweet due to hourly retweet quota reached
