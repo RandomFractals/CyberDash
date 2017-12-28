@@ -125,7 +125,7 @@ TwitterBot.prototype.searchTweets = function() {
   this.logger.info('searching...')
   this.twitter.get('search/tweets', {
     q: this.config.search_query,
-    count: 3, // max tweets to analyze every 15 minutes
+    count: 1, // max tweets to analyze every 15 minutes
     result_type: 'recent',
     tweet_mode: 'extended',
     since_id: this.sinceTweetId,
@@ -252,7 +252,7 @@ TwitterBot.prototype.updateTweet = function (tweet) {
  */
 TwitterBot.prototype.worthRT = function (tweet) {
   // check tweet stats
-  return (tweet.user.isFriend || tweet.links.length > 0) && // RT friends and tweets with links
+  return (tweet.user.isFriend || tweet.links.length > 0 || this.rateRT) && // RT friends and tweets with links
     tweet.hashtagsCount <= this.config.max_tweet_hashtags && // not too spammy
     !tweet.skipRT && !tweet.skipReply &&
     tweet.lang === this.config.language // skip foreign lang tweets
