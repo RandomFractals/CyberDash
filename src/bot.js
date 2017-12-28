@@ -271,7 +271,7 @@ TwitterBot.prototype.matchesKeywords = function (tweet) {
     tweet.keywords.split(' ').length <= this.config.max_tweet_hashtags &&
     (!this.config.hashtags_filter || 
       (this.config.hashtags_filter && tweet.hashtags && 
-      tweet.hashtags.length <= this.config.max_tweet_hashtags) ) )
+        tweet.hashtags.length <= this.config.max_tweet_hashtags) ) )
 }
 
 
@@ -409,16 +409,22 @@ TwitterBot.prototype.logTweet = function (tweet) {
     this.logger.debug(this.dashes)
     this.logger.debug(`matches: ${tweet.keywords}`)
     this.logger.debug('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
-    this.logger.debug(`links: ${tweet.entities.urls.length} | lang: ${tweet.lang}`)
+    this.logger.debug(`links: ${tweet.links.length}`,
+      `| isRetweet: ${tweet.isRetweet}`,
+      `| isReply: ${tweet.isReply}`,
+      `| lang: ${tweet.lang}`)
     this.logger.debug(`sentiment: ${tweet.sentiment.ratingText}`,
-      `| rating=${tweet.sentiment.rating}`,
+      `rating=${tweet.sentiment.rating}`,
       `| score=${tweet.sentiment.score}`,
       `| comparative=${tweet.sentiment.comparative}`)
     this.logger.debug(this.dashes)
     this.logger.debug(`@${tweet.user.screen_name}:`,
       `tweets: ${tweet.user.statuses_count}`,
       `| friends: ${tweet.user.friends_count}`,
-      `| followers: ${tweet.user.followers_count}`
+      `| followers: ${tweet.user.followers_count}`,
+      `| isFriend: ${tweet.user.isFriend}`,
+      `| blacklisted: ${tweet.user.blacklisted}`,
+      `| muted: ${tweet.user.muted}`
     )
     this.logger.debug(this.dashes)  
     this.logger.debug(tweet.user.description)
