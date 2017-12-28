@@ -112,7 +112,7 @@ TwitterBot.prototype.logConfig = function () {
     //'webpack': 5 // set 'webpack' word sentiment to max positive rating to boost RTs
   })
   this.logger.info('sentiment_test:', this.config.sentiment_test)
-  this.logger.info(`sentiment: score=${sentimentTest.score} comparative=${sentimentTest.comparative}`)
+  this.logger.info(`sentiment: score:${sentimentTest.score} | comparative:${sentimentTest.comparative}`)
 }
 
 
@@ -156,64 +156,38 @@ TwitterBot.prototype.searchTweets = function() {
  * @param tweet Tweet json object
  */
 TwitterBot.prototype.processTweet = function (tweet) {
-  if ((this.rateRT && tweet.lang === this.config.language) || // for tweets rating
-      (this.userChecksOut(tweet) && this.worthRT(tweet)) ) { // for straight up RT
+  if (this.userChecksOut(tweet) && this.worthRT(tweet) ) { // for straight up RT
 
     // get full tweet text
-    // see: https://developer.twitter.com/en/docs/tweets/tweet-updates for more info
-    tweet.fullText = tweet.text
-    if (tweet.truncated && tweet.extended_tweet !== undefined) {
-      tweet.fullText = tweet.extended_tweet.full_text
-    } 
-    else if (tweet.full_text !== undefined) {
-      // get new extended tweet full_text from tweet json object directly
-      tweet.fullText = tweet.full_text
-    }
+    tweet.fullText = this.getFullText(tweet)
 
-    // get sentiment
-    tweet.sentiment = sentiment(tweet.fullText, {
-      'webpack': 5 // set 'webpack' word sentiment to max positive rating to boost RTs
-    })
-
-    // create tweet rating info
-    tweet.sentiment.rating = Math.round(tweet.sentiment.comparative * 100 / 20) // for 5 star rating
-    tweet.sentiment.ratingEmojis = this.getRatingEmojis(tweet.sentiment.rating)
-    tweet.sentiment.ratingText = this.getRatingText(tweet.sentiment.rating)
+    // get tweet text sentiment and rating text and emojis for tweet rating RT
+    tweet.sentiment = this.getSentiment(tweet)
     
-    // get matched/mute keywords
-    tweet.keywords = this.getKeywordMatches(tweet.fullText, this.config.track_keywords)
-    tweet.muteKeywords = this.getKeywordMatches(tweet.fullText, this.config.mute_tweet_keywords)
+    // update matched/mute keywords and hashtags
+    this.updateKeywords(tweet)
 
-    // extract all hashtags from full tweet text
-    // b/c tweet.entities.hashtags are iffy and finicky sometimes :)
-    tweet.hashtags = tweet.fullText.match(this.hashtagsRegEx)
+    // log enriched tweet stats for debug
+    this.logTweet(tweet)
 
-    if (this.logger.level.isEqualTo(DEBUG)) {
-      this.logTweet(tweet)
-    }
-
-    if (this.config.mode === RATE) {
-      // send rated quote tweet
-      this.quoteTweet(tweet.sentiment.ratingEmojis, tweet)
-    } 
-    // run last keywords and hashtags checks for RT
-    else if (tweet.muteKeywords.length <= 0 &&
-        tweet.keywords.length > 0 &&
-        tweet.keywords.split(' ').length <= this.config.max_tweet_hashtags &&
-        (this.config.hashtags_filter && tweet.hashtags && 
-          tweet.hashtags.length <= this.config.max_tweet_hashtags) &&
+    // run last keywords and hashtags checks
+    if (this.matchesKeywords(tweet) &&
         this.logger.level.isGreaterThanOrEqualTo(INFO) ) { // RT only in info mode!
+      if (this.config.mode === RATE) {
+        // send rated quote tweet
+        this.quoteTweet(tweet.sentiment.ratingEmojis, tweet)
+      } 
+      else {
         // just retweeted it for 'breaking' news bots :)
-      this.retweet(tweet)
-    }
+        this.retweet(tweet)
+      }
+    } // end of keywords check
 
   }
-  else {
+  else { // did not pass configured user and tweet filters
     // log . for skipped tweets
     process.stdout.write('.')
-    if (this.logger.level.isEqualTo(DEBUG)) {
-      this.logger.debug(`\n@${tweet.user.screen_name}: ${tweet.text}`)
-    }
+    this.logger.debug(`\n-@${tweet.user.screen_name}: ${tweet.text}`)
   }
 } // end of processTweet(tweet)
 
@@ -264,6 +238,81 @@ TwitterBot.prototype.worthRT = function (tweet) {
     hashtagsCount <= this.config.max_tweet_hashtags && // not too spammy
     !skipRT && !skipReply &&
     tweet.lang === this.config.language // skip foreign lang tweets
+}
+
+
+/**
+ * Checks a tweet for matching track filter keywords, mute keywords and hashtags limits.
+ * 
+ * @param tweet Tweet to inspect with injected keywords and hashtags.
+ */
+TwitterBot.prototype.matchesKeywords = function (tweet) {
+  return (
+    tweet.muteKeywords.length <= 0 &&
+    tweet.keywords.length > 0 &&
+    tweet.keywords.split(' ').length <= this.config.max_tweet_hashtags &&
+    (!this.config.hashtags_filter || 
+      (this.config.hashtags_filter && tweet.hashtags && 
+      tweet.hashtags.length <= this.config.max_tweet_hashtags) ) )
+}
+
+
+/**
+ * Extracts full tweet text for normal and extended tweets.
+ * 
+ * see: https://developer.twitter.com/en/docs/tweets/tweet-updates for more info
+ * 
+ * @param tweet Tweet to get full text from.
+ */
+TwitterBot.prototype.getFullText = function (tweet) {
+  // get full tweet text
+  let fullText = tweet.text
+  if (tweet.truncated && tweet.extended_tweet !== undefined) {
+    fullText = tweet.extended_tweet.full_text
+  } 
+  else if (tweet.full_text !== undefined) {
+    // get new extended tweet full_text from tweet json object directly
+    fullText = tweet.full_text
+  }
+  return fullText
+}
+
+
+/**
+ * Gets tweet text sentiment and rating text and emojis.
+ * 
+ * @param tweet Tweet to get sentiment info for.
+ * 
+ * Note: this could be extended later to boost tweets from whitelisted friends,
+ * or users with good standing and great following.
+ */
+TwitterBot.prototype.getSentiment = function (tweet) {
+  let tweetSentiment = sentiment(tweet.fullText, {
+    // TODO: use track filter keywords from config here and boost all of them?
+    'webpack': 5 // set 'webpack' word sentiment to max positive rating to boost RTs
+  })
+
+  // create tweet rating info
+  tweetSentiment.rating = Math.round(tweetSentiment.comparative * 100 / 20) // for 5 star rating
+  tweetSentiment.ratingEmojis = this.getRatingEmojis(tweetSentiment.rating)
+  tweetSentiment.ratingText = this.getRatingText(tweetSentiment.rating)
+  return tweetSentiment
+}
+
+
+/**
+ * Updates a tweet with matched track filter, mute keywords, and hashtags.
+ * 
+ * @param tweet Tweet to update matched keywords for.
+ */
+TwitterBot.prototype.updateKeywords = function (tweet) {
+  // get matched/mute keywords
+  tweet.keywords = this.getKeywordMatches(tweet.fullText, this.config.track_keywords)
+  tweet.muteKeywords = this.getKeywordMatches(tweet.fullText, this.config.mute_tweet_keywords)
+
+  // extract all hashtags from full tweet text
+  // b/c tweet.entities.hashtags are iffy and finicky sometimes :)
+  tweet.hashtags = tweet.fullText.match(this.hashtagsRegEx)
 }
 
 
@@ -336,25 +385,27 @@ TwitterBot.prototype.getRatingText = function(rating) {
  * @param tweet Tweet info to log
  */
 TwitterBot.prototype.logTweet = function (tweet) {
-  this.logger.debug(`\n${this.line}\n${tweet.fullText}`)
-  process.stdout.write(this.getRatingText(tweet.sentiment.rating))
-  this.logger.debug(this.dashes)
-  this.logger.debug(`matches: ${tweet.keywords}`)
-  this.logger.debug('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
-  this.logger.debug(`links: ${tweet.entities.urls.length} | lang: ${tweet.lang}`)
-  this.logger.debug(`sentiment: ${tweet.sentiment.ratingText}`,
-    `| rating=${tweet.sentiment.rating}`,
-    `| score=${tweet.sentiment.score}`,
-    `| comparative=${tweet.sentiment.comparative}`)
-  this.logger.debug(this.dashes)
-  this.logger.debug(`@${tweet.user.screen_name}:`,
-    `tweets: ${tweet.user.statuses_count}`,
-    `| friends: ${tweet.user.friends_count}`,
-    `| followers: ${tweet.user.followers_count}`
-  )
-  this.logger.debug(this.dashes)  
-  this.logger.debug(tweet.user.description)
-  //this.logger.debug(tweet)
+  if (this.logger.level.isEqualTo(DEBUG)) {  
+    this.logger.debug(`\n${this.line}\n${tweet.fullText}`)
+    process.stdout.write(this.getRatingText(tweet.sentiment.rating))
+    this.logger.debug(this.dashes)
+    this.logger.debug(`matches: ${tweet.keywords}`)
+    this.logger.debug('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
+    this.logger.debug(`links: ${tweet.entities.urls.length} | lang: ${tweet.lang}`)
+    this.logger.debug(`sentiment: ${tweet.sentiment.ratingText}`,
+      `| rating=${tweet.sentiment.rating}`,
+      `| score=${tweet.sentiment.score}`,
+      `| comparative=${tweet.sentiment.comparative}`)
+    this.logger.debug(this.dashes)
+    this.logger.debug(`@${tweet.user.screen_name}:`,
+      `tweets: ${tweet.user.statuses_count}`,
+      `| friends: ${tweet.user.friends_count}`,
+      `| followers: ${tweet.user.followers_count}`
+    )
+    this.logger.debug(this.dashes)  
+    this.logger.debug(tweet.user.description)
+    //this.logger.debug(tweet)
+  }
 }
 
 
