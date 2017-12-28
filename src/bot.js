@@ -231,7 +231,7 @@ TwitterBot.prototype.userChecksOut = function (user) {
  * Injects our custom bot tweet checks props 
  * into original tweet json data model.
  * 
- * @param user Tweet to update.
+ * @param tweet Tweet to update.
  */
 TwitterBot.prototype.updateTweet = function (tweet) {
   // set tweet full text, retweet, reply and hashtags count props
