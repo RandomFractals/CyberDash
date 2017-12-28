@@ -173,7 +173,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
     // log enriched tweet stats for debug
     this.logTweet(tweet)
 
-    // 3rd: run last keywords and hashtags checks
+    // 4th: run last keywords and hashtags checks
     if (this.matchesKeywords(tweet) &&
         this.logger.level.isGreaterThanOrEqualTo(INFO) ) { // RT only in info mode!
       if (this.config.mode === RATE) {
