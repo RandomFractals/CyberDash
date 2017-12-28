@@ -159,11 +159,12 @@ TwitterBot.prototype.processTweet = function (tweet) {
   // 1st: friends and family coat check :)
   this.updateUser(tweet.user)
 
-  // 2nd: extract full tweet text
-  tweet.fullText = this.getFullText(tweet)
-  if (this.userChecksOut(tweet.user) && this.worthRT(tweet) ) { // for straight up RT
+  // 2nd: tweet augmentation
+  this.updateTweet(tweet)
 
-    // get tweet text sentiment and rating text and emojis for tweet rating RT
+  // 3rd: RT checks
+  if (this.userChecksOut(tweet.user) && this.worthRT(tweet) ) {
+    // get tweet sentiment and rating text info
     tweet.sentiment = this.getSentiment(tweet)
     
     // update matched/mute keywords and hashtags
@@ -227,20 +228,33 @@ TwitterBot.prototype.userChecksOut = function (user) {
 
 
 /**
+ * Injects our custom bot tweet checks props 
+ * into original tweet json data model.
+ * 
+ * @param user Tweet to update.
+ */
+TwitterBot.prototype.updateTweet = function (tweet) {
+  // set tweet full text, retweet, reply and hashtags count props
+  tweet.fullText = this.getFullText(tweet)  
+  tweet.isRetweet = (tweet.retweeted_status !== undefined || tweet.fullText.startsWith('RT '))
+  tweet.isReply = (tweet.in_reply_to_status_id_str !== null)
+  tweet.skipRT = this.config.filter_retweets ? tweet.isRetweet: false
+  tweet.skipReply = this.config.filter_replies ? tweet.isReply: false
+  tweet.hashtagsCount = tweet.entities.hashtags.length
+  tweet.links = tweet.entities.urls
+}
+
+
+/**
  * Checks if a tweet is worth RTing.
  * 
  * @param tweet Tweet to check for RT.
  */
 TwitterBot.prototype.worthRT = function (tweet) {
   // check tweet stats
-  const isRetweet = (tweet.retweeted_status !== undefined || tweet.fullText.startsWith('RT '))
-  const isReply = (tweet.in_reply_to_status_id_str !== null)
-  const skipRT = this.config.filter_retweets ? isRetweet: false
-  const skipReply = this.config.filter_replies ? isReply: false
-  const hashtagsCount = tweet.entities.hashtags.length
-  return (tweet.user.isFriend || tweet.entities.urls.length > 0) && // RT friends and tweets with links
-    hashtagsCount <= this.config.max_tweet_hashtags && // not too spammy
-    !skipRT && !skipReply &&
+  return (tweet.user.isFriend || tweet.links.length > 0) && // RT friends and tweets with links
+    tweet.hashtagsCount <= this.config.max_tweet_hashtags && // not too spammy
+    !tweet.skipRT && !tweet.skipReply &&
     tweet.lang === this.config.language // skip foreign lang tweets
 }
 
