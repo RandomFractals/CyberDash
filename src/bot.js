@@ -39,7 +39,7 @@ const TwitterBot = function (botConfig) {
   // set rate RT flag
   this.rateRT = (this.config.mode === RATE)
 
-  // create log and tweet parse vars
+  // create tweet log and parse vars
   this.dashes = '------------------------------'  
   this.dots = '...'
   this.line = this.dashes + this.dashes + this.dashes
@@ -84,7 +84,7 @@ const TwitterBot = function (botConfig) {
 
 
 /**
- * Logs bot this.config.
+ * Logs bot config.
  */
 TwitterBot.prototype.logConfig = function () {
   this.logger.info('Bot Config:')
@@ -109,7 +109,7 @@ TwitterBot.prototype.logConfig = function () {
   this.logger.info('🔹🔹🔹◽◽|🔸🔸◽◽◽')
   // create and log sentiment test
   sentimentTest = sentiment(this.config.sentiment_test, {
-    //'webpack': 5 // set 'webpack' word sentiment to max positive rating to boost RTs
+    // TODO: use track filter keywords from config here and boost all of them?
   })
   this.logger.info('sentiment_test:', this.config.sentiment_test)
   this.logger.info(`sentiment: score:${sentimentTest.score} | comparative:${sentimentTest.comparative}`)
@@ -156,10 +156,9 @@ TwitterBot.prototype.searchTweets = function() {
  * @param tweet Tweet json object
  */
 TwitterBot.prototype.processTweet = function (tweet) {
+  // get full tweet text 1st
+  tweet.fullText = this.getFullText(tweet)
   if (this.userChecksOut(tweet) && this.worthRT(tweet) ) { // for straight up RT
-
-    // get full tweet text
-    tweet.fullText = this.getFullText(tweet)
 
     // get tweet text sentiment and rating text and emojis for tweet rating RT
     tweet.sentiment = this.getSentiment(tweet)
@@ -187,7 +186,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
   else { // did not pass configured user and tweet filters
     // log . for skipped tweets
     process.stdout.write('.')
-    this.logger.debug(`\n-@${tweet.user.screen_name}: ${tweet.text}`)
+    this.logger.debug(`\n-@${tweet.user.screen_name}: ${tweet.fullText}`)
   }
 } // end of processTweet(tweet)
 
