@@ -156,9 +156,12 @@ TwitterBot.prototype.searchTweets = function() {
  * @param tweet Tweet json object
  */
 TwitterBot.prototype.processTweet = function (tweet) {
-  // get full tweet text 1st
+  // 1st: friends and family coat check :)
+  this.updateUser(tweet.user)
+
+  // 2nd: extract full tweet text
   tweet.fullText = this.getFullText(tweet)
-  if (this.userChecksOut(tweet) && this.worthRT(tweet) ) { // for straight up RT
+  if (this.userChecksOut(tweet.user) && this.worthRT(tweet) ) { // for straight up RT
 
     // get tweet text sentiment and rating text and emojis for tweet rating RT
     tweet.sentiment = this.getSentiment(tweet)
@@ -169,7 +172,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
     // log enriched tweet stats for debug
     this.logTweet(tweet)
 
-    // run last keywords and hashtags checks
+    // 3rd: run last keywords and hashtags checks
     if (this.matchesKeywords(tweet) &&
         this.logger.level.isGreaterThanOrEqualTo(INFO) ) { // RT only in info mode!
       if (this.config.mode === RATE) {
@@ -192,31 +195,34 @@ TwitterBot.prototype.processTweet = function (tweet) {
 
 
 /**
+ * Injects our custom bot user checks props 
+ * into original tweet.user json data model.
+ * 
+ * @param user Tweet user to update.
+ */
+TwitterBot.prototype.updateUser = function (user) {
+  // set whitelisted, blacklisted, muted, and user retweet quota props
+  user.isFriend = (this.whitelist[user.screen_name] !== undefined)
+  user.blacklisted = (this.blacklist[user.screen_name] !== undefined)
+  user.retweetQuotaExceeded = (this.retweets[user.screen_name] !== undefined &&
+    this.retweets[user.screen_name] >= this.config.hourly_user_quota)
+  user.muted = this.getKeywordMatches(user.description, this.config.mute_user_keywords).length > 0
+}
+
+
+/**
  * Checks user stats.
  * 
- * @param tweet Tweet with user stats.
+ * @param user Tweet user stats.
  */
-TwitterBot.prototype.userChecksOut = function (tweet) {
-  // check user stats
-  const isFriend = (this.whitelist[tweet.user.screen_name] !== undefined)
-  const blacklisted = (this.blacklist[tweet.user.screen_name] !== undefined)
-  const userQuotaExceeded = (this.retweets[tweet.user.screen_name] !== undefined &&
-    this.retweets[tweet.user.screen_name] >= this.config.hourly_user_quota)
-
-  const muteUser = (
-    this.getKeywordMatches(
-      tweet.user.description, 
-      this.config.mute_user_keywords
-    ).length > 0
-  )
-
-  return (isFriend && !blacklisted && !userQuotaExceeded) || // friends can be blacklisted :(
-    (!blacklisted && !muteUser && !userQuotaExceeded &&
-      !tweet.user.verified && // skip verified 'unknown' users for now
-      tweet.user.followers_count >= this.config.min_user_followers && // min required for 'unknown' tweeps
-      tweet.user.friends_count <= this.config.max_user_friends && // skip tweets from tweeps that follow the universe
-      tweet.user.statuses_count >= this.config.min_user_tweets && // min required for 'unknown' user to RT
-      tweet.user.statuses_count <= this.config.max_user_tweets) // most likely just another Twitter bot
+TwitterBot.prototype.userChecksOut = function (user) {
+  return (user.isFriend && !user.blacklisted && !user.retweetQuotaExceeded) || // friends can be blacklisted :(
+    (!user.blacklisted && !user.muted && !user.retweetQuotaExceeded &&
+      !user.verified && // skip verified 'unknown' users for now
+      user.followers_count >= this.config.min_user_followers && // min required for 'unknown' tweeps
+      user.friends_count <= this.config.max_user_friends && // skip tweets from tweeps that follow the universe
+      user.statuses_count >= this.config.min_user_tweets && // min required for 'unknown' user to RT
+      user.statuses_count <= this.config.max_user_tweets) // most likely just another Twitter bot
 }
 
 
@@ -227,13 +233,12 @@ TwitterBot.prototype.userChecksOut = function (tweet) {
  */
 TwitterBot.prototype.worthRT = function (tweet) {
   // check tweet stats
-  const isFriend = (this.whitelist[tweet.user.screen_name] !== undefined)  
-  const isRetweet = (tweet.retweeted_status !== undefined || tweet.text.startsWith('RT '))
+  const isRetweet = (tweet.retweeted_status !== undefined || tweet.fullText.startsWith('RT '))
   const isReply = (tweet.in_reply_to_status_id_str !== null)
   const skipRT = this.config.filter_retweets ? isRetweet: false
   const skipReply = this.config.filter_replies ? isReply: false
   const hashtagsCount = tweet.entities.hashtags.length
-  return (isFriend || tweet.entities.urls.length > 0) && // RT friends and tweets with links
+  return (tweet.user.isFriend || tweet.entities.urls.length > 0) && // RT friends and tweets with links
     hashtagsCount <= this.config.max_tweet_hashtags && // not too spammy
     !skipRT && !skipReply &&
     tweet.lang === this.config.language // skip foreign lang tweets
