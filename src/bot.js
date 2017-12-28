@@ -180,7 +180,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
         this.quoteTweet(tweet.sentiment.ratingEmojis, tweet)
       } 
       else {
-        // just retweeted it for 'breaking' news bots :)
+        // just retweeted it for the 'breaking' news bots :)
         this.retweet(tweet)
       }
     } // end of keywords check
@@ -205,7 +205,7 @@ TwitterBot.prototype.updateUser = function (user) {
   user.isFriend = (this.whitelist[user.screen_name] !== undefined)
   user.blacklisted = (this.blacklist[user.screen_name] !== undefined)
   user.retweetQuotaExceeded = (this.retweets[user.screen_name] !== undefined &&
-    this.retweets[user.screen_name] >= this.config.hourly_user_quota)
+    this.retweets[user.screen_name] > this.config.hourly_user_quota)
   user.muted = this.getKeywordMatches(user.description, this.config.mute_user_keywords).length > 0
 }
 
