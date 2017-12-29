@@ -135,6 +135,13 @@ rate and RT bot info log level trace:
 ![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/WebPackSenseBotRun2.png?raw=true 
  "@WebPackSense")
 
+NOTE: 
+
+- every . in that trace is a skipped tweet due to bot config rules. 
+- | denotes a straight up retweet of a tweet with a link.
+- new followers get logged and sent our greeting DM.
+- tweets without links generate a quoted tweet with emojis sentiment rating :)
+
 # 1. Run realtime Twitter stream/filter bot (default)
 
 >node src/stream
