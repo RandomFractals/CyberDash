@@ -412,7 +412,7 @@ TwitterBot.prototype.logTweet = function (tweet) {
     }
     this.logger.debug(this.dashes)
     this.logger.debug(`matches: ${tweet.keywords}`)
-    this.logger.debug('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
+    this.logger.debug(`hashtags: ${tweet.hashtagsCount}`, tweet.entities.hashtags.map(hashtag => hashtag.text))
     this.logger.debug(`links: ${tweet.links.length}`,
       `| isRetweet: ${tweet.isRetweet}`,
       `| isReply: ${tweet.isReply}`,
