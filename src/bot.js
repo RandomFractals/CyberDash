@@ -156,36 +156,34 @@ TwitterBot.prototype.searchTweets = function() {
  * @param tweet Tweet json object
  */
 TwitterBot.prototype.processTweet = function (tweet) {
-  // 1st: friends and family coat check :)
+  // friends and family coat check :)
   this.updateUser(tweet.user)
 
-  // 2nd: tweet augmentation
+  // tweet augmentation
   this.updateTweet(tweet)
 
-  // 3rd: RT checks
-  if (this.userChecksOut(tweet.user) && this.worthRT(tweet) ) {
-    // get tweet sentiment and rating text info
-    tweet.sentiment = this.getSentiment(tweet)
-    
-    // update matched/mute keywords and hashtags
-    this.updateKeywords(tweet)
+  // update matched/mute keywords and hashtags
+  this.updateKeywords(tweet)
 
-    // log enriched tweet stats for debug
-    this.logTweet(tweet)
-
-    // 4th: run last keywords and hashtags checks
-    if (this.matchesKeywords(tweet) &&
-        this.logger.level.isGreaterThanOrEqualTo(INFO) ) { // RT only in info mode!
-      if (this.config.mode === RATE && tweet.links.length === 0) {
-        // send rated quote tweet
-        this.quoteTweet(tweet.sentiment.ratingEmojis, tweet)
-      } 
-      else {
-        // just retweeted it for the 'breaking' news bots :)
-        this.retweet(tweet)
-      }
-    } // end of keywords check
-
+  // get tweet sentiment for rating quote tweets
+  tweet.sentiment = this.getSentiment(tweet)
+  
+  // log enriched tweet stats for debug
+  this.logTweet(tweet)
+  
+  // run user, RT and keywords checks
+  if (this.userChecksOut(tweet.user) && 
+    this.worthRT(tweet) &&
+    this.matchesKeywords(tweet) &&
+    this.logger.level.isGreaterThanOrEqualTo(INFO) ) { // RT only in info mode!
+    if (this.config.mode === RATE && tweet.links.length === 0) {
+      // send rated quote tweet
+      this.quoteTweet(tweet.sentiment.ratingEmojis, tweet)
+    } 
+    else {
+      // just retweeted it for the 'breaking' news bots :)
+      this.retweet(tweet)
+    }
   }
   else { // did not pass configured user and tweet filters
     // log . for skipped tweets
