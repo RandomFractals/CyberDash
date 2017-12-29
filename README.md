@@ -139,7 +139,7 @@ rate and RT bot info log level trace:
 
 >node src/stream
 
-sample trace output:
+sample trace output (old pic from week 1 of bot dev :(
 
 ![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/CyberDashTrace7.png?raw=true 
  "trace")
