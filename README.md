@@ -121,6 +121,10 @@ This option is also handy to fine-tune mute tweet and user keywords config, and 
 
 Once you are happy with the results change log level to info for this Twitter bot to start retweeting or generating quoted tweet rating tweets in 'rate' bot mode. See src/bot.js code for what is done in 'rate' bot mode. Modify as desired.
 
+# RT and Rate Twitter Bot Config
+
+For an example of rate quoted tweets see WebPackSense.env bot config and the actual Twitter bot I created for the webpack dev community: https://twitter.com/WebPackSense
+
 # 1. Run realtime Twitter stream/filter bot (default)
 
 >node src/stream
