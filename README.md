@@ -123,7 +123,17 @@ Once you are happy with the results change log level to info for this Twitter bo
 
 # RT and Rate Twitter Bot Config
 
-For an example of rate quoted tweets see WebPackSense.env bot config and the actual Twitter bot I created for the webpack dev community: https://twitter.com/WebPackSense
+For an example of a hybrid rate quoted tweets and RT tweets with links see WebPackSense.env bot config, and the actual Twitter bot I created for the webpack dev community: https://twitter.com/WebPackSense
+
+From the 1st two hours of that bot run:
+
+![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/WebPackSenseBotRunDay1.png?raw=true 
+ "@WebPackSense")
+
+rate and RT bot info log level trace:
+
+![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/WebPackSenseBotRun2.png?raw=true 
+ "@WebPackSense")
 
 # 1. Run realtime Twitter stream/filter bot (default)
 
