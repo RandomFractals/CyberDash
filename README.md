@@ -84,8 +84,11 @@ LIKE_MENTIONS=true
 # Bot language to skip RT of foreign tweets
 LANGUAGE=en
 
-# Bot log level
-LOG_LEVEL=info
+# Bot log level: debug or info
+LOG_LEVEL=debug
+
+# Bot mode: rate or RT
+MODE=rate
 
 # Twitter bot API keys
 CONSUMER_KEY=
@@ -100,6 +103,23 @@ ACCESS_TOKEN_SECRET=
 https://help.twitter.com/en/rules-and-policies/twitter-automation
 
 The settings I've chosen for this Twitter bot limit the number of RT's your bot will send to comply with Twitter rules and rate limit regulations. Fine tune them at your own risk :(
+
+# Test
+
+Before you run your new Twitter bot, please consider testing it first.
+
+Change log level to debug for this bot to skip the actual retweet or quoted tweet step and output matching tweets trace.
+
+in your .env bot config file change this line to debug:
+
+```
+# Bot log level
+LOG_LEVEL=debug
+```
+
+This option is also handy to fine tune mute tweet/user keywords config and ban spam users by building a private Twitter list to ignore marketing and spammy Twitter users and bots.
+
+Once you are happy with the results change log level to info for this Twitter bot to start retweeting or generating quoted tweet rating tweets.
 
 # 1. Run realtime Twitter stream/filter bot (default)
 
