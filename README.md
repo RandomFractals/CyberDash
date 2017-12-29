@@ -132,6 +132,7 @@ From the 1st two hours of that bot run:
 
 rate and RT bot info log level trace:
 
+![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/WebPackSense4hrsRun.png?raw=true 
  "@WebPackSense")
 
 NOTE: 
