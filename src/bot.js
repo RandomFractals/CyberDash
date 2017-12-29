@@ -293,6 +293,8 @@ TwitterBot.prototype.getKeywordMatches = function (text, keywords) {
  * 
  * Note: this could be extended later to boost tweets from whitelisted friends,
  * or users with good standing and great following.
+ * 
+ * Also could enhance this with better sentiment lib in v2.0
  */
 TwitterBot.prototype.getSentiment = function (tweet) {
   let tweetSentiment = sentiment(tweet.fullText, {
@@ -330,7 +332,7 @@ TwitterBot.prototype.getRatingEmojis = function(rating) {
 
 
 /**
- * Gets console friendly tweet rating text.
+ * Gets console friendly tweet rating text for debug logging.
  * 
  * @param rating Integer tweet sentiment rating in -5,5 range.
  */
@@ -404,7 +406,10 @@ TwitterBot.prototype.matchesKeywords = function (tweet) {
 TwitterBot.prototype.logTweet = function (tweet) {
   if (this.logger.level.isEqualTo(DEBUG)) {  
     this.logger.debug(`\n${this.line}\n${tweet.fullText}`)
-    process.stdout.write(this.getRatingText(tweet.sentiment.rating))
+    if (this.config.mode === RATE && tweet.links.length === 0) {
+      // log rated quote tweet rating text
+      process.stdout.write(this.getRatingText(tweet.sentiment.rating))
+    }
     this.logger.debug(this.dashes)
     this.logger.debug(`matches: ${tweet.keywords}`)
     this.logger.debug('hashtags:', tweet.entities.hashtags.map(hashtag => hashtag.text))
