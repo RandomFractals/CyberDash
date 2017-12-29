@@ -10,7 +10,7 @@ const RATE = 'rate'
 // tweet rating emojis
 const POSITIVE_EMOJI = '🔹'
 const NEGATIVE_EMOJI = '🔸'
-const NEUTRAL_EMOJI = '◽'
+const NEUTRAL_EMOJI  = '◽'
 
 /**
  * Creates new Twitter bot instance.
