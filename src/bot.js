@@ -125,7 +125,7 @@ TwitterBot.prototype.searchTweets = function() {
   this.logger.info('searching...')
   this.twitter.get('search/tweets', {
     q: this.config.search_query,
-    count: 10, // max tweets to analyze every 15 minutes
+    count: 20, // max tweets to analyze every 15 minutes
     result_type: 'recent',
     tweet_mode: 'extended',
     since_id: this.sinceTweetId,
