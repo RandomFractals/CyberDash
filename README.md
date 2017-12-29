@@ -117,9 +117,9 @@ in your .env bot config file change this line to debug:
 LOG_LEVEL=debug
 ```
 
-This option is also handy to fine tune mute tweet/user keywords config and ban spam users by building a private Twitter list to ignore marketing and spammy Twitter users and bots.
+This option is also handy to fine-tune mute tweet and user keywords config, and ban spam users by building a private 'blacklist' Twitter list to ignore marketing and spammy Twitter users and bots.
 
-Once you are happy with the results change log level to info for this Twitter bot to start retweeting or generating quoted tweet rating tweets.
+Once you are happy with the results change log level to info for this Twitter bot to start retweeting or generating quoted tweet rating tweets in 'rate' bot mode. See src/bot.js code for what is done in 'rate' bot mode. Modify as desired.
 
 # 1. Run realtime Twitter stream/filter bot (default)
 
