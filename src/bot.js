@@ -171,7 +171,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
   // log enriched tweet stats for debug
   this.logTweet(tweet)
   
-  // run user, RT and keywords checks
+  // run user, RT, and keywords checks
   if (this.userChecksOut(tweet.user) && 
     this.worthRT(tweet) &&
     this.matchesKeywords(tweet) &&
@@ -201,27 +201,12 @@ TwitterBot.prototype.processTweet = function (tweet) {
  */
 TwitterBot.prototype.updateUser = function (user) {
   // set whitelisted, blacklisted, muted, and user retweet quota props
-  user.isFriend = (this.whitelist[user.screen_name] !== undefined)
-  user.blacklisted = (this.blacklist[user.screen_name] !== undefined)
-  user.retweetQuotaExceeded = (this.retweets[user.screen_name] !== undefined &&
-    this.retweets[user.screen_name] > this.config.hourly_user_quota)
+  const userName = user.screen_name
+  user.isFriend = (this.whitelist[userName] !== undefined)
+  user.blacklisted = (this.blacklist[userName] !== undefined)
+  user.retweetQuotaExceeded = (this.retweets[userName] !== undefined &&
+    this.retweets[userName] > this.config.hourly_user_quota)
   user.muted = this.getKeywordMatches(user.description, this.config.mute_user_keywords).length > 0
-}
-
-
-/**
- * Checks user stats.
- * 
- * @param user Tweet user stats.
- */
-TwitterBot.prototype.userChecksOut = function (user) {
-  return (user.isFriend && !user.blacklisted && !user.retweetQuotaExceeded) || // friends can be blacklisted :(
-    (!user.blacklisted && !user.muted && !user.retweetQuotaExceeded &&
-      !user.verified && // skip verified 'unknown' users for now
-      user.followers_count >= this.config.min_user_followers && // min required for 'unknown' tweeps
-      user.friends_count <= this.config.max_user_friends && // skip tweets from tweeps that follow the universe
-      user.statuses_count >= this.config.min_user_tweets && // min required for 'unknown' user to RT
-      user.statuses_count <= this.config.max_user_tweets) // most likely just another Twitter bot
 }
 
 
@@ -240,20 +225,6 @@ TwitterBot.prototype.updateTweet = function (tweet) {
   tweet.skipReply = this.config.filter_replies ? tweet.isReply: false
   tweet.hashtagsCount = tweet.entities.hashtags.length
   tweet.links = tweet.entities.urls
-}
-
-
-/**
- * Checks if a tweet is worth RTing.
- * 
- * @param tweet Tweet to check for RT.
- */
-TwitterBot.prototype.worthRT = function (tweet) {
-  // check tweet stats
-  return (tweet.user.isFriend || tweet.links.length > 0 || this.rateRT) && // RT friends and tweets with links
-    tweet.hashtagsCount <= this.config.max_tweet_hashtags && // not too spammy
-    !tweet.skipRT && !tweet.skipReply &&
-    tweet.lang === this.config.language // skip foreign lang tweets
 }
 
 
@@ -295,22 +266,6 @@ TwitterBot.prototype.updateKeywords = function (tweet) {
 
 
 /**
- * Checks a tweet for matching track filter keywords, mute keywords and hashtags limits.
- * 
- * @param tweet Tweet to inspect with injected keywords and hashtags.
- */
-TwitterBot.prototype.matchesKeywords = function (tweet) {
-  return (
-    tweet.muteKeywords.length <= 0 &&
-    tweet.keywords.length > 0 &&
-    tweet.keywords.split(' ').length <= this.config.max_tweet_hashtags &&
-    (!this.config.hashtags_filter || 
-      (this.config.hashtags_filter && tweet.hashtags && 
-        tweet.hashtags.length <= this.config.max_tweet_hashtags) ) )
-}
-
-
-/**
  * Checks if tweet text or user description matches filter keywords.
  * Twitter can be finicky with those keyword matches sometimes.
  * 
@@ -342,7 +297,7 @@ TwitterBot.prototype.getKeywordMatches = function (text, keywords) {
 TwitterBot.prototype.getSentiment = function (tweet) {
   let tweetSentiment = sentiment(tweet.fullText, {
     // TODO: use track filter keywords from config here and boost all of them?
-    'webpack': 5 // set 'webpack' word sentiment to max positive rating to boost RTs
+    //'webpack': 5 // set 'webpack' word sentiment to max positive rating to boost RTs
   })
 
   // create tweet rating info
@@ -396,6 +351,52 @@ TwitterBot.prototype.getRatingText = function(rating) {
 
 
 /**
+ * Checks user stats.
+ * 
+ * @param user Tweet user stats.
+ */
+TwitterBot.prototype.userChecksOut = function (user) {
+  return (user.isFriend && !user.blacklisted && !user.retweetQuotaExceeded) || // friends can be blacklisted :(
+    (!user.blacklisted && !user.muted && !user.retweetQuotaExceeded &&
+      !user.verified && // skip verified 'unknown' users for now
+      user.followers_count >= this.config.min_user_followers && // min required for 'unknown' tweeps
+      user.friends_count <= this.config.max_user_friends && // skip tweets from tweeps that follow the universe
+      user.statuses_count >= this.config.min_user_tweets && // min required for 'unknown' user to RT
+      user.statuses_count <= this.config.max_user_tweets) // most likely just another Twitter bot
+}
+
+
+/**
+ * Checks if a tweet is worth RTing.
+ * 
+ * @param tweet Tweet to check for RT.
+ */
+TwitterBot.prototype.worthRT = function (tweet) {
+  // check tweet stats
+  return (tweet.user.isFriend || tweet.links.length > 0 || this.rateRT) && // RT friends and tweets with links
+    tweet.hashtagsCount <= this.config.max_tweet_hashtags && // not too spammy
+    !tweet.skipRT && !tweet.skipReply &&
+    tweet.lang === this.config.language // skip foreign lang tweets
+}
+
+
+/**
+ * Checks a tweet for matching track filter keywords, mute keywords and hashtags limits.
+ * 
+ * @param tweet Tweet to inspect with injected keywords and hashtags.
+ */
+TwitterBot.prototype.matchesKeywords = function (tweet) {
+  return (
+    tweet.muteKeywords.length <= 0 &&
+    tweet.keywords.length > 0 &&
+    tweet.keywords.split(' ').length <= this.config.max_tweet_hashtags &&
+    (!this.config.hashtags_filter || 
+      (this.config.hashtags_filter && tweet.hashtags && 
+        tweet.hashtags.length <= this.config.max_tweet_hashtags) ) )
+}
+
+
+/**
  * Logs tweet text and stats.
  * 
  * @param tweet Tweet info to log
@@ -429,58 +430,6 @@ TwitterBot.prototype.logTweet = function (tweet) {
     //this.logger.debug(tweet)
   }
 }
-
-
-/**
- * Logs retweet or quoted tweet.
- * 
- * @param status Retweet status message
- * @param tweet Tweet info to log
- */
-TwitterBot.prototype.logRetweet = function (status, tweet) {
-  if (this.logger.level.isEqualTo(DEBUG)) {
-    // log new RT
-    this.logger.debug(this.dashes)
-    this.logger.debug(`>${status}: @${tweet.user.screen_name}: ${tweet.text}`)
-    this.logger.debug(this.dashes)
-  }
-}
-
-
-/**
- * Retweets a given tweet.
- * 
- * @param tweet Tweet to retweet
- */
-TwitterBot.prototype.retweet = function (tweet) {
-  if (this.retweetCount < this.config.hourly_retweet_quota) {
-    // retweet
-    this.twitter.post('statuses/retweet/:id', {
-      id: tweet.id_str
-    })
-    .then( response => {
-      // log new RT
-      this.logRetweet('RT', tweet)
-
-      // update bot quotas
-      this.updateQuotas(tweet)
-
-      // log | for each RT to stdout
-      process.stdout.write('|')      
-    })
-    .catch(err => {
-      this.logger.error('Failed to RT!', tweet)      
-    })
-  }
-  else { // skip retweet due to hourly retweet quota reached
-    if (this.logger.level.isEqualTo(DEBUG)) {
-      this.logger.debug('Skipping RT: hourly retweet quota reached!')
-      this.logRetweet('skip RT', tweet)
-    }
-    // log - for skipped RT due to RT quota
-    process.stdout.write('-')
-  }
-} // end of retweet()
 
 
 /**
@@ -544,6 +493,58 @@ TwitterBot.prototype.updateQuotas = function (tweet) {
   // update total hourly retweets counter
   this.retweetCount++
 }
+
+
+/**
+ * Logs retweet or quoted tweet.
+ * 
+ * @param status Retweet status message
+ * @param tweet Tweet info to log
+ */
+TwitterBot.prototype.logRetweet = function (status, tweet) {
+  if (this.logger.level.isEqualTo(DEBUG)) {
+    // log new RT
+    this.logger.debug(this.dashes)
+    this.logger.debug(`>${status}: @${tweet.user.screen_name}: ${tweet.text}`)
+    this.logger.debug(this.dashes)
+  }
+}
+
+
+/**
+ * Retweets a given tweet.
+ * 
+ * @param tweet Tweet to retweet
+ */
+TwitterBot.prototype.retweet = function (tweet) {
+  if (this.retweetCount < this.config.hourly_retweet_quota) {
+    // retweet
+    this.twitter.post('statuses/retweet/:id', {
+      id: tweet.id_str
+    })
+    .then( response => {
+      // log new RT
+      this.logRetweet('RT', tweet)
+
+      // update bot quotas
+      this.updateQuotas(tweet)
+
+      // log | for each RT to stdout
+      process.stdout.write('|')      
+    })
+    .catch(err => {
+      this.logger.error('Failed to RT!', tweet)      
+    })
+  }
+  else { // skip retweet due to hourly retweet quota reached
+    if (this.logger.level.isEqualTo(DEBUG)) {
+      this.logger.debug('Skipping RT: hourly retweet quota reached!')
+      this.logRetweet('skip RT', tweet)
+    }
+    // log - for skipped RT due to RT quota
+    process.stdout.write('-')
+  }
+} // end of retweet()
 
 
 /**
