@@ -174,15 +174,16 @@ TwitterBot.prototype.processTweet = function (tweet) {
   // run user, RT, and keywords checks
   if (this.userChecksOut(tweet.user) && 
     this.worthRT(tweet) &&
-    this.matchesKeywords(tweet) &&
-    this.logger.level.isGreaterThanOrEqualTo(INFO) ) { // RT only in info mode!
+    this.matchesKeywords(tweet) ) {
     if (this.config.mode === RATE && tweet.links.length === 0) {
       // send rated quote tweet
       this.quoteTweet(tweet.sentiment.ratingEmojis, tweet)
+      this.logRetweet(tweet.sentiment.ratingText, tweet)
     } 
     else {
       // just retweeted it for the 'breaking' news bots :)
       this.retweet(tweet)
+      this.logRetweet('RT', tweet)
     }
   }
   else { // did not pass configured user and tweet filters
@@ -404,7 +405,8 @@ TwitterBot.prototype.matchesKeywords = function (tweet) {
  * @param tweet Tweet info to log
  */
 TwitterBot.prototype.logTweet = function (tweet) {
-  if (this.logger.level.isEqualTo(DEBUG)) {  
+  if (this.logger.level.isEqualTo(DEBUG) &&
+      !tweet.user.muted) {  
     this.logger.debug(`\n${this.line}\n${tweet.fullText}`)
     if (this.config.mode === RATE && tweet.links.length === 0) {
       // log rated quote tweet rating text
@@ -440,6 +442,22 @@ TwitterBot.prototype.logTweet = function (tweet) {
 
 
 /**
+ * Logs retweet or quoted tweet.
+ * 
+ * @param status Retweet status message
+ * @param tweet Tweet info to log
+ */
+TwitterBot.prototype.logRetweet = function (status, tweet) {
+  if (this.logger.level.isEqualTo(DEBUG)) {
+    // log new RT
+    this.logger.debug(this.dashes)
+    this.logger.debug(`>${status}: @${tweet.user.screen_name}: ${tweet.fullText}`)
+    this.logger.debug(this.dashes)
+  }
+}
+
+
+/**
  * Sends quoted tweet status update using
  * new attachment_url param for the quoted tweet.
  * 
@@ -449,7 +467,8 @@ TwitterBot.prototype.logTweet = function (tweet) {
  * @param tweet Quoted tweet
  */
 TwitterBot.prototype.quoteTweet = function (quoteText, tweet) {
-  if (this.retweetCount < this.config.hourly_retweet_quota) {
+  if (this.retweetCount < this.config.hourly_retweet_quota && // below hourly RT quota
+    this.logger.level.isGreaterThanOrEqualTo(INFO) ) { // RT only in info mode!
     // send quoted tweet
     const quoteTweetUrl = `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`
     this.twitter.post('statuses/update', {
@@ -473,7 +492,6 @@ TwitterBot.prototype.quoteTweet = function (quoteText, tweet) {
   }
   else { // skip retweet due to hourly retweet quota reached
     if (this.logger.level.isEqualTo(DEBUG)) {
-      this.logger.debug('Skipping RT: hourly retweet quota reached!')
       this.logRetweet('skip RT', tweet)
     }
     // log - for skipped RT due to RT quota
@@ -503,28 +521,13 @@ TwitterBot.prototype.updateQuotas = function (tweet) {
 
 
 /**
- * Logs retweet or quoted tweet.
- * 
- * @param status Retweet status message
- * @param tweet Tweet info to log
- */
-TwitterBot.prototype.logRetweet = function (status, tweet) {
-  if (this.logger.level.isEqualTo(DEBUG)) {
-    // log new RT
-    this.logger.debug(this.dashes)
-    this.logger.debug(`>${status}: @${tweet.user.screen_name}: ${tweet.text}`)
-    this.logger.debug(this.dashes)
-  }
-}
-
-
-/**
  * Retweets a given tweet.
  * 
  * @param tweet Tweet to retweet
  */
 TwitterBot.prototype.retweet = function (tweet) {
-  if (this.retweetCount < this.config.hourly_retweet_quota) {
+  if (this.retweetCount < this.config.hourly_retweet_quota && // below hourly RT quota
+      this.logger.level.isGreaterThanOrEqualTo(INFO) ) { // RT only in info mode!
     // retweet
     this.twitter.post('statuses/retweet/:id', {
       id: tweet.id_str
@@ -545,7 +548,6 @@ TwitterBot.prototype.retweet = function (tweet) {
   }
   else { // skip retweet due to hourly retweet quota reached
     if (this.logger.level.isEqualTo(DEBUG)) {
-      this.logger.debug('Skipping RT: hourly retweet quota reached!')
       this.logRetweet('skip RT', tweet)
     }
     // log - for skipped RT due to RT quota
