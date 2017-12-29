@@ -125,7 +125,7 @@ TwitterBot.prototype.searchTweets = function() {
   this.logger.info('searching...')
   this.twitter.get('search/tweets', {
     q: this.config.search_query,
-    count: 1, // max tweets to analyze every 15 minutes
+    count: 10, // max tweets to analyze every 15 minutes
     result_type: 'recent',
     tweet_mode: 'extended',
     since_id: this.sinceTweetId,
@@ -176,7 +176,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
     // 4th: run last keywords and hashtags checks
     if (this.matchesKeywords(tweet) &&
         this.logger.level.isGreaterThanOrEqualTo(INFO) ) { // RT only in info mode!
-      if (this.config.mode === RATE) {
+      if (this.config.mode === RATE && tweet.links.length === 0) {
         // send rated quote tweet
         this.quoteTweet(tweet.sentiment.ratingEmojis, tweet)
       } 
@@ -260,22 +260,6 @@ TwitterBot.prototype.worthRT = function (tweet) {
 
 
 /**
- * Checks a tweet for matching track filter keywords, mute keywords and hashtags limits.
- * 
- * @param tweet Tweet to inspect with injected keywords and hashtags.
- */
-TwitterBot.prototype.matchesKeywords = function (tweet) {
-  return (
-    tweet.muteKeywords.length <= 0 &&
-    tweet.keywords.length > 0 &&
-    tweet.keywords.split(' ').length <= this.config.max_tweet_hashtags &&
-    (!this.config.hashtags_filter || 
-      (this.config.hashtags_filter && tweet.hashtags && 
-        tweet.hashtags.length <= this.config.max_tweet_hashtags) ) )
-}
-
-
-/**
  * Extracts full tweet text for normal and extended tweets.
  * 
  * see: https://developer.twitter.com/en/docs/tweets/tweet-updates for more info
@@ -293,6 +277,59 @@ TwitterBot.prototype.getFullText = function (tweet) {
     fullText = tweet.full_text
   }
   return fullText
+}
+
+
+/**
+ * Updates a tweet with matched track filter, mute keywords, and hashtags.
+ * 
+ * @param tweet Tweet to update matched keywords for.
+ */
+TwitterBot.prototype.updateKeywords = function (tweet) {
+  // get matched/mute keywords
+  tweet.keywords = this.getKeywordMatches(tweet.fullText, this.config.track_keywords)
+  tweet.muteKeywords = this.getKeywordMatches(tweet.fullText, this.config.mute_tweet_keywords)
+
+  // extract all hashtags from full tweet text
+  // b/c tweet.entities.hashtags are iffy and finicky sometimes :)
+  tweet.hashtags = tweet.fullText.match(this.hashtagsRegEx)
+}
+
+
+/**
+ * Checks a tweet for matching track filter keywords, mute keywords and hashtags limits.
+ * 
+ * @param tweet Tweet to inspect with injected keywords and hashtags.
+ */
+TwitterBot.prototype.matchesKeywords = function (tweet) {
+  return (
+    tweet.muteKeywords.length <= 0 &&
+    tweet.keywords.length > 0 &&
+    tweet.keywords.split(' ').length <= this.config.max_tweet_hashtags &&
+    (!this.config.hashtags_filter || 
+      (this.config.hashtags_filter && tweet.hashtags && 
+        tweet.hashtags.length <= this.config.max_tweet_hashtags) ) )
+}
+
+
+/**
+ * Checks if tweet text or user description matches filter keywords.
+ * Twitter can be finicky with those keyword matches sometimes.
+ * 
+ * @param text Full tweet text or user info to check for keywords.
+ * @param keywords Keywords list to check.
+ */
+TwitterBot.prototype.getKeywordMatches = function (text, keywords) {
+  let keywordMatches = ''
+  if (text) {
+    text = text.toLowerCase()
+    keywords.forEach(keyword => {
+      if (text.indexOf(keyword) >= 0) {
+        keywordMatches += keyword + ' '
+      }
+    })
+  }
+  return keywordMatches
 }
 
 
@@ -315,43 +352,6 @@ TwitterBot.prototype.getSentiment = function (tweet) {
   tweetSentiment.ratingEmojis = this.getRatingEmojis(tweetSentiment.rating)
   tweetSentiment.ratingText = this.getRatingText(tweetSentiment.rating)
   return tweetSentiment
-}
-
-
-/**
- * Updates a tweet with matched track filter, mute keywords, and hashtags.
- * 
- * @param tweet Tweet to update matched keywords for.
- */
-TwitterBot.prototype.updateKeywords = function (tweet) {
-  // get matched/mute keywords
-  tweet.keywords = this.getKeywordMatches(tweet.fullText, this.config.track_keywords)
-  tweet.muteKeywords = this.getKeywordMatches(tweet.fullText, this.config.mute_tweet_keywords)
-
-  // extract all hashtags from full tweet text
-  // b/c tweet.entities.hashtags are iffy and finicky sometimes :)
-  tweet.hashtags = tweet.fullText.match(this.hashtagsRegEx)
-}
-
-
-/**
- * Checks if tweet text or user description matches filter keywords.
- * Twitter can be finicky with those keyword matches sometimes.
- * 
- * @param text Full tweet text or user info to check for keywords.
- * @param keywords Keywords list to check.
- */
-TwitterBot.prototype.getKeywordMatches = function (text, keywords) {
-  let keywordMatches = ''
-  if (text) {
-    text = text.toLowerCase()
-    keywords.forEach(keyword => {
-      if (text.indexOf(keyword) >= 0) {
-        keywordMatches += keyword + ' '
-      }
-    })
-  }
-  return keywordMatches
 }
 
 
