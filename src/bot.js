@@ -221,7 +221,7 @@ TwitterBot.prototype.updateTweet = function (tweet) {
   tweet.fullText = this.getFullText(tweet)  
   tweet.isRetweet = (tweet.retweeted_status !== undefined || tweet.fullText.startsWith('RT '))
   tweet.isReply = (tweet.in_reply_to_status_id_str !== null)
-  tweet.skipRT = this.config.filter_retweets ? tweet.isRetweet: false
+  tweet.skipRetweet = this.config.filter_retweets ? tweet.isRetweet: false
   tweet.skipReply = this.config.filter_replies ? tweet.isReply: false
   tweet.hashtagsCount = tweet.entities.hashtags.length
   tweet.links = tweet.entities.urls
@@ -377,7 +377,7 @@ TwitterBot.prototype.worthRT = function (tweet) {
   // check tweet stats
   return (tweet.user.isFriend || tweet.links.length > 0 || this.rateRT) && // RT friends and tweets with links
     tweet.hashtagsCount <= this.config.max_tweet_hashtags && // not too spammy
-    !tweet.skipRT && !tweet.skipReply &&
+    !tweet.skipRetweet && !tweet.skipReply &&
     tweet.lang === this.config.language // skip foreign lang tweets
 }
 
@@ -414,9 +414,11 @@ TwitterBot.prototype.logTweet = function (tweet) {
     this.logger.debug(`matches: ${tweet.keywords}`)
     this.logger.debug(`hashtags: ${tweet.hashtagsCount}`, tweet.entities.hashtags.map(hashtag => hashtag.text))
     this.logger.debug(`links: ${tweet.links.length}`,
+      `| lang: ${tweet.lang}`,
       `| isRetweet: ${tweet.isRetweet}`,
       `| isReply: ${tweet.isReply}`,
-      `| lang: ${tweet.lang}`)
+      `| skipRetweet: ${tweet.skipRetweet}`,
+      `| skipReply: ${tweet.skipReply}`)
     this.logger.debug(`sentiment: ${tweet.sentiment.ratingText}`,
       `rating=${tweet.sentiment.rating}`,
       `| score=${tweet.sentiment.score}`,
