@@ -146,6 +146,7 @@ Also, new followers get a greeting DM, and 'blacklist' is updated every 15 minut
 
 # V2.0 TODO
 
+- Plug in smarter sentiments lib or service call for rating quoted tweets without links.
 - hook up redis and check for tweet duplicates from tweeps that post same articles every day for promo
 
 # This Twitter Bot 3rd party API References
