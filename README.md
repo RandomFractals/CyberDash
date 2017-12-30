@@ -194,3 +194,5 @@ https://medium.freecodecamp.org/how-to-build-and-deploy-a-multifunctional-twitte
 ## Fun Twitter Bots on Github
 
 https://github.com/aershov24/ibotsunburn
+
+https://github.com/maeligg/JSLibGenerator
