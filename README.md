@@ -162,6 +162,11 @@ Also, new followers get a greeting DM, and 'blacklist' is updated every 15 minut
 
 >node src/search
 
+search/tweets 'webpack' bor run trace sample:
+
+![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/WebPackSenseSearchTweetsRunTrace1.png?raw=true 
+ "SearchTweetsTrace")
+
 # V1.0 TODO
 
 - finish search.js testing and filters config for periodic RT's using Twitter search/tweets interface
