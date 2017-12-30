@@ -2,7 +2,7 @@
 
 This simple keywords search Twitter bot was originally created to keep up with cyberSec news and seed Dasher: https://twitter.com/CyberDash
 
-I extended it for webpack dev community in its second incarnation. See it running in a hybrid mode at https://twitter.com/WebPackSense and scroll down for more info.
+I extended it for the webpack dev community as an experiment to guage webpack feedback in its second incarnation. See it running in a hybrid mode at https://twitter.com/WebPackSense and scroll down for more info.
 
 You can use this node.js Twitter bot code to create your own Twitter news feed for the topics of your interest, or for augmenting your existing Twitter account to become a subject matter expert in your domain, as most top Twitter 'influencers' do :) Just follow the build, config, test, debug, and bot run instructions below.
 
