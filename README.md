@@ -1,12 +1,12 @@
-# CyberDash
+# CyberDash - smarter Twitter news bot
 
-CyberSec news Twitter bot: https://twitter.com/CyberDash
+This simple keywords search Twitter bot was originally created to keep up with cyberSec news and seed Dasher: https://twitter.com/CyberDash
 
-This keywords search Twitter bot was originally created to retweet posts with links related to cyber security.
+I extended it for webpack dev community in its second incarnation. See it running in a hybrid mode at https://twitter.com/WebPackSense and scroll down for more info.
 
-Scroll down for more info on the second incarnation of this bot running in a hybrid mode at https://twitter.com/WebPackSense
+You can use this node.js Twitter bot code to create your own Twitter news feed for the topics of your interest, or for augmenting your existing Twitter account to become a subject matter expert in your domain, as most top Twitter 'influencers' do :) Just follow the build, config, test, debug, and bot run instructions below.
 
-You can use this simple node.js Twitter bot code to create your own Twitter news feed for the topics of your interest, or for augmenting your existing Twitter account to become a subject matter expert in your domain, as most top Twitter 'influencers' do :) Just follow the build, config, test, debug, and bot run instructions below.
+Be creative! Fork and mode it at will!
 
 Where I started:
 
