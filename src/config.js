@@ -8,6 +8,7 @@ module.exports = {
   search_query: process.env.SEARCH_QUERY,
   hashtags_filter: Boolean(process.env.HASHTAGS_FILTER),
   mute_tweet_filter: process.env.MUTE_TWEET_FILTER,
+  mute_tweet_links_filter: process.env.MUTE_TWEET_LINKS_FILTER,  
   blacklist: process.env.BLACKLIST,
   mute_user_filter: process.env.MUTE_USER_FILTER,  
   min_user_followers: Number(process.env.MIN_USER_FOLLOWERS),

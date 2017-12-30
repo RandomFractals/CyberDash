@@ -59,7 +59,10 @@ const TwitterBot = function (botConfig) {
 
   // get 'mute' tweet filter keywords
   this.config.mute_tweet_keywords = this.config.mute_tweet_filter.split(',').map(keyword => keyword.toLowerCase())
-
+ 
+  // get 'mute' tweet links filter
+  this.config.mute_tweet_links = this.config.mute_tweet_links_filter.split(',').map(domain => domain.toLowerCase())
+   
   // get a list of configured user profile description filter keywords
   this.config.mute_user_keywords = this.config.mute_user_filter.split(',').map(keyword => keyword.toLowerCase())
 
@@ -95,6 +98,7 @@ TwitterBot.prototype.logConfig = function () {
   this.logger.info('filter_retweets:', this.config.filter_retweets)
   this.logger.info('filter_replies:', this.config.filter_replies)
   this.logger.info('mute_tweet_filter:', this.config.mute_tweet_filter)
+  this.logger.info('mute_tweet_links_filter:', this.config.mute_tweet_links_filter)  
   this.logger.info('mute_user_filter:', this.config.mute_user_filter)
   this.logger.info('min_user_followers:', this.config.min_user_followers.toLocaleString())  
   this.logger.info('max_user_friends:', this.config.max_user_friends.toLocaleString())  
@@ -259,7 +263,8 @@ TwitterBot.prototype.updateKeywords = function (tweet) {
   // get matched/mute keywords
   tweet.keywords = this.getKeywordMatches(tweet.fullText, this.config.track_keywords)
   tweet.muteKeywords = this.getKeywordMatches(tweet.fullText, this.config.mute_tweet_keywords)
-
+  // TODO: add muteLinks
+  
   // extract all hashtags from full tweet text
   // b/c tweet.entities.hashtags are iffy and finicky sometimes :)
   tweet.hashtags = tweet.fullText.match(this.hashtagsRegEx)

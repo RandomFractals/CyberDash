@@ -49,6 +49,9 @@ HASHTAGS_FILTER=true
 # Skip tweets with these keywords
 MUTE_TWEET_FILTER=attend,join us,join our,summit,webinar,daily,predictions,easy steps,top,register
 
+# Skip tweets with these links
+MUTE_TWEET_LINKS_FILTER=reddit.com,paper.li,youtu.be
+
 # Name of the 'blacklist' Twitter list to skip tweets from the members of
 # Note: can be any public or private Twitter list you create and curate
 BLACKLIST=blacklist
