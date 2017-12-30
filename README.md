@@ -169,17 +169,11 @@ search/tweets 'webpack' bor run trace sample:
 ![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/WebPackSenseSearchTweetsRunTrace1.png?raw=true 
  "SearchTweetsTrace")
 
-# V1.0 TODO
-
-- finish search.js testing and filters config for periodic RT's using Twitter search/tweets interface
-- add different match algo's: contains, regex, or http://compromise.cool/
-- follow some good cybersec experts and update 'blacklist' for better and more diverse cybersec news RT results
-
 # V2.0 TODO
 
-- Add mute links config to check for reddit, paper.li, etc. links noise.
 - Plug in smarter sentiments lib or service call for rating quoted tweets without links.
 - hook up redis and check for tweet duplicates from tweeps that post same articles every day for promo
+- add different match algo's?: contains, regex, or http://compromise.cool/
 
 # This Twitter Bot 3rd party API References
 
