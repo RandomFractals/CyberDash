@@ -229,7 +229,7 @@ TwitterBot.prototype.updateTweet = function (tweet) {
   tweet.skipRetweet = this.config.filter_retweets ? tweet.isRetweet: false
   tweet.skipReply = this.config.filter_replies ? tweet.isReply: false
   tweet.hashtagsCount = tweet.entities.hashtags.length
-  tweet.links = tweet.entities.urls
+  tweet.links = tweet.entities.urls.map(link => link.expanded_url)
 }
 
 
