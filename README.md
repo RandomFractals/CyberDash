@@ -2,7 +2,9 @@
 
 CyberSec news Twitter bot: https://twitter.com/CyberDash
 
-This keywords search Twitter bot retweets posts with links related to cyber security.
+This keywords search Twitter bot was originally created to retweet posts with links related to cyber security.
+
+Scroll down for more info on the second incarnation of this bot running in a hybrid mode at https://twitter.com/WebPackSense
 
 You can use this simple node.js Twitter bot code to create your own Twitter news feed for the topics of your interest, or for augmenting your existing Twitter account to become a subject matter expert in your domain, as most top Twitter 'influencers' do :) Just follow the build, config, test, debug, and bot run instructions below.
 
