@@ -264,7 +264,7 @@ TwitterBot.prototype.updateKeywords = function (tweet) {
   tweet.keywords = this.getKeywordMatches(tweet.fullText, this.config.track_keywords)
   tweet.muteKeywords = this.getKeywordMatches(tweet.fullText, this.config.mute_tweet_keywords)
   // TODO: add muteLinks
-  
+
   // extract all hashtags from full tweet text
   // b/c tweet.entities.hashtags are iffy and finicky sometimes :)
   tweet.hashtags = tweet.fullText.match(this.hashtagsRegEx)
@@ -420,6 +420,7 @@ TwitterBot.prototype.logTweet = function (tweet) {
     this.logger.debug(this.dashes)
     this.logger.debug(`matches: ${tweet.keywords}`)
     this.logger.debug(`hashtags: ${tweet.hashtagsCount}`, tweet.entities.hashtags.map(hashtag => hashtag.text))
+    this.logger.debug('links:', tweet.links)
     this.logger.debug(`links: ${tweet.links.length}`,
       `| lang: ${tweet.lang}`,
       `| isRetweet: ${tweet.isRetweet}`,
