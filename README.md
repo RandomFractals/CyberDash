@@ -130,9 +130,9 @@ From the 1st two hours of that bot run:
 ![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/WebPackSenseBotRunDay1.png?raw=true 
  "@WebPackSense")
 
-Rate and RT bot log trace from the first 9 hours of day 1 that bot going live:
+Rate and RT bot log trace from the first 20 hours of day 1 on the job :)
 
-![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/WebPackSenseHealthy9hrsBotRunDay1.png?raw=true 
+![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/WebPackSenseBotRunTrace20hrsDay1.png?raw=true 
  "@WebPackSense")
 
 NOTE: 
