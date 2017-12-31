@@ -156,9 +156,14 @@ sample trace output (old pic from week 1 of bot dev :(
 ![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/CyberDashTrace7.png?raw=true 
  "trace")
 
-Note: every . in that trace denotes a matching tweet analyzed and skipped according to the bot config rules. See 'Dasher's' :) timeline for actual RT's: https://twitter.com/CyberDash
+NOTE: 
 
-Also, new followers get a greeting DM, and 'blacklist' is updated every 15 minutes to curate that channel.
+- every . in that trace denotes a matching tweet analyzed and skipped according to the bot config rules. See 'Dasher's' :) timeline for actual RT's: https://twitter.com/CyberDash
+- new followers get a greeting DM
+- bot 'blacklist' is updated every 15 minutes for currating that channel live as new tweets come in and you detect noise tweet sources
+- your friends, bots and tweeps you follow, are automatically added to the bot 'whitelist', which is updated every hour. tweets from friends on the subject keywords you configured don't require a link to be retweeted
+
+There is probably more that this bot does that escapes my recollection after 2 weeks of coding and tweeking it for the 2 Twitter bot accounts I setup. I suggest you review src/bot.js code and mod for your needs. That code is heavily documented and nicely formatted. Enjoy! Buy me a beer some day if you end up using this custom Twitter news bot code.
 
 # 2. OR Run search.js for periodic RT's
 
