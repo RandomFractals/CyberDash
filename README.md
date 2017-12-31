@@ -183,6 +183,9 @@ Here is a sample log of my WebPackSense Twitter bot running on Heroku in a worke
 ![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/WebPackSenseBotWorkerOnHeroku.png?raw=true 
  "workerLog")
 
+![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/WebPackSenseWorkerProcessLog.png?raw=true 
+ "workerLog2")
+
 # V2.0 TODO
 
 - Plug in smarter sentiments lib or service call for rating quoted tweets without links.
