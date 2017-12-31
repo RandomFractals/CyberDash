@@ -169,6 +169,15 @@ search/tweets 'webpack' bor run trace sample:
 ![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/WebPackSenseSearchTweetsRunTrace1.png?raw=true 
  "SearchTweetsTrace")
 
+# Deploy your custom Twitter news bot to Heroku
+
+The best way to put your custom Twitter news bot on auto-pilot is to deploy it to Heroku, and run it in a worker dyno, after initial local testing and config. Heroku worker dyno's are free to use for low volume feeds. 
+
+Here is a sample log of my WebPackSense Twitter bot running on Heroku in a worker dyno configured to filter realtime tweets about webpack via stream.js:
+
+![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/WebPackSenseBotWorkerOnHeroku.png?raw=true 
+ "workerLog")
+
 # V2.0 TODO
 
 - Plug in smarter sentiments lib or service call for rating quoted tweets without links.
