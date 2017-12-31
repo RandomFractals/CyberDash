@@ -8,8 +8,8 @@ const DEBUG = 'debug'
 const RATE = 'rate'
 
 // tweet rating emojis
-const POSITIVE_EMOJI = '🔹'
-const NEGATIVE_EMOJI = '🔸'
+const POSITIVE_EMOJI = '🎉'
+const NEGATIVE_EMOJI = '💫'
 const NEUTRAL_EMOJI  = '◽'
 
 /**
