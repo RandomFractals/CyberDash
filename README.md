@@ -4,7 +4,7 @@ This simple keywords search Twitter bot was originally created to keep up with c
 
 I extended it for the webpack dev community as an experiment to guage webpack feedback in its second incarnation. See it running in a hybrid mode at https://twitter.com/WebPackSense and scroll down for more info.
 
-You can use this node.js Twitter bot code to create your own Twitter news feed for the topics of your interest, or for augmenting your existing Twitter account to become a subject matter expert in your domain, as most top Twitter 'influencers' do :) Just follow the build, config, test, debug, and bot run instructions below.
+You can use this node.js Twitter bot code to create your own Twitter news feed for the topics of your interest, or for augmenting your existing Twitter account to become a subject matter expert in your domain, as most top Twitter 'influencers' do :) Just follow the build, config, test, debug, run and bot deploy instructions below.
 
 Be creative! Fork and mode it at will!
 
@@ -163,7 +163,7 @@ NOTE:
 - bot 'blacklist' is updated every 15 minutes for currating that channel live as new tweets come in and you detect noise tweet sources
 - your friends, bots and tweeps you follow, are automatically added to the bot 'whitelist', which is updated every hour. tweets from friends on the subject keywords you configured don't require a link to be retweeted
 
-There is probably more that this bot does that escapes my recollection after 2 weeks of coding and tweeking it for the 2 Twitter bot accounts I setup. I suggest you review src/bot.js code and mod for your needs. That code is heavily documented and nicely formatted. Enjoy! Buy me a beer some day if you end up using this custom Twitter news bot code.
+There is probably more that this bot does that escapes my recollection after 2 weeks of coding and tweeking it for the 2 Twitter bot accounts I've set up. I suggest you review src/bot.js code and mod for your needs. That code is heavily documented and nicely formatted. Enjoy! Buy me a beer some day if you end up using this custom Twitter news bot code.
 
 # 2. OR Run search.js for periodic RT's
 
