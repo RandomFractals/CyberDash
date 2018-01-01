@@ -132,7 +132,7 @@ For an example of a hybrid rate quoted tweets and retweets with links see WebPac
 
 From the first fews days of testing and running that bot to collect good webpack reads and guage webdev's feedback on that framework:
 
-![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/WebPackSenseBallons2017.png?raw=true 
+![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/WebPackSenseBalloons2017.png?raw=true 
  "@WebPackSense")
 
 Rate and RT bot log trace from the first 20 hours of day 1 on the job :)
