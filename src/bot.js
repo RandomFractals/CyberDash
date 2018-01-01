@@ -179,7 +179,8 @@ TwitterBot.prototype.processTweet = function (tweet) {
   if (this.userChecksOut(tweet.user) && 
     this.worthRT(tweet) &&
     this.matchesKeywords(tweet) ) {
-    if (this.config.mode === RATE && tweet.links.length === 0) {
+    if (this.config.mode === RATE && 
+        (tweet.links.length === 0 || tweet.isReply) ) {
       // send rated quote tweet
       this.quoteTweet(tweet.sentiment.ratingEmojis, tweet)
       this.logRetweet(tweet.sentiment.ratingText, tweet)
