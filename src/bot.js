@@ -329,7 +329,7 @@ TwitterBot.prototype.getSentiment = function (tweet) {
   })
 
   // create tweet rating info
-  tweetSentiment.rating = Math.round(tweetSentiment.comparative * 100 / 20) // for 5 star rating
+  tweetSentiment.rating = Math.round(tweetSentiment.comparative * this.config.rating_scale)
   tweetSentiment.ratingEmojis = this.getRatingEmojis(tweetSentiment.rating)
   tweetSentiment.ratingText = this.getRatingText(tweetSentiment.rating)
   return tweetSentiment
@@ -339,13 +339,13 @@ TwitterBot.prototype.getSentiment = function (tweet) {
 /**
  * Gets tweet rating emojis text.
  * 
- * @param rating Integer tweet sentiment rating in -5,5 range.
+ * @param rating Integer tweet sentiment rating in -10,10 range max.
  */
 TwitterBot.prototype.getRatingEmojis = function(rating) {
   let ratingText = ''
   let ratingChar = rating >= 0 ? this.config.positive_emoji: this.config.negative_emoji
   const absRating = Math.abs(rating)
-  for (let i=0; i<5; i++) { // for -5/+5 int ratings
+  for (let i=0; i<this.config.rating_scale; i++) { // for -10/+10 int ratings max
     if (absRating > i) {
       ratingText += ratingChar
     }
@@ -360,13 +360,13 @@ TwitterBot.prototype.getRatingEmojis = function(rating) {
 /**cls
  * Gets console friendly tweet rating text for debug logging.
  * 
- * @param rating Integer tweet sentiment rating in -5,5 range.
+ * @param rating Integer tweet sentiment rating in -10,10 range max.
  */
 TwitterBot.prototype.getRatingText = function(rating) {
   let ratingText = '|'
   let ratingChar = rating >= 0 ? '+': '-'
   const absRating = Math.abs(rating)
-  for (let i=0; i<5; i++) { // for -5/+5 int ratings
+  for (let i=0; i<this.config.rating_scale; i++) { // for -10/+10 int ratings max
     if (absRating > i) {
       ratingText += ratingChar
     }
