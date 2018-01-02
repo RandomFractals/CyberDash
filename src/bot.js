@@ -7,11 +7,6 @@ const INFO = 'info'
 const DEBUG = 'debug'
 const RATE = 'rate'
 
-// tweet rating emojis
-const POSITIVE_EMOJI = '🔥' //'🎉'
-const NEGATIVE_EMOJI = '😡' //'💫'
-const NEUTRAL_EMOJI  = '◽' // 🔹|🔸|◽
-
 /**
  * Creates new Twitter bot instance.
  * 
@@ -348,14 +343,14 @@ TwitterBot.prototype.getSentiment = function (tweet) {
  */
 TwitterBot.prototype.getRatingEmojis = function(rating) {
   let ratingText = ''
-  let ratingChar = rating >= 0 ? POSITIVE_EMOJI: NEGATIVE_EMOJI
+  let ratingChar = rating >= 0 ? this.config.positive_emoji: this.config.negative_emoji
   const absRating = Math.abs(rating)
   for (let i=0; i<5; i++) { // for -5/+5 int ratings
     if (absRating > i) {
       ratingText += ratingChar
     }
     else {
-      ratingText += NEUTRAL_EMOJI
+      ratingText += this.config.neutral_emoji
     }
   }
   return ratingText
