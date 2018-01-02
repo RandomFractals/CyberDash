@@ -1,0 +1,23 @@
+2018-01-01T02:25:43.633825+00:00 app[worker.1]: |[32m[2018-01-01T02:25:43.633] [INFO] bot - [39m>🎉◽◽◽◽: @justinfagnani: https://twitter.com/justinfagnani/status/947655041602633729
+2018-01-01T03:21:33.375463+00:00 app[worker.1]: |.|..|.[32m[2018-01-01T03:21:33.375] [INFO] bot - [39m>🎉◽◽◽◽: @justinfagnani: https://twitter.com/justinfagnani/status/947669090889482240
+2018-01-01T04:04:15.260059+00:00 app[worker.1]: |....|.........[32m[2018-01-01T04:04:15.259] [INFO] bot - [39m>◽◽◽◽◽: @TarasNovak: https://twitter.com/TarasNovak/status/947679836935540736
+2018-01-01T04:16:41.846921+00:00 app[worker.1]: |.[32m[2018-01-01T04:16:41.846] [INFO] bot - [39m>💫💫💫💫💫: @denvercoder: https://twitter.com/denvercoder/status/947682968062935041
+2018-01-01T05:13:05.007155+00:00 app[worker.1]: ||............[32m[2018-01-01T05:13:05.007] [INFO] bot - [39m>◽◽◽◽◽: @TheLarkInn: https://twitter.com/TheLarkInn/status/947697157943037954
+2018-01-01T06:00:22.633162+00:00 app[worker.1]: |...........|[32m[2018-01-01T06:00:22.632] [INFO] bot - [39m>◽◽◽◽◽: @TheLarkInn: https://twitter.com/TheLarkInn/status/947709059486101504
+2018-01-01T06:26:01.508531+00:00 app[worker.1]: |..|.[32m[2018-01-01T06:26:01.508] [INFO] bot - [39m>🎉◽◽◽◽: @_harshwardhan94: https://twitter.com/_harshwardhan94/status/947715512766578688
+2018-01-01T06:50:37.994771+00:00 app[worker.1]: |.....[32m[2018-01-01T06:50:37.993] [INFO] bot - [39m>◽◽◽◽◽: @roryprimrose: https://twitter.com/roryprimrose/status/947721706776403968
+2018-01-01T06:55:18.096130+00:00 app[worker.1]: |.[32m[2018-01-01T06:55:18.095] [INFO] bot - [39m>◽◽◽◽◽: @roryprimrose: https://twitter.com/roryprimrose/status/947722881592467456
+2018-01-01T07:43:02.542084+00:00 app[worker.1]: |............[32m[2018-01-01T07:43:02.541] [INFO] bot - [39m>🎉◽◽◽◽: @maggiepint: https://twitter.com/maggiepint/status/947734892854382592
+2018-01-01T14:14:38.392369+00:00 app[worker.1]: |...|...............|....|.....|.......|......|||..|..|..................[32m[2018-01-01T14:14:38.382] [INFO] bot - [39m>🎉🎉◽◽◽: @philjones88: https://twitter.com/philjones88/status/947833445090320384
+Disconnected from log stream. There may be events happening that you do not see here! Attempting to reconnect...
+2018-01-01T02:25:43.633825+00:00 app[worker.1]: |[32m[2018-01-01T02:25:43.633] [INFO] bot - [39m>🎉◽◽◽◽: @justinfagnani: https://twitter.com/justinfagnani/status/947655041602633729
+2018-01-01T03:21:33.375463+00:00 app[worker.1]: |.|..|.[32m[2018-01-01T03:21:33.375] [INFO] bot - [39m>🎉◽◽◽◽: @justinfagnani: https://twitter.com/justinfagnani/status/947669090889482240
+2018-01-01T04:04:15.260059+00:00 app[worker.1]: |....|.........[32m[2018-01-01T04:04:15.259] [INFO] bot - [39m>◽◽◽◽◽: @TarasNovak: https://twitter.com/TarasNovak/status/947679836935540736
+2018-01-01T04:16:41.846921+00:00 app[worker.1]: |.[32m[2018-01-01T04:16:41.846] [INFO] bot - [39m>💫💫💫💫💫: @denvercoder: https://twitter.com/denvercoder/status/947682968062935041
+2018-01-01T05:13:05.007155+00:00 app[worker.1]: ||............[32m[2018-01-01T05:13:05.007] [INFO] bot - [39m>◽◽◽◽◽: @TheLarkInn: https://twitter.com/TheLarkInn/status/947697157943037954
+2018-01-01T06:00:22.633162+00:00 app[worker.1]: |...........|[32m[2018-01-01T06:00:22.632] [INFO] bot - [39m>◽◽◽◽◽: @TheLarkInn: https://twitter.com/TheLarkInn/status/947709059486101504
+2018-01-01T06:26:01.508531+00:00 app[worker.1]: |..|.[32m[2018-01-01T06:26:01.508] [INFO] bot - [39m>🎉◽◽◽◽: @_harshwardhan94: https://twitter.com/_harshwardhan94/status/947715512766578688
+2018-01-01T06:50:37.994771+00:00 app[worker.1]: |.....[32m[2018-01-01T06:50:37.993] [INFO] bot - [39m>◽◽◽◽◽: @roryprimrose: https://twitter.com/roryprimrose/status/947721706776403968
+2018-01-01T06:55:18.096130+00:00 app[worker.1]: |.[32m[2018-01-01T06:55:18.095] [INFO] bot - [39m>◽◽◽◽◽: @roryprimrose: https://twitter.com/roryprimrose/status/947722881592467456
+2018-01-01T07:43:02.542084+00:00 app[worker.1]: |............[32m[2018-01-01T07:43:02.541] [INFO] bot - [39m>🎉◽◽◽◽: @maggiepint: https://twitter.com/maggiepint/status/947734892854382592
+2018-01-01T14:14:38.392369+00:00 app[worker.1]: |...|...............|....|.....|.......|......|||..|..|..................[32m[2018-01-01T14:14:38.382] [INFO] bot - [39m>🎉🎉◽◽◽: @philjones88: https://twitter.com/philjones88/status/947833445090320384
