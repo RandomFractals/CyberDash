@@ -111,7 +111,7 @@ TwitterBot.prototype.logConfig = function () {
   this.logger.info('like_mentions:', this.config.like_mentions)
   this.logger.info('language:', this.config.language)
   this.logger.info('mode:', this.config.mode)
-  this.logger.info('🔹🔹🔹◽◽|🔸🔸◽◽◽')
+  this.logger.info(`🔹|🔸|◽: ${POSITIVE_EMOJI}|${NEGATIVE_EMOJI}|${NEUTRAL_EMOJI}`)
   // create and log sentiment test
   sentimentTest = sentiment(this.config.sentiment_test, {
     // TODO: use track filter keywords from config here and boost all of them?
