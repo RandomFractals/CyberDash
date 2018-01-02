@@ -357,7 +357,7 @@ TwitterBot.prototype.getRatingEmojis = function(rating) {
 }
 
 
-/**
+/**cls
  * Gets console friendly tweet rating text for debug logging.
  * 
  * @param rating Integer tweet sentiment rating in -5,5 range.
@@ -586,10 +586,9 @@ TwitterBot.prototype.retweet = function (tweet) {
       this.updateQuotas(tweet)
 
       // update retweeted links to check for duplicates later      
-      tweet.entities.urls.filter(link => link.indexOf('https://twitter.com') < 0) // filter out twitter status links
-        .map(link => {
-          this.retweetLinks[link.url.replace('https://t.co/', '')] = link.expanded_url
-        })
+      tweet.entities.urls
+        .filter(link => link.expanded_url.indexOf('https://twitter.com') < 0) // filter out twitter status links
+        .map(link => this.retweetLinks[link.url.replace('https://t.co/', '')] = link.expanded_url)
 
       // log | for each RT to stdout
       process.stdout.write('|')      
