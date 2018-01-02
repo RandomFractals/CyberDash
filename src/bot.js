@@ -29,9 +29,10 @@ const TwitterBot = function (botConfig) {
   this.blacklist = {} // RT users blacklist
   this.favorites = {} // favorite tweets
 
-  // create retweet counters
+  // create retweet counters and caches
   this.retweets = {} // hourly per user RT counters
   this.retweetCount = 0
+  this.retweetLinks = {} // to check for duplicates
 
   // since tweet id marker for search/tweets
   this.sinceTweetId = 0
@@ -231,6 +232,7 @@ TwitterBot.prototype.updateTweet = function (tweet) {
   tweet.skipReply = this.config.filter_replies ? tweet.isReply: false
   tweet.hashtagsCount = tweet.entities.hashtags.length
   tweet.links = tweet.entities.urls.map(link => link.expanded_url)
+    .filter(link => link.indexOf('https://twitter.com') < 0) // filter out twitter status links
 }
 
 
@@ -423,9 +425,9 @@ TwitterBot.prototype.logTweet = function (tweet) {
     this.logger.debug(`matches: ${tweet.keywords}`)
     this.logger.debug(`hashtags: ${tweet.hashtagsCount}`, tweet.entities.hashtags.map(hashtag => hashtag.text))
     this.logger.debug('muteLinks:', tweet.muteLinks)
-    this.logger.debug('links:', tweet.links)
-    this.logger.debug(`links: ${tweet.links.length}`,
-      `| lang: ${tweet.lang}`,
+    this.logger.debug(`links: ${tweet.links.length}`, tweet.links)
+    this.logger.debug(
+      `lang: ${tweet.lang}`,
       `| isRetweet: ${tweet.isRetweet}`,
       `| isReply: ${tweet.isReply}`,
       `| skipRetweet: ${tweet.skipRetweet}`,
@@ -491,7 +493,7 @@ TwitterBot.prototype.quoteTweet = function (quoteText, tweet) {
 
       // update bot quotas
       this.updateQuotas(tweet)
-
+      
       // log | for each RT to stdout
       process.stdout.write('|')
     })
@@ -547,6 +549,11 @@ TwitterBot.prototype.retweet = function (tweet) {
 
       // update bot quotas
       this.updateQuotas(tweet)
+
+      tweet.entities.urls.map(link => {
+        // update retweeted links to check for duplicates later
+        this.retweetLinks[link.expanded_url] = link.expanded_url
+      })
 
       // log | for each RT to stdout
       process.stdout.write('|')      
