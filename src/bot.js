@@ -193,6 +193,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
   if (this.userChecksOut(tweet.user) && 
       this.worthRT(tweet) &&
       this.matchesKeywords(tweet) ) {
+
     if (this.config.mode === RATE && 
         (tweet.links.length === 0 || tweet.isReply) ) {
       // send rated quote tweet
@@ -204,6 +205,12 @@ TwitterBot.prototype.processTweet = function (tweet) {
       this.retweet(tweet)
       this.logRetweet('RT', tweet)
     }
+    else {
+      // log another skipped tweet
+      process.stdout.write('.')
+      this.logger.debug(`\n-@${tweet.user.screen_name}: ${tweet.fullText}`)        
+    }
+    
   }
   else { // did not pass configured user and tweet filters
     // log . for skipped tweets
