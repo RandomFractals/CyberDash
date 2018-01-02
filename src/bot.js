@@ -143,9 +143,11 @@ TwitterBot.prototype.searchTweets = function() {
       this.processTweet(tweet)
       //this.logger.info(`>@${tweet.user.screen_name}: \n${tweet.text}`)
 
-      // update retweetLinks for debug      
-      tweet.links.map(link => {
-        this.retweetLinks[link.expanded_url] = link.expanded_url
+      // update retweetLinks for debug
+      console.log(tweet.entities.urls)
+      tweet.entities.urls.map(link => {
+        this.retweetLinks[link.url.replace('https://t.co/', '')] = link.expanded_url
+        console.log(link)
       })
     })
     
@@ -157,7 +159,9 @@ TwitterBot.prototype.searchTweets = function() {
       response.data.search_metadata, `\n${this.dots}`)
 
     // log retweeted links for debug      
-    this.logger.debug(`\n${this.dashes} \nRetweeted Links\n${this.dashes}\n`, this.retweetLinks)
+    this.logger.debug(
+      `\n${this.dashes} \nRetweeted Links\n${this.dashes}\n`, 
+      JSON.stringify(this.retweetLinks, null, '\t'))
   })
   .catch(err => {
     this.logger.error(`Failed to get 'search/tweets' results!`, err)
@@ -561,10 +565,11 @@ TwitterBot.prototype.retweet = function (tweet) {
       // update bot quotas
       this.updateQuotas(tweet)
 
-      tweet.links.map(link => {
-        // update retweeted links to check for duplicates later
-        this.retweetLinks[link.expanded_url] = link.expanded_url
-      })
+      // update retweeted links to check for duplicates later      
+      tweet.entities.urls.filter(link => link.indexOf('https://twitter.com') < 0) // filter out twitter status links
+        .map(link => {
+          this.retweetLinks[link.url.replace('https://t.co/', '')] = link.expanded_url
+        })
 
       // log | for each RT to stdout
       process.stdout.write('|')      
