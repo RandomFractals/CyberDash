@@ -98,6 +98,12 @@ MODE=rate
 # Tweet rating scale: 1 to 10
 RATING_SCALE=3
 
+# Bot rate quoted tweet emojis
+# 🔥/🎉 | 😡/💫 | ◽ || 🔹|🔸|◽ - blue, orange and grey squares
+POSITIVE_EMOJI=🔥
+NEGATIVE_EMOJI=😡
+NEUTRAL_EMOJI=◽
+
 SENTIMENT_TEST=my bot is not that bad
 
 # Twitter bot API keys

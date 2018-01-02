@@ -10,7 +10,7 @@ const RATE = 'rate'
 // tweet rating emojis
 const POSITIVE_EMOJI = '🔥' //'🎉'
 const NEGATIVE_EMOJI = '😡' //'💫'
-const NEUTRAL_EMOJI  = '◽'
+const NEUTRAL_EMOJI  = '◽' // 🔹|🔸|◽
 
 /**
  * Creates new Twitter bot instance.
@@ -112,7 +112,8 @@ TwitterBot.prototype.logConfig = function () {
   this.logger.info('language:', this.config.language)
   this.logger.info('mode:', this.config.mode)
   this.logger.info('rating_scale:', this.config.rating_scale)
-  this.logger.info(`🔹|🔸|◽: ${POSITIVE_EMOJI}|${NEGATIVE_EMOJI}|${NEUTRAL_EMOJI}`)
+  this.logger.info('🔹|🔸|◽:',
+    `${this.config.positive_emoji}|${this.config.negative_emoji}|${this.config.neutral_emoji}`)
   // create and log sentiment test
   sentimentTest = sentiment(this.config.sentiment_test, {
     // TODO: use track filter keywords from config here and boost all of them?
