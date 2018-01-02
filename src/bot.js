@@ -142,11 +142,22 @@ TwitterBot.prototype.searchTweets = function() {
     response.data.statuses.forEach(tweet => {
       this.processTweet(tweet)
       //this.logger.info(`>@${tweet.user.screen_name}: \n${tweet.text}`)
+
+      // update retweetLinks for debug      
+      tweet.links.map(link => {
+        this.retweetLinks[link.expanded_url] = link.expanded_url
+      })
     })
+    
     // update since tweet id for the next twitter search call
     this.sinceTweetId = response.data.search_metadata.max_id_str
+
+    // log search results metadata
     this.logger.info(`\n${this.line}\nsearch_metadata: `, 
       response.data.search_metadata, `\n${this.dots}`)
+
+    // log retweeted links for debug      
+    this.logger.debug(`\n${this.dashes} \nRetweeted Links\n${this.dashes}\n`, this.retweetLinks)
   })
   .catch(err => {
     this.logger.error(`Failed to get 'search/tweets' results!`, err)
@@ -550,7 +561,7 @@ TwitterBot.prototype.retweet = function (tweet) {
       // update bot quotas
       this.updateQuotas(tweet)
 
-      tweet.entities.urls.map(link => {
+      tweet.links.map(link => {
         // update retweeted links to check for duplicates later
         this.retweetLinks[link.expanded_url] = link.expanded_url
       })
