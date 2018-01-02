@@ -52,7 +52,7 @@ HASHTAGS_FILTER=true
 MUTE_TWEET_FILTER=attend,join us,join our,summit,webinar,daily,predictions,easy steps,top,register
 
 # Skip tweets with these links
-MUTE_TWEET_LINKS_FILTER=reddit.com,paper.li,youtu.be
+MUTE_TWEET_LINKS_FILTER=reddit.com,paper.li,youtu.be,goog.gl,ift.tt,dlvr.it
 
 # Name of the 'blacklist' Twitter list to skip tweets from the members of
 # Note: can be any public or private Twitter list you create and curate
@@ -60,7 +60,7 @@ BLACKLIST=blacklist
 
 # Skip tweets from news bots, companies, magazines, 'celebrities' and support 'providers'
 # Add other 'mute' user profile description keywords as desired
-MUTE_USER_FILTER=publish,news,marketing,award-winning,best-selling,co-author,speaker,influencer,firm,company,magazine,provide,support
+MUTE_USER_FILTER=publish,news,tips,weekly,marketing,agency,studio,award-winning,best-selling,co-author,speaker,influencer,firm,company,magazine,provide,support,events,tutorials,courses
 
 # Minimum followers to RT a tweet from 'unknown' user
 MIN_USER_FOLLOWERS=1000
