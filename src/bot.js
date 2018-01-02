@@ -144,10 +144,8 @@ TwitterBot.prototype.searchTweets = function() {
       //this.logger.info(`>@${tweet.user.screen_name}: \n${tweet.text}`)
 
       // update retweetLinks for debug
-      console.log(tweet.entities.urls)
       tweet.entities.urls.map(link => {
         this.retweetLinks[link.url.replace('https://t.co/', '')] = link.expanded_url
-        console.log(link)
       })
     })
     
@@ -191,17 +189,17 @@ TwitterBot.prototype.processTweet = function (tweet) {
   // log enriched tweet stats for debug
   this.logTweet(tweet)
   
-  // run user, RT, and keywords checks
+  // run user, retweet, links and keywords checks
   if (this.userChecksOut(tweet.user) && 
-    this.worthRT(tweet) &&
-    this.matchesKeywords(tweet) ) {
+      this.worthRT(tweet) &&
+      this.matchesKeywords(tweet) ) {
     if (this.config.mode === RATE && 
         (tweet.links.length === 0 || tweet.isReply) ) {
       // send rated quote tweet
       this.quoteTweet(tweet.sentiment.ratingEmojis, tweet)
       this.logRetweet(tweet.sentiment.ratingText, tweet)
     } 
-    else {
+    else if (this.isUniqueTweet(tweet)) { // check for retweets with same link from diff. users
       // just retweeted it for the 'breaking' news bots :)
       this.retweet(tweet)
       this.logRetweet('RT', tweet)
@@ -420,6 +418,24 @@ TwitterBot.prototype.matchesKeywords = function (tweet) {
     (!this.config.hashtags_filter || 
       (this.config.hashtags_filter && tweet.hashtags && 
         tweet.hashtags.length <= this.config.max_tweet_hashtags) ) )
+}
+
+
+/**
+ * Checks if a tweet has unique links to retweet.
+ * 
+ * @param tweet Tweet to check for duplicate links.
+ * 
+ * TODO: add a check for duplicate text later
+ * for spammy users that retweet same content every day,
+ * or don't use RT Twitter feature and repost same content
+ * others already shared.
+ */
+TwitterBot.prototype.isUniqueTweet = function (tweet) {
+  return tweet.links.length === 0 || 
+    tweet.entities.urls.filter(link => {
+      this.retweetLinks[link.url.replace('https://t.co/', '')] !== undefined
+    }).length === 0
 }
 
 
