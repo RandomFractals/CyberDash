@@ -95,6 +95,11 @@ LOG_LEVEL=debug
 # Bot mode: rate or RT
 MODE=rate
 
+# Tweet rating scale: 1 to 10
+RATING_SCALE=3
+
+SENTIMENT_TEST=my bot is not that bad
+
 # Twitter bot API keys
 CONSUMER_KEY=
 CONSUMER_SECRET=
