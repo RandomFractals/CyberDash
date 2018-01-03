@@ -529,6 +529,11 @@ TwitterBot.prototype.quoteTweet = function (quoteText, tweet) {
       // update bot quotas
       this.updateQuotas(tweet)
       
+      if (this.config.like_retweets) {
+        // auto-add it to our favorites
+        this.likeTweet(tweet)
+      }
+      
       // log | for each RT to stdout
       process.stdout.write('|')
     })
@@ -590,6 +595,11 @@ TwitterBot.prototype.retweet = function (tweet) {
         .filter(link => link.expanded_url.indexOf('https://twitter.com') < 0) // filter out twitter status links
         .map(link => this.retweetLinks[link.url.replace('https://t.co/', '')] = link.expanded_url)
 
+      if (this.config.like_retweets) {
+        // auto-add it to our favorites
+        this.likeTweet(tweet)
+      }
+
       // log | for each RT to stdout
       process.stdout.write('|')      
     })
@@ -617,11 +627,7 @@ TwitterBot.prototype.likeMentions = function () {
     })
     .then(response => {
       this.logger.debug('\nMentions:', response.data.length)
-      response.data.map(tweet => {
-        if (this.favorites[tweet.id_str] === undefined) {
-          this.likeTweet(tweet)
-        }
-      })
+      response.data.map(tweet => this.likeTweet(tweet))
     })
     .catch( err => {
       this.logger.error(`Failed to get mentions for: @${this.config.twitter_account}`)
@@ -636,19 +642,21 @@ TwitterBot.prototype.likeMentions = function () {
  * @param tweet Tweet to add to favorites.
  */
 TwitterBot.prototype.likeTweet = function (tweet) {
-  this.twitter.post('favorites/create', {
-    id: tweet.id_str
-  })
-  .then( response => {
-    // add to favorites
-    this.favorites[tweet.id_str] = tweet
-    this.logger.debug(this.dashes)
-    this.logger.debug(`>Liked: @${tweet.user.screen_name}: ${tweet.text}`)
-    this.logger.debug(this.dashes)
-  })
-  .catch( err => {
-    this.logger.error('Failed to Like!', tweet)
-  })
+  if (this.favorites[tweet.id_str] === undefined) {
+    this.twitter.post('favorites/create', {
+      id: tweet.id_str
+    })
+    .then( response => {
+      // add tweet url to favorites, keyed by tweet id
+      this.favorites[tweet.id_str] = `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`
+      this.logger.debug(this.dashes)
+      this.logger.debug(`>Liked: @${tweet.user.screen_name}: ${tweet.text}`)
+      this.logger.debug(this.dashes)
+    })
+    .catch( err => {
+      this.logger.error('Failed to Like!', tweet)
+    })
+  }
 }
 
 

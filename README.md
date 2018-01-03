@@ -86,6 +86,9 @@ HOURLY_RETWEET_QUOTA=10
 # Search and like mentions flag
 LIKE_MENTIONS=true
 
+# Auto-like retweeted tweets. Set to true to enable it
+LIKE_RETWEETS=
+
 # Bot language to skip RT of foreign tweets
 LANGUAGE=en
 

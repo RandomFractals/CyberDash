@@ -22,6 +22,7 @@ module.exports = {
   hourly_retweet_quota: Number(process.env.HOURLY_RETWEET_QUOTA),
   // bot config vars
   like_mentions: Boolean(process.env.LIKE_MENTIONS),
+  like_retweets: Boolean(process.env.LIKE_RETWEETS),
   language: process.env.LANGUAGE,
   log_level: process.env.LOG_LEVEL,
   mode: process.env.MODE,
