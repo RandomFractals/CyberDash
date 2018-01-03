@@ -104,6 +104,7 @@ TwitterBot.prototype.logConfig = function () {
   this.logger.info('hourly_user_quota:', this.config.hourly_user_quota.toLocaleString())
   this.logger.info('hourly_retweet_quota:', this.config.hourly_retweet_quota.toLocaleString())
   this.logger.info('like_mentions:', this.config.like_mentions)
+  this.logger.info('like_retweets:', this.config.like_retweets)
   this.logger.info('language:', this.config.language)
   this.logger.info('mode:', this.config.mode)
   this.logger.info('rating_scale:', this.config.rating_scale)
