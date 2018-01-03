@@ -326,7 +326,7 @@ TwitterBot.prototype.getKeywordMatches = function (text, keywords) {
 TwitterBot.prototype.getSentiment = function (tweet) {
   let tweetSentiment = sentiment(tweet.fullText, {
     // TODO: use track filter keywords from config here and boost all of them?
-    'webpack': -5 // set 'webpack' word sentiment to 3 out of max 5 positive rating to boost rate quoted tweets
+    'webpack': -5 // set 'webpack' word sentiment to what it is
   })
 
   // create tweet rating info
