@@ -335,51 +335,38 @@ TwitterBot.prototype.getSentiment = function (tweet) {
 
   // create tweet rating info
   tweetSentiment.rating = Math.round(tweetSentiment.comparative * this.config.rating_scale)
-  tweetSentiment.ratingEmojis = this.getRatingEmojis(tweetSentiment.rating)
-  tweetSentiment.ratingText = this.getRatingText(tweetSentiment.rating)
+  tweetSentiment.ratingEmojis = this.getRatingText(
+    tweetSentiment.rating,
+    this.config.positive_emoji,
+    this.config.negative_emoji,
+    this.config.neutral_emoji
+  )
+  tweetSentiment.ratingText = this.getRatingText(tweetSentiment.rating, '+', '-', '.')
   return tweetSentiment
 }
 
 
 /**
- * Gets tweet rating emojis text.
+ * Gets tweet rating text for rate quoted tweets.
  * 
- * @param rating Integer tweet sentiment rating in -10,10 range max.
+ * @param ratingNumber Integer tweet sentiment rating number.
+ * @param positiveChar Positive rating char
+ * @param negativeChar Negative rating char
+ * @param nuetralChar Neutral rating char
  */
-TwitterBot.prototype.getRatingEmojis = function(rating) {
+TwitterBot.prototype.getRatingText = function(ratingNumber, positiveChar, negativeChar, nuetralChar) {
   let ratingText = ''
-  let ratingChar = rating >= 0 ? this.config.positive_emoji: this.config.negative_emoji
-  const absRating = Math.abs(rating)
+  let ratingChar = ratingNumber >= 0 ? positiveChar: negativeChar
+  const absRating = Math.abs(ratingNumber)
   for (let i=0; i<this.config.rating_scale; i++) { // for -10/+10 int ratings max
     if (absRating > i) {
       ratingText += ratingChar
     }
     else {
-      ratingText += this.config.neutral_emoji
-    }
-  }
-  return ratingText
-}
-
-
-/**cls
- * Gets console friendly tweet rating text for debug logging.
- * 
- * @param rating Integer tweet sentiment rating in -10,10 range max.
- */
-TwitterBot.prototype.getRatingText = function(rating) {
-  let ratingText = '|'
-  let ratingChar = rating >= 0 ? '+': '-'
-  const absRating = Math.abs(rating)
-  for (let i=0; i<this.config.rating_scale; i++) { // for -10/+10 int ratings max
-    if (absRating > i) {
-      ratingText += ratingChar
-    }
-    else {
-      ratingText += '.' // neutral
+      ratingText += nuetralChar
     }
   }  
-  return ratingText + '|'
+  return ratingText
 }
 
 
