@@ -196,7 +196,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
   
   // run user, retweet, links and keywords checks
   if (this.userChecksOut(tweet.user) && 
-      this.worthRT(tweet) &&
+      this.worthRetweeting(tweet) &&
       this.matchesKeywords(tweet) ) {
 
     if (this.config.mode === RATE && 
@@ -387,11 +387,11 @@ TwitterBot.prototype.userChecksOut = function (user) {
 
 
 /**
- * Checks if a tweet is worth RTing.
+ * Checks if a tweet is worth retweeting.
  * 
- * @param tweet Tweet to check for RT.
+ * @param tweet Tweet to check for configured retweeting rules.
  */
-TwitterBot.prototype.worthRT = function (tweet) {
+TwitterBot.prototype.worthRetweeting = function (tweet) {
   // check tweet stats
   return (tweet.user.isFriend || tweet.links.length > 0 || this.rateRT) && // RT friends and tweets with links
     tweet.hashtagsCount <= this.config.max_tweet_hashtags && // not too spammy
