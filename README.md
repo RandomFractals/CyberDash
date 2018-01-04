@@ -49,7 +49,7 @@ SEARCH_QUERY=#cyberSec #hacking AND -filter:replies AND -filter:retweets
 HASHTAGS_FILTER=true
 
 # Skip tweets with these keywords
-MUTE_TWEET_FILTER=attend,join us,join our,summit,webinar,daily,predictions,easy steps,top,register
+MUTE_TWEET_FILTER=attend,join us,join our,summit,webinar,daily,predictions,easy steps,top,register,meetup
 
 # Skip tweets with these links
 MUTE_TWEET_LINKS_FILTER=reddit.com,paper.li,youtu.be,goog.gl,ift.tt,dlvr.it
