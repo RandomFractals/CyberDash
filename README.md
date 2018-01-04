@@ -200,11 +200,12 @@ Here is a sample log of my WebPackSense Twitter bot running on Heroku in a worke
 ![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/WebPackSenseWorkerProcessLog.png?raw=true 
  "workerLog2")
 
-# V2.0 TODO
+# v2.x TODO
 
 - Plug in smarter sentiments lib or service call for rating quoted tweets without links.
 - hook up redis and check for tweet duplicates from tweeps that post same articles every day for promo
 - add different match algo's?: contains, regex, or http://compromise.cool/
+- add followBack(user) to new user stream follower event to see what that looks like? Automate! :)
 
 # This Twitter Bot 3rd party API References
 
