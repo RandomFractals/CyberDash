@@ -4,7 +4,7 @@ const bot = new TwitterBot(config)
 
 // subscirbe to user events
 const userStream = bot.twitter.stream('user')
-userStream.on('follow', event => bot.helloFriend(event)) // say hello :)
+userStream.on('follow', event => bot.sendDirectMessage(event, config.greeting)) // say hello :)
 
 // check whitelist every hour
 setInterval(() => bot.updateWhitelist, 60 * 60 * 1000)

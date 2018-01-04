@@ -666,23 +666,24 @@ TwitterBot.prototype.likeTweet = function (tweet) {
 
 
 /**
- * Sends 'Hello friend.' to new follower.
+ * Sends direct message to a twitter 'friend'.
+ * 
+ * Note: could be extended to answer queries via DM. v3.0 maybe :)
  */
-TwitterBot.prototype.helloFriend = function (event) {
+TwitterBot.prototype.sendDirectMessage = function (event, messageText) {
   const friendName = event.source.name
   const friendScreenName = event.source.screen_name
   if (friendScreenName !== this.config.twitter_account) { // not us
-    this.logger.info('\nnew follower:', friendScreenName)
-    // DM our greeting to new follower
+    // DM our friend
     this.twitter.post('direct_messages/new', {
       screen_name: friendScreenName,
-      text: this.config.greeting
+      text: messageText
     })
     .then( response  => {
-      this.logger.info(`Greeting DM sent to @${response.data.recipient_screen_name}: '${response.data.text}'`)
+      this.logger.info(`DM sent to @${response.data.recipient_screen_name}: '${response.data.text}'`)
     })
     .catch( err => {
-      this.logger.error('Failed to send greeting DM', err)      
+      this.logger.error('Failed to send DM', err)      
     })
   }
 }
