@@ -48,8 +48,14 @@ const TwitterBot = function (botConfig) {
 
   // get a list of configured track filter keywords
   this.config.track_keywords = this.config.track_filter.split(',').map(keyword => keyword.toLowerCase())
+
+  // create custom sentiment keywords config from the track filter keywords
+  // to boost quoted tweet ratings for custom tech keywords searches
+  this.config.sentiment_keywords = {} 
+  this.config.track_keywords.map(keyword => (this.config.sentiment_keywords[keyword] = 5)) // max 5 score
+
   if (this.config.hashtags_filter) {
-    // convert them to hashtags
+    // convert track keywords to hashtags
     this.config.track_keywords = this.config.track_keywords.map(keyword => ('#' + keyword))
   }
 
@@ -89,7 +95,8 @@ TwitterBot.prototype.logConfig = function () {
   this.logger.info('Bot Config:')
   this.logger.info(this.dashes)
   this.logger.info('track_filter:', this.config.track_keywords)
-  this.logger.info('search_query:', this.config.search_query)      
+  this.logger.info('search_query:', this.config.search_query)
+  this.logger.info('sentiment_keywords:', this.config.sentiment_keywords)
   this.logger.info('hashtags_filter:', this.config.hashtags_filter)
   this.logger.info('filter_retweets:', this.config.filter_retweets)
   this.logger.info('filter_replies:', this.config.filter_replies)
@@ -324,12 +331,7 @@ TwitterBot.prototype.getKeywordMatches = function (text, keywords) {
  * Also could enhance this with better sentiment lib in v2.0
  */
 TwitterBot.prototype.getSentiment = function (tweet) {
-  let tweetSentiment = sentiment(tweet.fullText, {
-    // TODO: use track filter keywords from config here and boost all of them?
-    // boost webpack and reactjs words for better tweet sentiment ratings
-    'webpack': 5,
-    'reactjs': 5
-  })
+  let tweetSentiment = sentiment(tweet.fullText, this.config.sentiment_keywords)
 
   // create tweet rating info
   tweetSentiment.rating = Math.round(tweetSentiment.comparative * this.config.rating_scale)
