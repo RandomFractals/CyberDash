@@ -214,6 +214,8 @@ https://github.com/ttezel/twit - used for Twitter API calls
 
 https://github.com/log4js-node/log4js-node - used for bot info, debug and error logging
 
+https://github.com/thisandagain/sentiment - used for rate quoted tweets scoring for now
+
 Official 'Standard' Twitter filter and search tweets APIs:
 
 https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference/post-statuses-filter.html
