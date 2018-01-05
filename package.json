@@ -22,6 +22,7 @@
     "bot"
   ],
   "dependencies": {
+    "compromise": "^11.2.1",
     "dotenv": "^4.0.0",
     "log4js": "^2.4.1",
     "sentiment": "^4.1.0",
