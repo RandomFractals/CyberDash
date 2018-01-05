@@ -1,8 +1,8 @@
 {
-  "name": "cyber-dash",
-  "productName": "CyberDash Twitter Bot",
-  "version": "1.0.0",
-  "description": "Retweets cyber security Twitter posts",
+  "name": "twitter-dash",
+  "productName": "Twitter Dash Bot",
+  "version": "2.0.0",
+  "description": "retweets and rate quotes tweets of your choosing",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -14,11 +14,13 @@
   "author": "Random Fractals, Inc.",
   "license": "MIT",
   "keywords": [
-    "cyberSec",
     "twitter",
     "stream",
     "filter",
+    "dash",
     "news",
+    "quote",
+    "tweet",
     "bot"
   ],
   "dependencies": {
