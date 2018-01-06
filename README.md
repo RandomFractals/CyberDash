@@ -221,6 +221,8 @@ https://github.com/nlp-compromise/compromise - used for normalizing tweet text p
 
 # Twitter Dev Docs for Filter and Search Tweets APIs
 
+https://apps.twitter.com/ - go here first to create your Twitter bot app first
+
 https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference/post-statuses-filter.html
 
 https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets.html
