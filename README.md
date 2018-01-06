@@ -217,6 +217,8 @@ https://github.com/log4js-node/log4js-node - used for bot info, debug and error 
 
 https://github.com/thisandagain/sentiment - used for rate quoted tweets scoring for now
 
+https://github.com/nlp-compromise/compromise - used for normalizing tweet text prior to sentiment scoring
+
 Official 'Standard' Twitter filter and search tweets APIs:
 
 https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference/post-statuses-filter.html
