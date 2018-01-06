@@ -223,6 +223,8 @@ https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference/post-
 
 https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets.html
 
+https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators
+
 https://apps.timwhitlock.info/emoji/tables/unicode - see these to change tweet rating emojis in bot.js
 
 # Twitter Bots Tutorials
