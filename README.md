@@ -225,7 +225,7 @@ https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-twe
 
 https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators
 
-https://apps.timwhitlock.info/emoji/tables/unicode - see these to change tweet rating emojis in bot.js
+https://apps.timwhitlock.info/emoji/tables/unicode - see these to change tweet rating emojis in your bot .env config
 
 # Twitter Bots Tutorials
 
