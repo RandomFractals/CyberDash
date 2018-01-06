@@ -183,7 +183,7 @@ There is probably more that this bot does that escapes my recollection after 2 w
 
 >node src/search
 
-search/tweets 'webpack' bor run trace sample:
+search/tweets 'webpack' bot run trace sample:
 
 ![Alt text](https://github.com/RandomFractals/CyberDash/blob/master/screens/WebPackSenseSearchTweetsRunTrace1.png?raw=true 
  "SearchTweetsTrace")
