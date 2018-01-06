@@ -219,7 +219,7 @@ https://github.com/thisandagain/sentiment - used for rate quoted tweets scoring 
 
 https://github.com/nlp-compromise/compromise - used for normalizing tweet text prior to sentiment scoring
 
-Official 'Standard' Twitter filter and search tweets APIs:
+# Official 'Standard' Twitter Filter and Search tweets APIs
 
 https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference/post-statuses-filter.html
 
