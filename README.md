@@ -97,8 +97,8 @@ LANGUAGE=en
 # Bot log level: debug or info
 LOG_LEVEL=debug
 
-# Bot mode: rate or RT
-MODE=rate
+# Bot mode: rate || retweet
+MODE=retweet
 
 # Tweet rating scale: 1 to 10
 RATING_SCALE=3
