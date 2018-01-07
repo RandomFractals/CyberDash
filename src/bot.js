@@ -145,7 +145,7 @@ TwitterBot.prototype.searchTweets = function() {
   .then(response => {
     // process tweet search results
     //console.log(JSON.stringify(response.data, null, '\t'))
-    response.data.statuses.forEach(tweet => {
+    response.data.statuses.reverse().forEach(tweet => {
       this.processTweet(tweet)
       //this.logger.info(`>@${tweet.user.screen_name}: \n${tweet.text}`)
 
