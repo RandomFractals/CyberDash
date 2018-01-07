@@ -4,7 +4,7 @@ This simple keywords search Twitter bot was originally created to keep up with c
 
 I extended it for the webpack dev community as an experiment to guage webpack feedback in its second incarnation. See it running in a hybrid mode at https://twitter.com/WebPackSense and scroll down for more info.
 
-v3.0 this bot for webdevs: https://twitter.com/WebDevCreations
+v3.0 of this bot for webdevs: https://twitter.com/WebDevCreations
 
 You can use this node.js Twitter bot code to create your own Twitter news feed for the topics of your interest, or for augmenting your existing Twitter account to become a subject matter expert in your domain, as most top Twitter 'influencers' do :) Just follow the build, config, test, debug, run and bot deploy instructions below.
 
