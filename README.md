@@ -206,6 +206,7 @@ Here is a sample log of my WebPackSense Twitter bot running on Heroku in a worke
 
 # v3.x TODO
 
+- add min_user_friends check. set it to 100 or 500 as another filter to filter out most news bots
 - Plug in smarter sentiments lib or service call for rating quoted tweets without links.
 - hook up redis and check for tweet duplicates from tweeps that post same articles every day for promo
 - add different match algo's?: contains, regex, or http://compromise.cool/
