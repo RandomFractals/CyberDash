@@ -14,6 +14,7 @@ module.exports = {
   mute_user_filter: process.env.MUTE_USER_FILTER,  
   // user/tweets min/max filters
   min_user_followers: Number(process.env.MIN_USER_FOLLOWERS),
+  min_user_friends: Number(process.env.MIN_USER_FRIENDS),
   max_user_friends: Number(process.env.MAX_USER_FRIENDS),
   min_user_tweets: Number(process.env.MIN_USER_TWEETS),
   max_user_tweets: Number(process.env.MAX_USER_TWEETS),

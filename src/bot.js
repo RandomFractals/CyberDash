@@ -104,7 +104,8 @@ TwitterBot.prototype.logConfig = function () {
   this.logger.info('mute_tweet_filter:', this.config.mute_tweet_filter)
   this.logger.info('mute_tweet_links_filter:', this.config.mute_tweet_links_filter)  
   this.logger.info('mute_user_filter:', this.config.mute_user_filter)
-  this.logger.info('min_user_followers:', this.config.min_user_followers.toLocaleString())  
+  this.logger.info('min_user_followers:', this.config.min_user_followers.toLocaleString())
+  this.logger.info('min_user_friends:', this.config.min_user_friends.toLocaleString())
   this.logger.info('max_user_friends:', this.config.max_user_friends.toLocaleString())  
   this.logger.info('min_user_tweets:', this.config.min_user_tweets.toLocaleString())
   this.logger.info('max_user_tweets:', this.config.max_user_tweets.toLocaleString())
@@ -384,6 +385,7 @@ TwitterBot.prototype.userChecksOut = function (user) {
     (!user.blacklisted && !user.muted && !user.retweetQuotaExceeded &&
       !user.verified && // skip verified 'unknown' users for now
       user.followers_count >= this.config.min_user_followers && // min required for 'unknown' tweeps
+      user.friends_count >= this.config.min_user_friends && // skip noobs without friends, also many bots
       user.friends_count <= this.config.max_user_friends && // skip tweets from tweeps that follow the universe
       user.statuses_count >= this.config.min_user_tweets && // min required for 'unknown' user to RT
       user.statuses_count <= this.config.max_user_tweets) // most likely just another Twitter bot
