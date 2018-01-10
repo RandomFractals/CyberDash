@@ -208,7 +208,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
     if (this.config.mode === RATE && 
         (tweet.links.length === 0 || tweet.isReply) ) {
       // send rated quote tweet
-      this.quoteTweet(`${this.getRatingStatus(tweet)} ${tweet.sentiment.nouns}`, tweet)
+      this.quoteTweet(`${this.getRatingStatus(tweet)}${tweet.sentiment.nouns}`, tweet)
       this.logRetweet(tweet.sentiment.ratingText, tweet)
     } 
     else if (this.isUniqueTweet(tweet)) { // check for retweets with same link from diff. users
