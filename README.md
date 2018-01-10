@@ -112,6 +112,9 @@ POSITIVE_EMOJI=🔥
 NEGATIVE_EMOJI=😡
 NEUTRAL_EMOJI=◽
 
+# Adds matching hashtags to rate quoted tweets
+ADD_HASHTAGS=
+
 SENTIMENT_TEST=my bot is not that bad
 
 # Twitter bot API keys

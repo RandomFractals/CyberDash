@@ -116,6 +116,7 @@ TwitterBot.prototype.logConfig = function () {
   this.logger.info('like_retweets:', this.config.like_retweets)
   this.logger.info('language:', this.config.language)
   this.logger.info('mode:', this.config.mode)
+  this.logger.info('add_hashtags:', this.config.add_hashtags)
   this.logger.info('rating_scale:', this.config.rating_scale)
   this.logger.info('🔹|🔸|◽:',
     `${this.config.positive_emoji}|${this.config.negative_emoji}|${this.config.neutral_emoji}`)
@@ -381,14 +382,19 @@ TwitterBot.prototype.getRatingText = function(ratingNumber, positiveChar, negati
  * @param user Tweet user stats.
  */
 TwitterBot.prototype.userChecksOut = function (user) {
-  return (user.isFriend && !user.blacklisted && !user.retweetQuotaExceeded) || // friends can be blacklisted :(
-    (!user.blacklisted && !user.muted && !user.retweetQuotaExceeded &&
-      !user.verified && // skip verified 'unknown' users for now
-      user.followers_count >= this.config.min_user_followers && // min required for 'unknown' tweeps
-      user.friends_count >= this.config.min_user_friends && // skip noobs without friends, also many bots
-      user.friends_count <= this.config.max_user_friends && // skip tweets from tweeps that follow the universe
-      user.statuses_count >= this.config.min_user_tweets && // min required for 'unknown' user to RT
-      user.statuses_count <= this.config.max_user_tweets) // most likely just another Twitter bot
+  return (user.screen_name !== this.config.twitter_account && // not us
+    ( (user.isFriend && !user.blacklisted && !user.retweetQuotaExceeded) || // friends can be blacklisted :(
+      (
+        !user.blacklisted && !user.muted && !user.retweetQuotaExceeded &&
+        !user.verified && // skip verified 'unknown' users for now
+        user.followers_count >= this.config.min_user_followers && // min required for 'unknown' tweeps
+        user.friends_count >= this.config.min_user_friends && // skip noobs without friends, also many bots
+        user.friends_count <= this.config.max_user_friends && // skip tweets from tweeps that follow the universe
+        user.statuses_count >= this.config.min_user_tweets && // min required for 'unknown' user to RT
+        user.statuses_count <= this.config.max_user_tweets // most likely just another Twitter bot
+      ) 
+    )
+  )
 }
 
 

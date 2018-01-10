@@ -32,6 +32,7 @@ module.exports = {
   positive_emoji: process.env.POSITIVE_EMOJI,
   negative_emoji: process.env.NEGATIVE_EMOJI,
   neutral_emoji: process.env.NEUTRAL_EMOJI,
+  add_hashtags: Boolean(process.env.ADD_HASHTAGS),
   sentiment_test: process.env.SENTIMENT_TEST,
   // Twitter API keys
   consumer_key: process.env.CONSUMER_KEY,
