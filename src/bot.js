@@ -208,7 +208,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
     if (this.config.mode === RATE && 
         (tweet.links.length === 0 || tweet.isReply) ) {
       // send rated quote tweet
-      this.quoteTweet(this.getRatingStatus(tweet), tweet)
+      this.quoteTweet(`${this.getRatingStatus(tweet)} ${tweet.sentiment.nouns}`, tweet)
       this.logRetweet(tweet.sentiment.ratingText, tweet)
     } 
     else if (this.isUniqueTweet(tweet)) { // check for retweets with same link from diff. users
@@ -472,7 +472,7 @@ TwitterBot.prototype.logTweet = function (tweet) {
     this.logger.debug(this.dashes)
     this.logger.debug(`matches: ${tweet.keywords}`)
     this.logger.debug(`hashtags: ${tweet.hashtagsCount}`, tweet.entities.hashtags.map(hashtag => hashtag.text))
-    this.logger.debug('nouns:', tweet.sentiment.nouns)    
+    this.logger.debug('nouns:', tweet.sentiment.nouns)
     // this.logger.debug('muteLinks:', tweet.muteLinks)
     this.logger.debug(`links: ${tweet.links.length}`, tweet.links)
     this.logger.debug(
