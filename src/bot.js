@@ -337,9 +337,15 @@ TwitterBot.prototype.getKeywordMatches = function (text, keywords) {
  * Also could enhance this with better sentiment lib in v2.0
  */
 TwitterBot.prototype.getSentiment = function (tweet) {
-  const normalizedText = nlp(tweet.fullText).normalize().sentences().out()
-  const tweetSentiment = sentiment(normalizedText, this.config.sentiment_keywords)
-  //console.log(normalizedText)
+  // get normalized text with compromise nlp
+  const normalizedText = nlp(tweet.fullText).normalize()
+  // console.log(normalizedText)
+
+  // create tweet sentiment
+  const tweetSentiment = sentiment(normalizedText.sentences().out(), this.config.sentiment_keywords)
+
+  // add extracted tweet nouns for rate quoted tweet summary
+  tweetSentiment.nouns = normalizedText.nouns().out()
 
   // create tweet rating info
   tweetSentiment.rating = Math.round(tweetSentiment.comparative * this.config.rating_scale)
@@ -350,7 +356,7 @@ TwitterBot.prototype.getSentiment = function (tweet) {
     this.config.neutral_emoji
   )
   tweetSentiment.ratingText = this.getRatingText(tweetSentiment.rating, '+', '-', '.')
-  //console.log(tweetSentiment)
+  // console.log(tweetSentiment)
   return tweetSentiment
 }
 
@@ -466,7 +472,8 @@ TwitterBot.prototype.logTweet = function (tweet) {
     this.logger.debug(this.dashes)
     this.logger.debug(`matches: ${tweet.keywords}`)
     this.logger.debug(`hashtags: ${tweet.hashtagsCount}`, tweet.entities.hashtags.map(hashtag => hashtag.text))
-    this.logger.debug('muteLinks:', tweet.muteLinks)
+    this.logger.debug('nouns:', tweet.sentiment.nouns)    
+    // this.logger.debug('muteLinks:', tweet.muteLinks)
     this.logger.debug(`links: ${tweet.links.length}`, tweet.links)
     this.logger.debug(
       `lang: ${tweet.lang}`,
