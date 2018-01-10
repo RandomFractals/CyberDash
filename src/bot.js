@@ -595,7 +595,7 @@ TwitterBot.prototype.getRatingStatus = function (tweet) {
   if (tweet.fullText.toLowerCase().indexOf('100daysofcode') >= 0 ||
       tweet.entities.hashtags.indexOf('100DaysOfCode') >= 0) {
     // prepand 100 cowboy hat emojis for the cowb0yz && g1rlz :)
-    ratingStatus += '💯 🤠 🍉 :) '
+    ratingStatus = '💯 🤠 🍉 :) ' + ratingStatus
   }
   return ratingStatus.trim()
 }
