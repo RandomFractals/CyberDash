@@ -208,7 +208,7 @@ TwitterBot.prototype.processTweet = function (tweet) {
     if (this.config.mode === RATE && 
         (tweet.links.length === 0 || tweet.isReply) ) {
       // send rated quote tweet
-      this.quoteTweet(tweet.sentiment.ratingEmojis, tweet)
+      this.quoteTweet(this.getRatingStatus(tweet), tweet)
       this.logRetweet(tweet.sentiment.ratingText, tweet)
     } 
     else if (this.isUniqueTweet(tweet)) { // check for retweets with same link from diff. users
@@ -527,7 +527,7 @@ TwitterBot.prototype.quoteTweet = function (quoteText, tweet) {
     // send rate quoted tweet
     const quoteTweetUrl = `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`
     this.twitter.post('statuses/update', {
-      status: this.getRatingStatus(tweet),
+      status: quoteText,
       attachment_url: quoteTweetUrl
     })
     .then( response => {
