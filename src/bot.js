@@ -9,6 +9,7 @@ const DEBUG = 'debug'
 const RATE = 'rate'
 
 // TODO: move this to config?
+const MAX_SEARCH_RESULTS = 20 // max tweets to analyze every 15 minutes for search/tweets calls
 
 /**
  * Creates new Twitter bot instance.
