@@ -8,6 +8,8 @@ const INFO = 'info'
 const DEBUG = 'debug'
 const RATE = 'rate'
 
+// TODO: move this to config?
+
 /**
  * Creates new Twitter bot instance.
  * 
@@ -138,7 +140,7 @@ TwitterBot.prototype.searchTweets = function() {
   this.logger.info('searching...')
   this.twitter.get('search/tweets', {
     q: this.config.search_query,
-    count: 20, // max tweets to analyze every 15 minutes
+    count: MAX_SEARCH_RESULTS, // max tweets to analyze every 15 minutes
     result_type: 'recent',
     tweet_mode: 'extended',
     since_id: this.sinceTweetId,
@@ -475,6 +477,7 @@ TwitterBot.prototype.logTweet = function (tweet) {
       `rating=${tweet.sentiment.rating}`,
       `| score=${tweet.sentiment.score}`,
       `| comparative=${tweet.sentiment.comparative}`)
+    this.logger.debug('ratedTweet:', this.getRatingStatus(tweet))
     this.logger.debug(this.dashes)
     this.logger.debug(`@${tweet.user.screen_name}:`,
       `tweets: ${tweet.user.statuses_count}`,
@@ -517,12 +520,13 @@ TwitterBot.prototype.logRetweet = function (status, tweet) {
  * @param tweet Quoted tweet
  */
 TwitterBot.prototype.quoteTweet = function (quoteText, tweet) {
-  if (this.retweetCount < this.config.hourly_retweet_quota && // below hourly RT quota
-    this.logger.level.isGreaterThanOrEqualTo(INFO) ) { // RT only in info mode!
-    // send quoted tweet
+  const belowRetweetQuota = (this.retweetCount < this.config.hourly_retweet_quota) // below hourly RT quota
+  if (belowRetweetQuota &&
+      this.logger.level.isGreaterThanOrEqualTo(INFO) ) { // RT only in info mode!
+    // send rate quoted tweet
     const quoteTweetUrl = `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`
     this.twitter.post('statuses/update', {
-      status: tweet.sentiment.ratingEmojis,
+      status: this.getRatingStatus(tweet),
       attachment_url: quoteTweetUrl
     })
     .then( response => {
@@ -546,13 +550,41 @@ TwitterBot.prototype.quoteTweet = function (quoteText, tweet) {
     })
   }
   else { // skip retweet due to hourly retweet quota reached
-    if (this.logger.level.isEqualTo(DEBUG)) {
+    if (belowRetweetQuota && this.logger.level.isEqualTo(DEBUG)) {
+      this.logRetweet('rate', tweet)
+    }
+    else if (this.logger.level.isEqualTo(DEBUG)) {
       this.logRetweet('skip RT', tweet)
     }
-    // log - for skipped RT due to RT quota
-    process.stdout.write('-')
+    else if (!belowRetweetQuota) {
+      // log - for skipped RT due to RT quota
+      process.stdout.write('-')
+    }
+    // console.log(this.getRatingStatus(tweet))
   }
 } // end of quoteTweet()
+
+
+/**
+ * Gets rate quoted tweet status
+ * with rating emojis and optionally matched hashtags.
+ */
+TwitterBot.prototype.getRatingStatus = function (tweet) {
+  let ratingStatus = tweet.sentiment.ratingEmojis
+  if (this.config.add_hashtags) {
+    let matchedKeywords = tweet.keywords
+    if (!matchedKeywords.startsWith('#')) {
+      // convert to hashtags      
+      keywords = matchedKeywords.trim().split(' ')
+      matchedKeywords = ''
+      keywords.forEach(keyword => {
+        matchedKeywords += `#${keyword} `
+      })  
+    }
+    ratingStatus += `\n${matchedKeywords}`
+  }
+  return ratingStatus
+}
 
 
 /**
