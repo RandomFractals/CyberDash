@@ -392,6 +392,7 @@ TwitterBot.prototype.getRatingText = function(ratingNumber, positiveChar, negati
  */
 TwitterBot.prototype.userChecksOut = function (user) {
   return (user.screen_name !== this.config.twitter_account && // not us
+    user.screen_name !== 'WebPackSense' && user.screen_name !== 'WebDevCreations' &&
     ( (user.isFriend && !user.blacklisted && !user.retweetQuotaExceeded) || // friends can be blacklisted :(
       (
         !user.blacklisted && !user.muted && !user.retweetQuotaExceeded &&
