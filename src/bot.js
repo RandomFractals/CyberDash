@@ -345,7 +345,7 @@ TwitterBot.prototype.getSentiment = function (tweet) {
   const tweetSentiment = sentiment(normalizedText.sentences().out(), this.config.sentiment_keywords)
 
   // add extracted tweet nouns for rate quoted tweet summary
-  tweetSentiment.nouns = normalizedText.nouns().out()
+  tweetSentiment.nouns = normalizedText.nouns().out().trim()
 
   // create tweet rating info
   tweetSentiment.rating = Math.round(tweetSentiment.comparative * this.config.rating_scale)
@@ -592,7 +592,7 @@ TwitterBot.prototype.getRatingStatus = function (tweet) {
     }
     ratingStatus += `\n${matchedKeywords}`
   }
-  return ratingStatus
+  return ratingStatus.trim()
 }
 
 
