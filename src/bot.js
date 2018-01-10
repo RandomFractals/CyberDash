@@ -572,7 +572,7 @@ TwitterBot.prototype.quoteTweet = function (quoteText, tweet) {
  */
 TwitterBot.prototype.getRatingStatus = function (tweet) {
   let ratingStatus = tweet.sentiment.ratingEmojis
-  if (this.config.add_hashtags) {
+  if (this.config.add_hashtags && tweet.keywords.trim().length > 0) {
     let matchedKeywords = tweet.keywords
     if (!matchedKeywords.startsWith('#')) {
       // convert to hashtags      
